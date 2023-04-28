@@ -46,7 +46,9 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
           const SizedBox(height: 20,),
           Image.asset("assets/images/forapp.png",width: 100,height: 100,),
           const SizedBox(height: 20,),
-          const Center(child: Text("Powered by FNET Enterprise",style: TextStyle(fontWeight: FontWeight.bold),))
+          const Center(child: Text("Powered by",style: TextStyle(fontWeight: FontWeight.bold),)),
+          const SizedBox(height: 20,),
+          Image.asset("assets/images/logo.png",width: 100,height: 100,),
         ],
       ),
       floatingActionButton: FloatingActionButton(

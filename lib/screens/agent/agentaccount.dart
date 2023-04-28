@@ -113,13 +113,13 @@ class _AgentAccountsState extends State<AgentAccounts> {
               ),
             );
           }),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: snackBackground,
-        onPressed: (){
-          Get.to(() => const AddAgentAccounts());
-        },
-        child: const Icon(Icons.search_rounded,size: 30,color: defaultWhite,),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: snackBackground,
+      //   onPressed: (){
+      //     Get.to(() => const AddAgentAccounts());
+      //   },
+      //   child: const Icon(Icons.add,size: 30,color: defaultWhite,),
+      // ),
     );
   }
 

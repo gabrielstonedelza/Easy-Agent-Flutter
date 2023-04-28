@@ -1,7 +1,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
-import '../controllers/agentcontroller.dart';
 import 'dashboard.dart';
 
 
@@ -91,6 +89,22 @@ class _ReBalancingState extends State<ReBalancing> {
 
   late String uToken = "";
   final storage = GetStorage();
+  final List networks = [
+    "Select Network",
+    "Mtn",
+    "AirtelTigo",
+    "Vodafone",
+  ];
+  final List exchangeTypes = [
+    "Select exchange type",
+    "Bank",
+    "Mobile Network"
+  ];
+  bool isBank = false;
+  bool isNetwork = false;
+
+  var _currentSelectedNetwork = "Select Network";
+  var _currentSelectedExchangeType = "Select exchange type";
 
 
   processBalancing() async {
@@ -102,6 +116,7 @@ class _ReBalancingState extends State<ReBalancing> {
     }, body: {
       "amount": _amountController.text.trim(),
       "bank": _currentSelectedBank,
+      "network": _currentSelectedNetwork,
       "account_number": _currentAccountNumberSelected,
       "account_name": _currentAccountNameSelected,
     });
@@ -183,6 +198,81 @@ class _ReBalancingState extends State<ReBalancing> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: DropdownButton(
+                          isExpanded: true,
+                          underline: const SizedBox(),
+
+                          items: exchangeTypes.map((dropDownStringItem) {
+                            return DropdownMenuItem(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected) {
+                            _onDropDownItemSelectedNetwork(newValueSelected);
+                            if(newValueSelected == "Bank") {
+                              setState(() {
+                                isBank = true;
+                                isNetwork = false;
+                              });
+                            }
+                            if(newValueSelected == "Mobile Network") {
+                              setState(() {
+                                isNetwork = true;
+                                isBank = false;
+                              });
+                            }
+                            else{
+                              setState(() {
+                                isNetwork = false;
+                                isBank = false;
+                              });
+                            }
+                          },
+                          value: _currentSelectedExchangeType,
+                        ),
+                      ),
+                    ),
+                  ),
+                 isNetwork ? Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: DropdownButton(
+                          isExpanded: true,
+                          underline: const SizedBox(),
+
+                          items: networks.map((dropDownStringItem) {
+                            return DropdownMenuItem(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected) {
+                            _onDropDownItemSelectedNetwork(newValueSelected);
+                            if(newValueSelected == "Customer") {
+                              setState(() {
+
+                              });
+                            }
+                          },
+                          value: _currentSelectedNetwork,
+                        ),
+                      ),
+                    ),
+                  ) : Container(),
+                 isBank ? Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: DropdownButton(
                           hint: const Text("Select bank"),
                           isExpanded: true,
                           underline: const SizedBox(),
@@ -198,7 +288,7 @@ class _ReBalancingState extends State<ReBalancing> {
                           value: _currentSelectedBank,
                         ),
                       ),
-                    ),),
+                    ),) : Container(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
@@ -297,6 +387,12 @@ class _ReBalancingState extends State<ReBalancing> {
       ),
     );
   }
+  void _onDropDownItemSelectedNetwork(newValueSelected) {
+    setState(() {
+      _currentSelectedNetwork = newValueSelected;
+    });
+  }
+
   void _onDropDownItemSelectedBank(newValueSelected) {
     setState(() {
       _currentSelectedBank = newValueSelected;
@@ -310,6 +406,11 @@ class _ReBalancingState extends State<ReBalancing> {
   void _onDropDownItemSelectedAccountName(newValueSelected) {
     setState(() {
       _currentAccountNameSelected = newValueSelected;
+    });
+  }
+  void _onDropDownItemSelectedExchangeType(newValueSelected) {
+    setState(() {
+      _currentSelectedExchangeType = newValueSelected;
     });
   }
 

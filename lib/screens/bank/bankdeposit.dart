@@ -209,9 +209,9 @@ class _BankDepositState extends State<BankDeposit> {
 
   late String uToken = "";
   final storage = GetStorage();
-  Future<void> openFinancialServices(String bankNum) async {
+  Future<void> openFinancialServices() async {
     await UssdAdvanced.multisessionUssd(
-        code: "*171*6*1*1*$bankNum#", subscriptionId: 1);
+        code: "*171*6*1*1#", subscriptionId: 1);
   }
 
   processBankDeposit() async {
@@ -280,91 +280,23 @@ class _BankDepositState extends State<BankDeposit> {
               ),
               Row(
                 mainAxisAlignment:
-                MainAxisAlignment.spaceEvenly,
+                MainAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: () {
-                      if(_currentSelectedBank == "GT Bank"){
-                        openFinancialServices("4");
-                      }
+                      openFinancialServices();
                       // Get.back();
                     },
                     child: Column(
                       children: [
                         Image.asset(
-                          "assets/images/gtbank.jpg",
+                          "assets/images/bank.png",
                           width: 50,
                           height: 50,
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("GT Bank",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
-                        )
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if(_currentSelectedBank == "Cal Bank"){
-                        openFinancialServices("7");
-                      }
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "assets/images/calbank.png",
-                          width: 50,
-                          height: 50,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Cal Bank",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
-                        )
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if(_currentSelectedBank == "Fidelity Bank"){
-                        openFinancialServices("5");
-                      }
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "assets/images/fidelity-card.png",
-                          width: 50,
-                          height: 50,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Fidelity",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
-                        )
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if(_currentSelectedBank == "Ecobank"){
-                        openFinancialServices("8");
-                      }
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "assets/images/ecomobile-card.png",
-                          width: 50,
-                          height: 50,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Ecobank",
+                          child: Text("Bank",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )

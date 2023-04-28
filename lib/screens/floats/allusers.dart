@@ -4,9 +4,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 
-import '../constants.dart';
-import '../widgets/loadingui.dart';
-import 'chats/privatechat.dart';
+import '../../constants.dart';
+import '../../widgets/loadingui.dart';
+import '../chats/privatechat.dart';
 
 
 class AllUsers extends StatefulWidget {
@@ -108,7 +108,6 @@ class _AllUsersState extends State<AllUsers> {
                           child: ListTile(
                             onTap: (){
                               Get.to(()=> PrivateChat(receiverUserName:allUsers[i]['username'],receiverId:allUsers[i]['id'].toString()));
-                              print(allUsers[i]['username']);
                             },
                             leading: const CircleAvatar(
                                 backgroundColor: primaryColor,

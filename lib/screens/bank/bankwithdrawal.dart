@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
@@ -40,9 +39,8 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
   var _currentSelectedBank = "Select bank";
   final List withDrawalTypes = [
     "Select Withdrawal Type",
-    "Cheque",
-    "Atm",
-    "Phone"
+    "POS",
+    "Mobile App"
   ];
 
   var _currrentWithDrawalType = "Select Withdrawal Type";

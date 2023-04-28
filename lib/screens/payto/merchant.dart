@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 
+import '../../constants.dart';
+import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
 
 class PayToMerchant extends StatefulWidget {
@@ -13,6 +15,17 @@ class PayToMerchant extends StatefulWidget {
 }
 
 class _PayToMerchantState extends State<PayToMerchant> {
+  bool isPosting = false;
+
+  void _startPosting()async{
+    setState(() {
+      isPosting = true;
+    });
+    await Future.delayed(const Duration(seconds: 5));
+    setState(() {
+      isPosting = false;
+    });
+  }
 
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController;
@@ -65,10 +78,8 @@ class _PayToMerchantState extends State<PayToMerchant> {
                       focusNode: merchantIdFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
                       cursorWidth: 10,
-                      decoration: InputDecoration(
-                          labelText: "Merchant id",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12))),
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Merchant Id"),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -84,11 +95,8 @@ class _PayToMerchantState extends State<PayToMerchant> {
                       focusNode: amountFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
                       cursorWidth: 10,
-                      decoration: InputDecoration(
-
-                          labelText: "Amount",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12))),
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Amount"),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -104,10 +112,8 @@ class _PayToMerchantState extends State<PayToMerchant> {
                       focusNode: referenceFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
                       cursorWidth: 10,
-                      decoration: InputDecoration(
-                          labelText: "Reference",
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12))),
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Reference"),
                       keyboardType: TextInputType.text,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -117,8 +123,11 @@ class _PayToMerchantState extends State<PayToMerchant> {
                     ),
                   ),
                   const SizedBox(height: 30,),
-                  RawMaterialButton(
-                    onPressed: () {
+                  isPosting  ? const LoadingUi() :
+                  NeoPopTiltedButton(
+                    isFloating: true,
+                    onTapUp: () {
+                      _startPosting();
                       FocusScopeNode currentFocus = FocusScope.of(context);
 
                       if (!currentFocus.hasPrimaryFocus) {
@@ -131,20 +140,23 @@ class _PayToMerchantState extends State<PayToMerchant> {
                         Get.offAll(() => const Dashboard());
                       }
                     },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
+                    decoration: const NeoPopTiltedButtonDecoration(
+                      color: secondaryColor,
+                      plunkColor: Color.fromRGBO(255, 235, 52, 1),
+                      shadowColor: Color.fromRGBO(36, 36, 36, 1),
+                      showShimmer: true,
                     ),
-                    elevation: 8,
-                    fillColor: Colors.amber,
-                    splashColor: Colors.amberAccent,
-                    child: const Text(
-                      "Send",
-                      style: TextStyle(
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 70.0,
+                        vertical: 15,
+                      ),
+                      child: Text('Send',style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
-                          color: Colors.white),
+                          color: Colors.white)),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -152,6 +164,16 @@ class _PayToMerchantState extends State<PayToMerchant> {
 
         ],
       ),
+    );
+  }
+  InputDecoration buildInputDecoration(String text) {
+    return InputDecoration(
+      labelStyle: const TextStyle(color: secondaryColor),
+      labelText: text,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: secondaryColor, width: 2),
+          borderRadius: BorderRadius.circular(12)),
     );
   }
 }

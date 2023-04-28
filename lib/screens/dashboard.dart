@@ -44,10 +44,11 @@ class _DashboardState extends State<Dashboard> {
   final ProfileController profileController = Get.find();
   final storage = GetStorage();
   late String uToken = "";
+  late String agentCode = "";
   late Timer _timer;
-  Future<void> openFinancialServices(String bankNum) async {
+  Future<void> openFinancialServices() async {
     await UssdAdvanced.multisessionUssd(
-        code: "*171*6*1*1*$bankNum#", subscriptionId: 1);
+        code: "*171*6*1*1#", subscriptionId: 1);
   }
 
   final _advancedDrawerController = AdvancedDrawerController();
@@ -174,6 +175,11 @@ class _DashboardState extends State<Dashboard> {
     if (storage.read("token") != null) {
       setState(() {
         uToken = storage.read("token");
+      });
+    }
+    if (storage.read("agent_code") != null) {
+      setState(() {
+        agentCode = storage.read("agent_code");
       });
     }
     notificationsController.getAllNotifications(uToken);
@@ -335,8 +341,8 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
           ),
-          title: const Text("Dashboard",
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(agentCode,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           backgroundColor: secondaryColor,
           actions: [
             // IconButton(onPressed: () {  }, icon: const Icon(Icons.notifications),)
@@ -614,138 +620,6 @@ class _DashboardState extends State<Dashboard> {
                     child: Column(
                       children: [
                         Image.asset(
-                          "assets/images/bank.png",
-                          width: 70,
-                          height: 70,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text("Financial"),
-                        const Text("Services"),
-                      ],
-                    ),
-                    onTap: () {
-                      showMaterialModalBottomSheet(
-                        context: context,
-                        builder: (context) => Card(
-                          elevation: 12,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(10),
-                                  topLeft: Radius.circular(10))),
-                          child: SizedBox(
-                            height: 155,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Center(
-                                    child: Text("Select Bank",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold))),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        openFinancialServices("4");
-                                        // Get.back();
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Image.asset(
-                                            "assets/images/gtbank.jpg",
-                                            width: 50,
-                                            height: 50,
-                                          ),
-                                          const Padding(
-                                            padding: EdgeInsets.only(top: 10.0),
-                                            child: Text("GT Bank",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold)),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        openFinancialServices("7");
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Image.asset(
-                                            "assets/images/calbank.png",
-                                            width: 50,
-                                            height: 50,
-                                          ),
-                                          const Padding(
-                                            padding: EdgeInsets.only(top: 10.0),
-                                            child: Text("Cal Bank",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold)),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        openFinancialServices("5");
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Image.asset(
-                                            "assets/images/fidelity-card.png",
-                                            width: 50,
-                                            height: 50,
-                                          ),
-                                          const Padding(
-                                            padding: EdgeInsets.only(top: 10.0),
-                                            child: Text("Fidelity",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold)),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        openFinancialServices("8");
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Image.asset(
-                                            "assets/images/ecomobile-card.png",
-                                            width: 50,
-                                            height: 50,
-                                          ),
-                                          const Padding(
-                                            padding: EdgeInsets.only(top: 10.0),
-                                            child: Text("Ecobank",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold)),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    child: Column(
-                      children: [
-                        Image.asset(
                           "assets/images/wallet.png",
                           width: 70,
                           height: 70,
@@ -758,6 +632,21 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     onTap: () {
                       checkMtnBalance();
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    child: Column(
+                      children: [
+                        Image.asset("assets/images/agent.png",width: 70,height: 70,),
+                        const SizedBox(height: 10,),
+                        const Text("Agent"),
+                        const Text("Accounts"),
+                      ],
+                    ),
+                    onTap: (){
+                      Get.to(() => const AgentAccounts());
                     },
                   ),
                 ),
@@ -806,17 +695,24 @@ class _DashboardState extends State<Dashboard> {
                   child: GestureDetector(
                     child: Column(
                       children: [
-                        Image.asset("assets/images/agent.png",width: 70,height: 70,),
-                        const SizedBox(height: 10,),
-                        const Text("Agent"),
-                        const Text("Accounts"),
+                        Image.asset(
+                          "assets/images/bank.png",
+                          width: 70,
+                          height: 70,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Text("Financial"),
+                        const Text("Services"),
                       ],
                     ),
-                    onTap: (){
-                      Get.to(() => const AgentAccounts());
+                    onTap: () {
+                      openFinancialServices();
                     },
                   ),
                 ),
+
               ],
             ),
             const SizedBox(

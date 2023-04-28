@@ -95,6 +95,7 @@ class _CashInState extends State<CashIn> {
   Future<void> dialCashInMtn(String customerNumber,String amount) async {
     UssdAdvanced.multisessionUssd(code: "*171*3*1*$customerNumber*$customerNumber*$amount#",subscriptionId: 1);
   }
+
   late String uToken = "";
   final storage = GetStorage();
 
@@ -264,32 +265,6 @@ class _CashInState extends State<CashIn> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
-                      onChanged: (value) {
-                        if (value.length == 10 &&
-                            controller.customersNumbers.contains(value)) {
-                          Get.snackbar("Success", "Customer is registered",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              duration: const Duration(seconds: 5),
-                              backgroundColor: snackBackground);
-
-                          setState(() {
-                            isCustomer = true;
-                          });
-                        } else if (value.length == 10 &&
-                            !controller.customersNumbers.contains(value)) {
-                          Get.snackbar(
-                              "Customer Error", "Customer is not registered",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: warning);
-                          setState(() {
-                            isCustomer = false;
-                          });
-                          Timer(const Duration(seconds: 3),
-                                  () => Get.to(() => const CustomerRegistration()));
-                        }
-                      },
                       controller: _customerPhoneController,
                       focusNode: customerPhoneFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
@@ -637,7 +612,7 @@ class _CashInState extends State<CashIn> {
                   ) : Container(),
                   const SizedBox(height: 30,),
                   isPosting  ? const LoadingUi() :
-                  isCustomer ? NeoPopTiltedButton(
+                  amountIsNotEmpty?  NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
                       _startPosting();
