@@ -1,0 +1,138 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+import 'package:flutter/foundation.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:easy_agent/constants.dart';
+import 'package:easy_agent/screens/dashboard.dart';
+import 'package:easy_agent/screens/sendsms.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pinput/pinput.dart';
+
+import '../controllers/profilecontroller.dart';
+import '../widgets/loadingui.dart';
+
+class AuthenticateByPhone extends StatefulWidget {
+
+  const AuthenticateByPhone({Key? key}) : super(key: key);
+
+  @override
+  State<AuthenticateByPhone> createState() => _AuthenticateByPhoneState();
+}
+
+class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
+  final storage = GetStorage();
+  bool hasAccountsToday = false;
+  bool isLoading = true;
+  late String uToken = "";
+  final ProfileController controller = Get.find();
+  late int oTP = 0;
+  final SendSmsController sendSms = SendSmsController();
+  late String userId = "";
+  late String agentPhone = "";
+  List profileDetails = [];
+
+
+  generate5digit(){
+    var rng = Random();
+    var rand = rng.nextInt(9000) + 1000;
+    oTP = rand.toInt();
+  }
+
+  Future<void> getUserDetails(String token) async {
+    const profileLink = "https://fnetagents.xyz/get_user_details/";
+    var link = Uri.parse(profileLink);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $token"
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      profileDetails = jsonData;
+      for(var i in profileDetails){
+        userId = i['id'].toString();
+        agentPhone = i['phone_number'];
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+    else{
+      if (kDebugMode) {
+        print(response.body);
+      }
+    }
+  }
+
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  void initState(){
+    super.initState();
+    if (storage.read("token") != null) {
+      setState(() {
+        uToken = storage.read("token");
+      });
+    }
+    getUserDetails(uToken);
+
+    generate5digit();
+    Timer(const Duration(seconds: 10), () {
+      String num = agentPhone.replaceFirst("0", '+233');
+      sendSms.sendMySms(num, "FNET", "Your code $oTP");
+    }
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: shadow,
+      body: isLoading  ? const LoadingUi() : Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Center(
+            child:Text("A code was sent to your phone,please enter the code here.",style:TextStyle(color:defaultWhite))
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: Form(
+              key: formKey,
+              child: Pinput(
+                defaultPinTheme: defaultPinTheme,
+                androidSmsAutofillMethod:  AndroidSmsAutofillMethod.smsRetrieverApi,
+                validator: (pin) {
+                  if (pin?.length == 4 && pin == oTP.toString()){
+                    Get.offAll(()=> const Dashboard());
+                  }
+                  else{
+                    Get.snackbar("Code Error", "you entered an invalid code",
+                        colorText: defaultWhite,
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 5));
+                  }
+                },
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+  final defaultPinTheme = PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w600),
+    decoration: BoxDecoration(
+      border: Border.all(color: const Color.fromRGBO(234, 239, 243, 1)),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  );
+}

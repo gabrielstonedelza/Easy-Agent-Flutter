@@ -1,18 +1,32 @@
 
-import 'package:easy_agent/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:telephony/telephony.dart';
 import 'package:get/get.dart';
+
+import 'constants.dart';
+import 'controllers/agentcontroller.dart';
+import 'controllers/customerscontroller.dart';
+import 'controllers/logincontroller.dart';
+import 'controllers/notificationcontroller.dart';
+import 'controllers/profilecontroller.dart';
+import 'newsplash.dart';
 
 onBackgroundMessage(SmsMessage message) {
   debugPrint("onBackgroundMessage called");
 }
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await GetStorage.init();
+  Get.put(LoginController());
+  Get.put(ProfileController());
+  Get.put(CustomersController());
+  Get.put(AgentController());
+  Get.put(NotificationController());
   runApp(const MyApp());
 }
 
@@ -61,10 +75,6 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
 
     final bool? result = await telephony.requestPhoneAndSmsPermissions;
 
@@ -83,7 +93,11 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       defaultTransition: Transition.leftToRight,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: secondaryColor,
+        appBarTheme: const AppBarTheme(
+            elevation: 0,
+            backgroundColor: secondaryColor,
+        )
       ),
       home: const SplashScreen(),
     );
