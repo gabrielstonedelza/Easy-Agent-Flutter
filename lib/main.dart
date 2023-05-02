@@ -7,10 +7,12 @@ import 'package:get/get.dart';
 
 import 'constants.dart';
 import 'controllers/agentcontroller.dart';
+import 'controllers/authphonecontroller.dart';
 import 'controllers/customerscontroller.dart';
 import 'controllers/logincontroller.dart';
 import 'controllers/notificationcontroller.dart';
 import 'controllers/profilecontroller.dart';
+import 'controllers/trialandmonthlypaymentcontroller.dart';
 import 'newsplash.dart';
 
 onBackgroundMessage(SmsMessage message) {
@@ -27,6 +29,8 @@ void main() async{
   Get.put(CustomersController());
   Get.put(AgentController());
   Get.put(NotificationController());
+  Get.put(AuthPhoneController());
+  Get.put(TrialAndMonthlyPaymentController());
   runApp(const MyApp());
 }
 
@@ -41,11 +45,13 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   String _message = "";
   final telephony = Telephony.instance;
+  final AuthPhoneController phoneController = Get.find();
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
+    phoneController.fetchDeviceInfo();
   }
 
   onMessage(SmsMessage message) async {

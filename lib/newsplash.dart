@@ -25,7 +25,6 @@ class _SplashScreenState extends State<SplashScreen> {
   bool isAfterFiveSeconds = false;
 
 
-
   @override
   void initState() {
     super.initState();
@@ -36,6 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
         hasToken = true;
       });
     }
+
     else{
       setState(() {
         hasToken = false;

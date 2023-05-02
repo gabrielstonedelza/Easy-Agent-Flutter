@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
+import 'balancing.dart';
 import 'dashboard.dart';
 
 
@@ -65,7 +66,7 @@ class _PaymentsState extends State<Payments> {
           backgroundColor: snackBackground,
           duration: const Duration(seconds: 5));
 
-      Get.offAll(()=> const Dashboard());
+      Get.offAll(()=> const ReBalancing());
     } else {
       Get.snackbar("Payment Error", "something went wrong please try again",
           colorText: defaultWhite,

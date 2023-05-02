@@ -256,6 +256,13 @@ class _BankDepositState extends State<BankDeposit> {
     }
 
   }
+  fetchAllInstalled() async {
+    List<Application> apps = await DeviceApps.getInstalledApplications(
+        onlyAppsWithLaunchIntent: true, includeSystemApps: true);
+    if (kDebugMode) {
+      // print(apps);
+    }
+  }
 
   void showInstalled() {
     showMaterialModalBottomSheet(
@@ -413,13 +420,6 @@ class _BankDepositState extends State<BankDeposit> {
     );
   }
 
-  fetchAllInstalled() async {
-    List<Application> apps = await DeviceApps.getInstalledApplications(
-        onlyAppsWithLaunchIntent: true, includeSystemApps: true);
-    if (kDebugMode) {
-      // print(apps);
-    }
-  }
 
   @override
   void initState(){

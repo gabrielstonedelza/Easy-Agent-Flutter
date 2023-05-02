@@ -162,6 +162,14 @@ class _ReBalancingState extends State<ReBalancing> {
       appBar: AppBar(
         title: const Text("Request ReBalancing",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
+        actions: [
+          IconButton(
+            onPressed: (){
+              Get.offAll(()=> const Dashboard());
+            },
+            icon: const Icon(Icons.home_filled,size: 30,),
+          )
+        ],
       ),
       body: isLoading ? const LoadingUi() : ListView(
         children: [

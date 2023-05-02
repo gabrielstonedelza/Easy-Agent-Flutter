@@ -60,7 +60,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pay to merchant",style:TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.amber,
+        backgroundColor: secondaryColor,
       ),
       body: ListView(
         children: [

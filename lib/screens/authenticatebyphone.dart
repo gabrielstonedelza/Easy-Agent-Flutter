@@ -9,9 +9,12 @@ import 'package:easy_agent/screens/dashboard.dart';
 import 'package:easy_agent/screens/sendsms.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
 
+import '../controllers/authphonecontroller.dart';
 import '../controllers/profilecontroller.dart';
+import '../controllers/trialandmonthlypaymentcontroller.dart';
 import '../widgets/loadingui.dart';
 
 class AuthenticateByPhone extends StatefulWidget {
@@ -33,6 +36,8 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
   late String userId = "";
   late String agentPhone = "";
   List profileDetails = [];
+  final AuthPhoneController authController = Get.find();
+  final TrialAndMonthlyPaymentController tpController = Get.find();
 
 
   generate5digit(){
@@ -79,10 +84,15 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     }
     getUserDetails(uToken);
 
+
     generate5digit();
     Timer(const Duration(seconds: 10), () {
       String num = agentPhone.replaceFirst("0", '+233');
       sendSms.sendMySms(num, "FNET", "Your code $oTP");
+      print(authController.phoneBrand);
+      print(authController.phoneModel);
+      print(authController.phoneId);
+      print(authController.phoneFingerprint);
     }
     );
   }
@@ -95,6 +105,10 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
       body: isLoading  ? const LoadingUi() : Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Lottie.asset("assets/images/74569-two-factor-authentication.json",width: 300,height: 300),
+          const SizedBox(
+            height: 20,
+          ),
           const Center(
             child:Text("A code was sent to your phone,please enter the code here.",style:TextStyle(color:defaultWhite))
           ),
@@ -109,13 +123,16 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                 androidSmsAutofillMethod:  AndroidSmsAutofillMethod.smsRetrieverApi,
                 validator: (pin) {
                   if (pin?.length == 4 && pin == oTP.toString()){
+                    storage.write("phoneAuthenticated", "Authenticated");
+                    authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
+                    tpController.startFreeTrial(uToken);
                     Get.offAll(()=> const Dashboard());
                   }
                   else{
                     Get.snackbar("Code Error", "you entered an invalid code",
                         colorText: defaultWhite,
                         snackPosition: SnackPosition.TOP,
-                        backgroundColor: Colors.red,
+                        backgroundColor: warning,
                         duration: const Duration(seconds: 5));
                   }
                 },

@@ -60,7 +60,7 @@ class _PayToAgentState extends State<PayToAgent> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pay to agent",style:TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.amber,
+        backgroundColor: secondaryColor,
       ),
       body: ListView(
         children: [

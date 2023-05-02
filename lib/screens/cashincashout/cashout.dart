@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
+import '../accounts/addaccountbalance.dart';
 import '../customers/registercustomer.dart';
 import '../dashboard.dart';
 
@@ -83,6 +85,19 @@ class _CashOutState extends State<CashOut> {
   Future<void> dialCashOutMtn(String customerNumber,String amount) async {
     UssdAdvanced.multisessionUssd(code: "*171*2*1*$customerNumber*$customerNumber*$amount#",subscriptionId: 1);
   }
+  late List accountBalanceDetailsToday = [];
+  bool isLoading =false;
+  late List lastItem = [];
+  late double physical = 0.0;
+  late double mtn = 0.0;
+  late double airteltigo = 0.0;
+  late double vodafone = 0.0;
+  late double eCash = 0.0;
+  late double mtnNow = 0.0;
+  late double airtelTigoNow = 0.0;
+  late double vodafoneNow = 0.0;
+  late double physicalNow = 0.0;
+  late double eCashNow = 0.0;
 
   late String uToken = "";
   final storage = GetStorage();
@@ -93,7 +108,8 @@ class _CashOutState extends State<CashOut> {
     final res = await http.post(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
-    }, body: {
+    },
+        body: {
       "network": _currentSelectedNetwork,
       "amount": _amountController.text.trim(),
       "customer": _customerPhoneController.text.trim(),
@@ -108,6 +124,22 @@ class _CashOutState extends State<CashOut> {
     });
 
     if (res.statusCode == 201) {
+      if (_currentSelectedNetwork == "Mtn") {
+        mtn = mtnNow + double.parse(_amountController.text);
+        eCash = eCashNow + double.parse(_amountController.text);
+        physical = physicalNow - double.parse(_amountController.text);
+      }
+      if (_currentSelectedNetwork == "AirtelTigo") {
+        airteltigo = airtelTigoNow + double.parse(_amountController.text);
+        eCash = eCashNow + double.parse(_amountController.text);
+        physical = physicalNow - double.parse(_amountController.text);
+      }
+      if (_currentSelectedNetwork == "Vodafone") {
+        vodafone = vodafoneNow + double.parse(_amountController.text);
+        eCash = eCashNow + double.parse(_amountController.text);
+        physical = physicalNow - double.parse(_amountController.text);
+      }
+      addAccountsToday();
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -121,6 +153,62 @@ class _CashOutState extends State<CashOut> {
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: warning);
+    }
+  }
+
+  addAccountsToday() async {
+    const accountUrl = "https://fnetagents.xyz/add_balance_to_start/";
+    final myLink = Uri.parse(accountUrl);
+    http.Response response = await http.post(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $uToken"
+    }, body: {
+      "physical": physical,
+      "mtn_e_cash": mtn,
+      "tigo_airtel_e_cash": airteltigo,
+      "vodafone_e_cash": vodafone,
+      "isStarted": "True",
+    });
+    if (response.statusCode == 201) {
+      Get.snackbar("Success", "You have added accounts for today",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: snackBackground);
+
+      Get.offAll(() => const Dashboard());
+    } else {
+
+      Get.snackbar("Account", "something happened",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: warning);
+    }
+  }
+
+  Future<void> fetchAccountBalance() async {
+    const postUrl = "https://fnetagents.xyz/get_my_account_balance_started_today/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      accountBalanceDetailsToday.assignAll(allPosts);
+      setState(() {
+        isLoading = false;
+        lastItem.assign(accountBalanceDetailsToday.last);
+        physicalNow = double.parse(lastItem[0]['physical']);
+        mtnNow = double.parse(lastItem[0]['mtn_e_cash']);
+        airtelTigoNow = double.parse(lastItem[0]['tigo_airtel_e_cash']);
+        vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
+        eCashNow = double.parse(lastItem[0]['mtn_e_cash']) + double.parse(lastItem[0]['tigo_airtel_e_cash']) + double.parse(lastItem[0]['vodafone_e_cash']);
+      });
+    } else {
+      // print(res.body);
     }
   }
 
@@ -143,6 +231,7 @@ class _CashOutState extends State<CashOut> {
     _d2Controller = TextEditingController();
     _d1Controller = TextEditingController();
     controller.getAllCustomers(uToken);
+    fetchAccountBalance();
   }
 
   @override
@@ -167,7 +256,7 @@ class _CashOutState extends State<CashOut> {
         title: const Text("Cash Out",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
       ),
-      body: ListView(
+      body:isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(18.0),
@@ -580,6 +669,22 @@ class _CashOutState extends State<CashOut> {
             ),
           )
 
+        ],
+      ) : Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Center(
+            child: Text("You have not added an account to work with today"),
+          ),
+          const Center(
+            child: Text("Please add accounts"),
+          ),
+          TextButton(
+            onPressed: (){
+              Get.to(() => const AddAccountBalance());
+            },
+            child: const Text("Add Accounts"),
+          )
         ],
       ),
     );

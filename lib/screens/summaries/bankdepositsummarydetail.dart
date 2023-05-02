@@ -175,7 +175,19 @@ class _BankDepositSummaryDetailState extends State<BankDepositSummaryDetail> {
                                     children: [
                                       const Text("Date : ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                                       ),
-                                      Text(items['date_deposited'].toString().split("T").first, style: const TextStyle(
+                                      Text(items['date_added'].toString().split("T").first, style: const TextStyle(
+                                          fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0,top: 2),
+                                  child: Row(
+                                    children: [
+                                      const Text("Time : ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                                      ),
+                                      Text(items['date_added'].toString().split("T").last.toString().split(".").first, style: const TextStyle(
                                           fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                                       ),
                                     ],

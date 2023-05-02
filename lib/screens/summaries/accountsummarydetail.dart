@@ -8,33 +8,33 @@ import 'package:get/get.dart';
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
 
-class PaymentSummaryDetail extends StatefulWidget {
-  final date_created;
-  const PaymentSummaryDetail({Key? key, this.date_created})
+class AccountBalanceSummaryDetail extends StatefulWidget {
+  final date_posted;
+  const AccountBalanceSummaryDetail({Key? key, this.date_posted})
       : super(key: key);
 
   @override
-  _PaymentSummaryDetailState createState() =>
-      _PaymentSummaryDetailState(date_created: this.date_created);
+  _AccountBalanceSummaryDetailState createState() =>
+      _AccountBalanceSummaryDetailState(date_posted: this.date_posted);
 }
 
-class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
-  final date_created;
-  _PaymentSummaryDetailState({required this.date_created});
+class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetail> {
+  final date_posted;
+  _AccountBalanceSummaryDetailState({required this.date_posted});
   late String username = "";
   final storage = GetStorage();
   bool hasToken = false;
   late String uToken = "";
-  late List allBankDeposits = [];
+  late List allBalancing = [];
   bool isLoading = true;
   late var items;
   late List amounts = [];
   late List amountResults = [];
-  late List depositsDates = [];
+  late List balancingDates = [];
   double sum = 0.0;
 
-  fetchAllBankDeposits() async {
-    const url = "https://fnetagents.xyz/get_my_payments";
+  fetchAllAccountBalance() async {
+    const url = "https://fnetagents.xyz/get_my_account_balance_started";
     var myLink = Uri.parse(url);
     final response =
     await http.get(myLink, headers: {"Authorization": "Token $uToken"});
@@ -42,19 +42,19 @@ class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
     if (response.statusCode == 200) {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
-      allBankDeposits = json.decode(jsonData);
-      for (var i in allBankDeposits) {
-        if (i['date_created'].toString().split("T").first == date_created) {
-          depositsDates.add(i);
-          sum = sum + double.parse(i['amount']);
+      allBalancing = json.decode(jsonData);
+      for (var i in allBalancing) {
+        if (i['date_posted'].toString().split("T").first == date_posted) {
+          balancingDates.add(i);
+          sum = sum + double.parse(i['e_cash_total']);
         }
       }
     }
 
     setState(() {
       isLoading = false;
-      allBankDeposits = allBankDeposits;
-      depositsDates = depositsDates;
+      allBalancing = allBalancing;
+      balancingDates = balancingDates;
     });
   }
 
@@ -69,7 +69,7 @@ class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
         uToken = storage.read("token");
       });
     }
-    fetchAllBankDeposits();
+    fetchAllAccountBalance();
   }
 
   @override
@@ -77,15 +77,15 @@ class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: secondaryColor,
-        title: Text("Payments for $date_created"),
+        title: Text("Account for $date_posted"),
       ),
       body: SafeArea(
           child: isLoading
               ? const LoadingUi()
               : ListView.builder(
-              itemCount: depositsDates != null ? depositsDates.length : 0,
+              itemCount: balancingDates != null ? balancingDates.length : 0,
               itemBuilder: (context, i) {
-                items = depositsDates[i];
+                items = balancingDates[i];
                 return Column(
                   children: [
                     const SizedBox(
@@ -103,20 +103,21 @@ class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
                           padding:
                           const EdgeInsets.only(top: 18.0, bottom: 18),
                           child: ListTile(
-                            title: buildRow("Amount: ", "amount"),
+                            title: buildRow("Total: ", "e_cash_total"),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                buildRow("Transaction Id: ", "transaction_id"),
-                                buildRow("Status: ", "payment_status"),
-                                buildRow("Reason: ", "reason_for_payment"),
+                                buildRow("Physical : ", "physical"),
+                                buildRow("Mtn : ", "mtn_e_cash"),
+                                buildRow("AirtelTigo : ", "tigo_airtel_e_cash"),
+                                buildRow("Vodafone : ", "vodafone_e_cash"),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0,top: 2),
                                   child: Row(
                                     children: [
                                       const Text("Date : ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                                       ),
-                                      Text(items['date_created'].toString().split("T").first, style: const TextStyle(
+                                      Text(items['date_posted'].toString().split("T").first, style: const TextStyle(
                                           fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                                       ),
                                     ],
@@ -128,7 +129,7 @@ class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
                                     children: [
                                       const Text("Time : ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                                       ),
-                                      Text(items['date_created'].toString().split("T").last.toString().split(".").first, style: const TextStyle(
+                                      Text(items['date_posted'].toString().split("T").last.toString().split(".").first, style: const TextStyle(
                                           fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                                       ),
                                     ],
