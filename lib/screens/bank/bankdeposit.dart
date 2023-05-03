@@ -258,9 +258,9 @@ class _BankDepositState extends State<BankDeposit> {
   }
   fetchAllInstalled() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
-        onlyAppsWithLaunchIntent: true, includeSystemApps: true);
+        onlyAppsWithLaunchIntent: true, includeSystemApps: false);
     if (kDebugMode) {
-      // print(apps);
+      print(apps);
     }
   }
 
@@ -351,60 +351,60 @@ class _BankDepositState extends State<BankDeposit> {
                       ],
                     ),
                   ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     DeviceApps.openApp("com.unicornheights.agencybanking");
+                  //   },
+                  //   child: Column(
+                  //     children: [
+                  //       Image.asset(
+                  //         "assets/images/accessbank.png",
+                  //         width: 50,
+                  //         height: 50,
+                  //       ),
+                  //       const Padding(
+                  //         padding: EdgeInsets.only(top: 10.0),
+                  //         child: Text("Access Bank app",
+                  //             style: TextStyle(
+                  //                 fontWeight: FontWeight.bold)),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     DeviceApps.openApp("com.fidelity.mobile");
+                  //   },
+                  //   child: Column(
+                  //     children: [
+                  //       Image.asset(
+                  //         "assets/images/fidelity-card.png",
+                  //         width: 50,
+                  //         height: 50,
+                  //       ),
+                  //       const Padding(
+                  //         padding: EdgeInsets.only(top: 10.0),
+                  //         child: Text("Fidelity App",
+                  //             style: TextStyle(
+                  //                 fontWeight: FontWeight.bold)),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
                   GestureDetector(
                     onTap: () {
-                      DeviceApps.openApp("com.unicornheights.agencybanking");
+                      DeviceApps.openApp("com.m2i.gtexpressbyod");
                     },
                     child: Column(
                       children: [
                         Image.asset(
-                          "assets/images/accessbank.png",
+                          "assets/images/gtbank.jpg",
                           width: 50,
                           height: 50,
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Access Bank app",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
-                        )
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      DeviceApps.openApp("com.fidelity.mobile");
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "assets/images/fidelity-card.png",
-                          width: 50,
-                          height: 50,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Fidelity App",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
-                        )
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      DeviceApps.openApp("com.app.ecobank");
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "assets/images/ecomobile-card.png",
-                          width: 50,
-                          height: 50,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Ecobank",
+                          child: Text("GT Bank",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )

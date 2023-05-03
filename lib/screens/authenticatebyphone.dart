@@ -89,10 +89,10 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     Timer(const Duration(seconds: 10), () {
       String num = agentPhone.replaceFirst("0", '+233');
       sendSms.sendMySms(num, "FNET", "Your code $oTP");
-      print(authController.phoneBrand);
-      print(authController.phoneModel);
-      print(authController.phoneId);
-      print(authController.phoneFingerprint);
+      // print(authController.phoneBrand);
+      // print(authController.phoneModel);
+      // print(authController.phoneId);
+      // print(authController.phoneFingerprint);
     }
     );
   }

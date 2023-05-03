@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:device_apps/device_apps.dart';
 import 'package:easy_agent/screens/notifications.dart';
 import 'package:easy_agent/screens/summaries/balancingsummary.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
@@ -84,7 +85,28 @@ class _DashboardState extends State<Dashboard> {
   bool isAuthenticated = false;
   bool isAuthenticatedAlready = false;
   bool needsToMakePayment = false;
+  late List accountBalanceDetailsToday = [];
 
+  Future<void> fetchAccountBalance() async {
+    const postUrl = "https://fnetagents.xyz/get_my_account_balance_started_today/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      accountBalanceDetailsToday.assignAll(allPosts);
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
   Future<void> getAllTriggeredNotifications() async {
     const url = "https://fnetagents.xyz/get_triggered_notifications/";
@@ -182,9 +204,7 @@ class _DashboardState extends State<Dashboard> {
       var allPosts = jsonData;
       myFreeTrialStatus.assignAll(allPosts);
       for(var i in myFreeTrialStatus){
-        setState(() {
-          freeTrialEnded = i['trial_ended'];
-        });
+        freeTrialEnded = i['trial_ended'];
         setState(() {
           endingDate = i['end_date'];
         });
@@ -210,9 +230,7 @@ class _DashboardState extends State<Dashboard> {
       var allPosts = jsonData;
       myMonthlyPaymentStatus.assignAll(allPosts);
       for(var i in myMonthlyPaymentStatus){
-        setState(() {
-          monthEnded = i['month_ended'];
-        });
+        monthEnded = i['month_ended'];
       }
 
       setState(() {
@@ -264,6 +282,7 @@ class _DashboardState extends State<Dashboard> {
     }
 
     fetchFreeTrial();
+    fetchAccountBalance();
     fetchMonthlyPayment();
     notificationsController.getAllNotifications(uToken);
     notificationsController.getAllUnReadNotifications(uToken);
@@ -283,8 +302,8 @@ class _DashboardState extends State<Dashboard> {
     });
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      fetchFreeTrial();
-      fetchMonthlyPayment();
+      // fetchFreeTrial();
+      // fetchMonthlyPayment();
       for (var e in triggered) {
         unTriggerNotifications(e["id"]);
       }
@@ -599,7 +618,12 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            Get.to(() => const MomoCashInSummary());
+                            accountBalanceDetailsToday.isNotEmpty ?
+                            Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5));
                           },
                         ),
                       ),
@@ -619,7 +643,11 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            Get.to(() => const MomoCashOutSummary());
+                            accountBalanceDetailsToday.isNotEmpty ? Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5));
                           },
                         ),
                       ),
@@ -652,10 +680,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            Get.snackbar("Hiii 😃😃", "Coming Soon",
-                                colorText: Colors.white,
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: Colors.amber);
+                            DeviceApps.openApp("com.wMY247KIOSK_15547762");
                             // showMaterialModalBottomSheet(
                             //   context: context,
                             //   builder: (context) => Card(
@@ -1055,7 +1080,11 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            Get.to(() => const MyAccountDashboard());
+                            accountBalanceDetailsToday.isNotEmpty ? Get.to(() => const MyAccountDashboard()) :Get.snackbar("Account balance error", "Please add account balance for today",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5));
                           },
                         ),
                       )

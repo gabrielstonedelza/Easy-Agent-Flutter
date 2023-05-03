@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -45,16 +47,21 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
 
 
   late final TextEditingController name;
-  late final TextEditingController location;
-  late final TextEditingController digitalAddress;
   late final TextEditingController phoneController;
 
   late TextEditingController dob = TextEditingController();
   final SendSmsController sendSms = SendSmsController();
   FocusNode nameFocusNode = FocusNode();
-  FocusNode locationFocusNode = FocusNode();
-  FocusNode digitalAddressFocusNode = FocusNode();
+
   FocusNode phoneControllerFocusNode = FocusNode();
+  String getRandom(int length){
+    const ch = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz';
+    Random r = Random();
+    return String.fromCharCodes(Iterable.generate(
+        length, (_) => ch.codeUnitAt(r.nextInt(ch.length))));
+  }
+
+  late String customerCode = "";
 
   @override
   void initState(){
@@ -65,18 +72,19 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
       });
     }
     name = TextEditingController();
-    location = TextEditingController();
-    digitalAddress = TextEditingController();
+
     phoneController = TextEditingController();
     controller.getAllCustomers(uToken);
+
+    setState(() {
+      customerCode = getRandom(15);
+    });
   }
 
   @override
   void dispose(){
     super.dispose();
     name.dispose();
-    location.dispose();
-    digitalAddress.dispose();
     phoneController.dispose();
   }
 
@@ -89,10 +97,8 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
       "Authorization": "Token $uToken"
     }, body: {
       "name": name.text,
-      "location": location.text,
-      "digital_address": digitalAddress.text,
       "phone": phoneController.text,
-      "date_of_birth": dob.text,
+      "unique_code": customerCode,
     });
     if(res.statusCode == 201){
       Get.snackbar("Congratulations", "Customer was created successfully",
@@ -103,7 +109,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
       String telnum = phoneController.text;
       telnum = telnum.replaceFirst("0", '+233');
       sendSms.sendMySms(telnum, "FNET",
-          "Welcome ${name.text}, you are now registered on FNET App.For more information please kindly call 0244950505.");
+          "Welcome ${name.text}, you are now registered on Easy Agent App.Your unique code for transactions is ($customerCode),please do not share this code with anyone,store it somewhere on your phone and delete this messages.For more information please kindly call 0244950505.");
       Get.offAll(()=>const Dashboard());
     }
     else{
@@ -183,81 +189,8 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       },
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      controller: location,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Location"),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter customer's location";
-                        }
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      controller: digitalAddress,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Digital Address"),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter customer's digital address";
-                        }
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      controller: dob,
-                      cursorColor: primaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.event,color: secondaryColor,),
-                            onPressed: (){
-                              showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(1900),
-                                  lastDate: DateTime(2080)
-                              ).then((value) {
-                                setState(() {
-                                  _dateTime = value!;
-                                  dob.text = _dateTime.toString().split("00").first;
-                                });
-                              });
-                            },
-                          ),
-                          labelText: "click on icon to pick date of birth",
-                          labelStyle: const TextStyle(color: secondaryColor),
-                          focusColor: primaryColor,
-                          fillColor: primaryColor,
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: primaryColor, width: 2),
-                              borderRadius: BorderRadius.circular(12)),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12))),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter customer's date of birth";
-                        }
-                      },
-                    ),
-                  ),
+                  const SizedBox(height: 30),
+
                   !isInSystem ? isPosting  ? const LoadingUi() :NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {

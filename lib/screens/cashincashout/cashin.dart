@@ -11,7 +11,6 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
-import '../accounts/addaccountbalance.dart';
 import '../dashboard.dart';
 
 class CashIn extends StatefulWidget {
@@ -113,6 +112,7 @@ class _CashInState extends State<CashIn> {
   late double vodafoneNow = 0.0;
   late double physicalNow = 0.0;
   late double eCashNow = 0.0;
+  bool isMtn = false;
 
   processMomoDeposit() async {
     const registerUrl = "https://fnetagents.xyz/post_momo_deposit/";
@@ -141,19 +141,25 @@ class _CashInState extends State<CashIn> {
     if (res.statusCode == 201) {
       if(_currentSelectedNetwork == "Mtn"){
         mtn = mtnNow - double.parse(_amountController.text);
-        eCash = eCashNow - double.parse(_amountController.text);
         physical = physicalNow + double.parse(_amountController.text);
+      //
+        airteltigo = airtelTigoNow;
+        vodafone = vodafoneNow;
       }
 
       if(_currentSelectedNetwork == "AirtelTigo"){
         airteltigo = airtelTigoNow - double.parse(_amountController.text);
-        eCash = eCashNow - double.parse(_amountController.text);
         physical = physicalNow + double.parse(_amountController.text);
+      //
+        mtn = mtnNow;
+        vodafone = vodafoneNow;
       }
       if(_currentSelectedNetwork == "Vodafone"){
         vodafone = vodafoneNow - double.parse(_amountController.text);
-        eCash = eCashNow - double.parse(_amountController.text);
         physical = physicalNow + double.parse(_amountController.text);
+      //
+        mtn = mtnNow;
+        airteltigo = airtelTigoNow;
       }
       addAccountsToday();
 
@@ -162,10 +168,13 @@ class _CashInState extends State<CashIn> {
           snackPosition: SnackPosition.TOP,
           backgroundColor: snackBackground,
           duration: const Duration(seconds: 5));
-      dialCashInMtn(_customerPhoneController.text.trim(),_amountController.text.trim());
+      if(_currentSelectedNetwork == "Mtn"){
+        dialCashInMtn(_customerPhoneController.text.trim(),_amountController.text.trim());
+      }
 
       Get.offAll(()=> const Dashboard());
     } else {
+
       Get.snackbar("Deposit Error", "something went wrong please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -196,11 +205,6 @@ class _CashInState extends State<CashIn> {
         vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
         eCashNow = double.parse(lastItem[0]['mtn_e_cash']) + double.parse(lastItem[0]['tigo_airtel_e_cash']) + double.parse(lastItem[0]['vodafone_e_cash']);
       });
-      // print(physicalNow);
-      // print(mtnNow);
-      // print(airtelTigoNow);
-      // print(vodafoneNow);
-      // print(eCashNow);
     } else {
       // print(res.body);
     }
@@ -213,19 +217,19 @@ class _CashInState extends State<CashIn> {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
-      "physical": physical,
-      "mtn_e_cash": mtn,
-      "tigo_airtel_e_cash": airteltigo,
-      "vodafone_e_cash": vodafone,
+      "physical": physical.toString(),
+      "mtn_e_cash": mtn.toString(),
+      "tigo_airtel_e_cash": airteltigo.toString(),
+      "vodafone_e_cash": vodafone.toString(),
       "isStarted": "True",
     });
     if (response.statusCode == 201) {
-      Get.snackbar("Success", "You have added accounts for today",
+      Get.snackbar("Success", "You accounts is updated",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
 
-      Get.offAll(() => const Dashboard());
+      // Get.offAll(() => const Dashboard());
     } else {
 
       Get.snackbar("Account", "something happened",
@@ -284,7 +288,7 @@ class _CashInState extends State<CashIn> {
         title: const Text("Cash In",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
       ),
-      body: isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView(
+      body: isLoading ? const LoadingUi() :  ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(18.0),
@@ -313,9 +317,14 @@ class _CashInState extends State<CashIn> {
                           }).toList(),
                           onChanged: (newValueSelected) {
                             _onDropDownItemSelectedNetwork(newValueSelected);
-                            if(newValueSelected == "Customer") {
+                            if(newValueSelected == "Mtn") {
                               setState(() {
-
+                                isMtn = true;
+                              });
+                            }
+                            else{
+                              setState(() {
+                                isMtn = false;
                               });
                             }
                           },
@@ -324,7 +333,7 @@ class _CashInState extends State<CashIn> {
                       ),
                     ),
                   ),
-                  Padding(
+                isMtn ?  Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
                       decoration: BoxDecoration(
@@ -359,7 +368,7 @@ class _CashInState extends State<CashIn> {
                         ),
                       ),
                     ),
-                  ),
+                  ) : Container(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
@@ -419,7 +428,7 @@ class _CashInState extends State<CashIn> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value.length > 3 && value != ""){
+                        if(value.length > 1 && value != ""){
                           setState(() {
                             amountIsNotEmpty = true;
                           });
@@ -736,12 +745,44 @@ class _CashInState extends State<CashIn> {
                           });
                           return;
                         }
-                        else if(_currentSelectedDepositType == "Select deposit type" || _currentSelectedNetwork == "Select Network"){
+                        else if(_currentSelectedDepositType == "Select deposit type" && _currentSelectedNetwork == "Mtn"){
                           Get.snackbar("Network or Type Error", "please select network and type",
                           colorText: defaultWhite,
                           backgroundColor: warning,
                           snackPosition: SnackPosition.BOTTOM,
                           duration: const Duration(seconds: 5));
+                          return;
+                        }
+                        else if(_currentSelectedNetwork == "Select Network"){
+                          Get.snackbar("Network Error", "please select network",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5));
+                          return;
+                        }
+                        else if(_currentSelectedNetwork == "Mtn" && int.parse(_amountController.text) > mtnNow){
+                          Get.snackbar("Amount Error", "Amount is greater than your Mtn Ecash,please check",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5));
+                          return;
+                        }
+                        else if(_currentSelectedNetwork == "AirtelTigo" && int.parse(_amountController.text) > airtelTigoNow){
+                          Get.snackbar("Amount Error", "Amount is greater than your AirtelTigo Ecash,please check",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5));
+                          return;
+                        }
+                        else if(_currentSelectedNetwork == "Vodafone" && int.parse(_amountController.text) > vodafoneNow){
+                          Get.snackbar("Amount Error", "Amount is greater than your Vodafone Ecash,please check",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5));
                           return;
                         }
                         else{
@@ -772,23 +813,7 @@ class _CashInState extends State<CashIn> {
           )
 
         ],
-      ) : Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Center(
-            child: Text("You have not added an account to work with today"),
-          ),
-          const Center(
-            child: Text("Please add accounts"),
-          ),
-          TextButton(
-            onPressed: (){
-              Get.to(() => const AddAccountBalance());
-            },
-            child: const Text("Add Accounts"),
-          )
-        ],
-      ),
+      )
     );
   }
   void _onDropDownItemSelectedNetwork(newValueSelected) {

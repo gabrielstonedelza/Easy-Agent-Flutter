@@ -41,7 +41,9 @@ class _AboutPageState extends State<AboutPage> {
         title: const Text("About Easy Agent"),
         backgroundColor: secondaryColor,
       ),
-      body: ListView(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 20,),
           Image.asset("assets/images/forapp.png",width: 100,height: 100,),
@@ -49,6 +51,12 @@ class _AboutPageState extends State<AboutPage> {
           const Center(child: Text("Powered by",style: TextStyle(fontWeight: FontWeight.bold),)),
           const SizedBox(height: 20,),
           Image.asset("assets/images/logo.png",width: 70,height: 70,),
+          const Padding(
+            padding: EdgeInsets.only(top:8.0,left: 18),
+            child: Center(child: Text("in partnership with Ghana Bankers Association of Ghana(ABAG)",style: TextStyle(fontWeight: FontWeight.bold),)),
+          ),
+          const SizedBox(height: 20,),
+          Image.asset("assets/images/abaglogo.png",width: 70,height: 70,),
         ],
       ),
       floatingActionButton: FloatingActionButton(

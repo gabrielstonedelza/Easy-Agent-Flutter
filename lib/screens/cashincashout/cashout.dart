@@ -1,11 +1,13 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
+import 'package:pinput/pinput.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +16,7 @@ import '../../widgets/loadingui.dart';
 import '../accounts/addaccountbalance.dart';
 import '../customers/registercustomer.dart';
 import '../dashboard.dart';
+import '../sendsms.dart';
 
 class CashOut extends StatefulWidget {
   const CashOut({Key? key}) : super(key: key);
@@ -81,6 +84,7 @@ class _CashOutState extends State<CashOut> {
   bool isDirect = false;
   double totalNow = 0.0;
   bool amountIsNotEmpty = false;
+  final SendSmsController sendSms = SendSmsController();
 
   Future<void> dialCashOutMtn(String customerNumber,String amount) async {
     UssdAdvanced.multisessionUssd(code: "*171*2*1*$customerNumber*$customerNumber*$amount#",subscriptionId: 1);
@@ -101,6 +105,39 @@ class _CashOutState extends State<CashOut> {
 
   late String uToken = "";
   final storage = GetStorage();
+  bool isDeCustomer = false;
+  late List myCustomerDetails = [];
+  late String customerName = "";
+  late String cUniqueCode = "";
+  late int oTP = 0;
+
+  fetchCustomer(String customerPhone)async{
+    final url = "https://fnetagents.xyz/customer_details_by_phone/$customerPhone/";
+    var myLink = Uri.parse(url);
+    final response = await http.get(myLink,headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $uToken"
+    });
+
+    if (response.statusCode == 200) {
+      final codeUnits = response.body.codeUnits;
+      var jsonData = const Utf8Decoder().convert(codeUnits);
+      myCustomerDetails = json.decode(jsonData);
+      for (var i in myCustomerDetails) {
+        setState(() {
+          customerName = i['name'];
+          cUniqueCode = i['unique_code'];
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+      print(cUniqueCode);
+      print(myCustomerDetails);
+    }
+
+  }
+
 
   processMomoWithdrawal() async {
     const registerUrl = "https://fnetagents.xyz/post_momo_withdrawal/";
@@ -126,18 +163,22 @@ class _CashOutState extends State<CashOut> {
     if (res.statusCode == 201) {
       if (_currentSelectedNetwork == "Mtn") {
         mtn = mtnNow + double.parse(_amountController.text);
-        eCash = eCashNow + double.parse(_amountController.text);
         physical = physicalNow - double.parse(_amountController.text);
+      //
+        airteltigo = airtelTigoNow;
+        vodafone = vodafoneNow;
       }
       if (_currentSelectedNetwork == "AirtelTigo") {
         airteltigo = airtelTigoNow + double.parse(_amountController.text);
-        eCash = eCashNow + double.parse(_amountController.text);
         physical = physicalNow - double.parse(_amountController.text);
+        mtn = mtnNow;
+        vodafone = vodafoneNow;
       }
       if (_currentSelectedNetwork == "Vodafone") {
         vodafone = vodafoneNow + double.parse(_amountController.text);
-        eCash = eCashNow + double.parse(_amountController.text);
         physical = physicalNow - double.parse(_amountController.text);
+        mtn = mtnNow;
+        airteltigo = airtelTigoNow;
       }
       addAccountsToday();
       Get.snackbar("Congratulations", "Transaction was successful",
@@ -145,10 +186,13 @@ class _CashOutState extends State<CashOut> {
           snackPosition: SnackPosition.TOP,
           backgroundColor: snackBackground,
           duration: const Duration(seconds: 5));
-      dialCashOutMtn(_customerPhoneController.text.trim(),_amountController.text.trim());
+      if(_currentSelectedNetwork == "Mtn"){
+        dialCashOutMtn(_customerPhoneController.text.trim(),_amountController.text.trim());
+      }
 
       Get.offAll(()=> const Dashboard());
     } else {
+      print(res.body);
       Get.snackbar("Withdrawal Error", "something went wrong please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -163,10 +207,10 @@ class _CashOutState extends State<CashOut> {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
-      "physical": physical,
-      "mtn_e_cash": mtn,
-      "tigo_airtel_e_cash": airteltigo,
-      "vodafone_e_cash": vodafone,
+      "physical": physical.toString(),
+      "mtn_e_cash": mtn.toString(),
+      "tigo_airtel_e_cash": airteltigo.toString(),
+      "vodafone_e_cash": vodafone.toString(),
       "isStarted": "True",
     });
     if (response.statusCode == 201) {
@@ -175,7 +219,7 @@ class _CashOutState extends State<CashOut> {
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
 
-      Get.offAll(() => const Dashboard());
+      // Get.offAll(() => const Dashboard());
     } else {
 
       Get.snackbar("Account", "something happened",
@@ -211,6 +255,13 @@ class _CashOutState extends State<CashOut> {
       // print(res.body);
     }
   }
+  bool hasOTP  = false;
+  bool sentOTP  = false;
+  generate5digit(){
+    var rng = Random();
+    var rand = rng.nextInt(9000) + 1000;
+    oTP = rand.toInt();
+  }
 
   @override
   void initState(){
@@ -220,6 +271,7 @@ class _CashOutState extends State<CashOut> {
         uToken = storage.read("token");
       });
     }
+    generate5digit();
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _d200Controller = TextEditingController();
@@ -256,7 +308,7 @@ class _CashOutState extends State<CashOut> {
         title: const Text("Cash Out",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
       ),
-      body:isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView(
+      body:isLoading ? const LoadingUi() : ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(18.0),
@@ -285,11 +337,11 @@ class _CashOutState extends State<CashOut> {
                           }).toList(),
                           onChanged: (newValueSelected) {
                             _onDropDownItemSelectedNetwork(newValueSelected);
-                            if(newValueSelected == "Customer") {
-                              setState(() {
-
-                              });
-                            }
+                            // if(newValueSelected == "Customer") {
+                            //   setState(() {
+                            //
+                            //   });
+                            // }
                           },
                           value: _currentSelectedNetwork,
                         ),
@@ -299,6 +351,37 @@ class _CashOutState extends State<CashOut> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
+                        onChanged: (value) {
+                          if (value.length == 10 &&
+                              controller.customersNumbers.contains(value)) {
+                            Get.snackbar("Success", "Customer is registered",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.TOP,
+                                backgroundColor: snackBackground);
+                            String num = _customerPhoneController.text.replaceFirst("0", '+233');
+                            sendSms.sendMySms(num, "FNET", "Your code $oTP");
+
+                            setState(() {
+                              isCustomer = true;
+                              sentOTP = true;
+                              fetchCustomer(_customerPhoneController.text);
+                            });
+
+                          } else if (value.length == 10 &&
+                              !controller.customersNumbers.contains(value)) {
+                            Get.snackbar(
+                                "Customer Error", "Customer is not registered",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.TOP,
+                                backgroundColor: Colors.red);
+                            setState(() {
+                              isCustomer = false;
+                              sentOTP = false;
+                            });
+                            Timer(const Duration(seconds: 3),
+                                    () => Get.to(() => const CustomerRegistration()));
+                          }
+                        },
                       controller: _customerPhoneController,
                       focusNode: customerPhoneFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
@@ -313,11 +396,41 @@ class _CashOutState extends State<CashOut> {
                       },
                     ),
                   ),
-                  Padding(
+                  const SizedBox(height: 10,),
+                  sentOTP  && !hasOTP ? const Text("An OTP was sent to the customers phone,enter it here",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),): Container(),
+                  const SizedBox(height: 20,),
+                  sentOTP && !hasOTP ? Pinput(
+                    // defaultPinTheme: defaultPinTheme,
+                    androidSmsAutofillMethod:  AndroidSmsAutofillMethod.smsRetrieverApi,
+                    validator: (pin) {
+                      if (pin?.length == 4 && pin == oTP.toString()){
+                        setState(() {
+                          hasOTP = true;
+                        });
+                        Get.defaultDialog(
+                          title: "Customer's Unique Code",
+                          content: Center(
+                            child: Text(cUniqueCode,style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w600)),
+                          )
+                        );
+                      }
+                      else{
+                        setState(() {
+                          hasOTP = false;
+                        });
+                        Get.snackbar("Code Error", "you entered an invalid code",
+                            colorText: defaultWhite,
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: warning,
+                            duration: const Duration(seconds: 5));
+                      }
+                    },
+                  ): Container(),
+                  hasOTP ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value.length > 3 && value != ""){
+                        if(value.length > 1 && value != ""){
                           setState(() {
                             amountIsNotEmpty = true;
                           });
@@ -342,349 +455,361 @@ class _CashOutState extends State<CashOut> {
                         }
                       },
                     ),
-                  ),
-                  amountIsNotEmpty ? Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 200;
-                                      setState(() {
-                                        d200 = dt;
-                                      });
-                                    },
-                                    focusNode: d200FocusNode,
-                                    controller: _d200Controller,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("200 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d200.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 100;
-                                      setState(() {
-                                        d100 = dt;
-                                      });
-                                    },
-                                    controller: _d100Controller,
-                                    focusNode: d100FocusNode,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("100 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d100.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 50;
-                                      setState(() {
-                                        d50 = dt;
-                                      });
-                                    },
-                                    focusNode: d50FocusNode,
-                                    controller: _d50Controller,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("50 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d50.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 20;
-                                      setState(() {
-                                        d20 = dt;
-                                      });
-                                    },
-                                    focusNode: d20FocusNode,
-                                    controller: _d20Controller,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("20 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d20.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 10;
-                                      setState(() {
-                                        d10 = dt;
-                                      });
-                                    },
-                                    focusNode: d10FocusNode,
-                                    controller: _d10Controller,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("10 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d10.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 5;
-                                      setState(() {
-                                        d5 = dt;
-                                      });
-                                    },
-                                    focusNode: d5FocusNode,
-                                    controller: _d5Controller,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("5 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d5.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 2;
-                                      setState(() {
-                                        d2 = dt;
-                                      });
-                                    },
-                                    focusNode: d2FocusNode,
-                                    controller: _d2Controller,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("2GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d2.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      var dt = int.parse(value) * 1;
-                                      setState(() {
-                                        d1 = dt;
-                                      });
-                                    },
-                                    focusNode: d1FocusNode,
-                                    controller: _d1Controller,
-                                    cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    decoration: buildInputDecoration("1 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d1.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: amountNotEqualTotal ? Text("TOTAL: $total",style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.red,fontSize: 20),) : const Text("")
-                          ),
-                          const SizedBox(width: 10,),
-                          const Expanded(
-                              child:  Text("")
-                          )
-                        ],
-                      ),
-                    ],
                   ) : Container(),
-                  const SizedBox(height: 30,),
-                  isPosting  ? const LoadingUi() :
-                  amountIsNotEmpty ? NeoPopTiltedButton(
-                    isFloating: true,
-                    onTapUp: () {
-                      _startPosting();
-                      FocusScopeNode currentFocus = FocusScope.of(context);
+                 hasOTP ? Column(
+                    children: [
+                      amountIsNotEmpty ? Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 200;
+                                          setState(() {
+                                            d200 = dt;
+                                          });
+                                        },
+                                        focusNode: d200FocusNode,
+                                        controller: _d200Controller,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("200 GHC Notes"),
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d200.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 100;
+                                          setState(() {
+                                            d100 = dt;
+                                          });
+                                        },
+                                        controller: _d100Controller,
+                                        focusNode: d100FocusNode,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("100 GHC Notes"),
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d100.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 50;
+                                          setState(() {
+                                            d50 = dt;
+                                          });
+                                        },
+                                        focusNode: d50FocusNode,
+                                        controller: _d50Controller,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("50 GHC Notes"),
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d50.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 20;
+                                          setState(() {
+                                            d20 = dt;
+                                          });
+                                        },
+                                        focusNode: d20FocusNode,
+                                        controller: _d20Controller,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("20 GHC Notes"),
+                                        keyboardType: TextInputType.number,
 
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      if (!_formKey.currentState!.validate()) {
-                        return;
-                      } else {
-                        var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                        if(int.parse(_amountController.text) != mainTotal){
-                          Get.snackbar("Total Error", "Your total should be equal to the amount",
-                              colorText: defaultWhite,
-                              backgroundColor: warning,
-                              snackPosition: SnackPosition.BOTTOM,
-                              duration: const Duration(seconds: 5)
-                          );
-                          setState(() {
-                            total = mainTotal;
-                            amountNotEqualTotal = true;
-                          });
-                          return;
-                        }
-                        else if(_currentSelectedNetwork == "Select Network"){
-                          Get.snackbar("Network or Type Error", "please select network and type",
-                              colorText: defaultWhite,
-                              backgroundColor: warning,
-                              snackPosition: SnackPosition.BOTTOM,
-                              duration: const Duration(seconds: 5));
-                          return;
-                        }
-                        else{
-                          processMomoWithdrawal();
-                        }
-                      }
-                    },
-                    decoration: const NeoPopTiltedButtonDecoration(
-                      color: secondaryColor,
-                      plunkColor: Color.fromRGBO(255, 235, 52, 1),
-                      shadowColor: Color.fromRGBO(36, 36, 36, 1),
-                      showShimmer: true,
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 70.0,
-                        vertical: 15,
-                      ),
-                      child: Text('Send',style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white)),
-                    ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d20.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 10;
+                                          setState(() {
+                                            d10 = dt;
+                                          });
+                                        },
+                                        focusNode: d10FocusNode,
+                                        controller: _d10Controller,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("10 GHC Notes"),
+                                        keyboardType: TextInputType.number,
+
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d10.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 5;
+                                          setState(() {
+                                            d5 = dt;
+                                          });
+                                        },
+                                        focusNode: d5FocusNode,
+                                        controller: _d5Controller,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("5 GHC Notes"),
+                                        keyboardType: TextInputType.number,
+
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d5.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 2;
+                                          setState(() {
+                                            d2 = dt;
+                                          });
+                                        },
+                                        focusNode: d2FocusNode,
+                                        controller: _d2Controller,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("2GHC Notes"),
+                                        keyboardType: TextInputType.number,
+
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d2.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        onChanged: (value) {
+                                          var dt = int.parse(value) * 1;
+                                          setState(() {
+                                            d1 = dt;
+                                          });
+                                        },
+                                        focusNode: d1FocusNode,
+                                        controller: _d1Controller,
+                                        cursorColor: secondaryColor,
+                                        cursorRadius: const Radius.elliptical(10, 10),
+                                        cursorWidth: 10,
+                                        decoration: buildInputDecoration("1 GHC Notes"),
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 12.0,bottom: 12),
+                                        child: Text(d1.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: amountNotEqualTotal ? Text("TOTAL: $total",style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.red,fontSize: 20),) : const Text("")
+                              ),
+                              const SizedBox(width: 10,),
+                              const Expanded(
+                                  child:  Text("")
+                              )
+                            ],
+                          ),
+                        ],
+                      ) : Container(),
+                      const SizedBox(height: 30,),
+                      isPosting  ? const LoadingUi() :
+                      amountIsNotEmpty ? NeoPopTiltedButton(
+                        isFloating: true,
+                        onTapUp: () {
+                          _startPosting();
+                          FocusScopeNode currentFocus = FocusScope.of(context);
+
+                          if (!currentFocus.hasPrimaryFocus) {
+                            currentFocus.unfocus();
+                          }
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          } else {
+                            var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
+                            if(int.parse(_amountController.text) != mainTotal){
+                              Get.snackbar("Total Error", "Your total should be equal to the amount",
+                                  colorText: defaultWhite,
+                                  backgroundColor: warning,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  duration: const Duration(seconds: 5)
+                              );
+                              setState(() {
+                                total = mainTotal;
+                                amountNotEqualTotal = true;
+                              });
+                              return;
+                            }
+                            else if(_currentSelectedNetwork == "Select Network"){
+                              Get.snackbar("Network or Type Error", "please select network and type",
+                                  colorText: defaultWhite,
+                                  backgroundColor: warning,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  duration: const Duration(seconds: 5));
+                              return;
+                            }
+                            else if(_currentSelectedNetwork == "Mtn" && int.parse(_amountController.text) > mtnNow){
+                              Get.snackbar("Amount Error", "Amount is greater than your Mtn Ecash,please check",
+                                  colorText: defaultWhite,
+                                  backgroundColor: warning,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  duration: const Duration(seconds: 5));
+                              return;
+                            }
+                            else if(_currentSelectedNetwork == "AirtelTigo" && int.parse(_amountController.text) > airtelTigoNow){
+                              Get.snackbar("Amount Error", "Amount is greater than your AirtelTigo Ecash,please check",
+                                  colorText: defaultWhite,
+                                  backgroundColor: warning,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  duration: const Duration(seconds: 5));
+                              return;
+                            }
+                            else if(_currentSelectedNetwork == "Vodafone" && int.parse(_amountController.text) > vodafoneNow){
+                              Get.snackbar("Amount Error", "Amount is greater than your Vodafone Ecash,please check",
+                                  colorText: defaultWhite,
+                                  backgroundColor: warning,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  duration: const Duration(seconds: 5));
+                              return;
+                            }
+                            else{
+                              processMomoWithdrawal();
+                            }
+                          }
+                        },
+                        decoration: const NeoPopTiltedButtonDecoration(
+                          color: secondaryColor,
+                          plunkColor: Color.fromRGBO(255, 235, 52, 1),
+                          shadowColor: Color.fromRGBO(36, 36, 36, 1),
+                          showShimmer: true,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 70.0,
+                            vertical: 15,
+                          ),
+                          child: Text('Send',style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.white)),
+                        ),
+                      ) : Container(),
+                    ],
                   ) : Container(),
                 ],
               ),
             ),
           )
 
-        ],
-      ) : Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Center(
-            child: Text("You have not added an account to work with today"),
-          ),
-          const Center(
-            child: Text("Please add accounts"),
-          ),
-          TextButton(
-            onPressed: (){
-              Get.to(() => const AddAccountBalance());
-            },
-            child: const Text("Add Accounts"),
-          )
         ],
       ),
     );
@@ -705,4 +830,14 @@ class _CashOutState extends State<CashOut> {
           borderRadius: BorderRadius.circular(12)),
     );
   }
+
+  final defaultPinTheme = PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: const TextStyle(fontSize: 20, color: Colors.black,fontWeight: FontWeight.w600),
+    decoration: BoxDecoration(
+      border: Border.all(color: secondaryColor),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  );
 }

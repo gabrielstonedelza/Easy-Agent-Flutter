@@ -62,16 +62,16 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Account Today"),
-        actions: [
-          IconButton(
-            onPressed: (){
-              Get.to(()=> const AddAccountBalance());
-            },
-            icon: const Icon(Icons.add_circle_rounded,size: 30,),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: (){
+        //       Get.to(()=> const AddAccountBalance());
+        //     },
+        //     icon: const Icon(Icons.add_circle_rounded,size: 30,),
+        //   )
+        // ],
       ),
-      body: isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView.builder(
+      body: isLoading ? const LoadingUi() : ListView.builder(
         itemCount: accountBalanceDetailsToday != null ? accountBalanceDetailsToday.length:0,
           itemBuilder: (context,index){
             items = accountBalanceDetailsToday[index];
@@ -145,22 +145,6 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
               ),
             );
           }
-      ) : Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Center(
-            child: Text("You have not added an account to work with today"),
-          ),
-          const Center(
-            child: Text("Please add accounts"),
-          ),
-          TextButton(
-            onPressed: (){
-              Get.to(() => const AddAccountBalance());
-            },
-            child: const Text("Add Accounts"),
-          )
-        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: secondaryColor,
