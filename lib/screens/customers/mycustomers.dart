@@ -81,8 +81,6 @@ class _MyCustomersState extends State<MyCustomers> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         buildRow("Phone : ", "phone"),
-                        buildRow("Location : ", "location"),
-                        buildRow("Digital Address : ", "digital_address"),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0, top: 2),
                           child: Row(

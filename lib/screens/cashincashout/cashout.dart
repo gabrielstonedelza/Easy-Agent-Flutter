@@ -359,7 +359,7 @@ class _CashOutState extends State<CashOut> {
                                 snackPosition: SnackPosition.TOP,
                                 backgroundColor: snackBackground);
                             String num = _customerPhoneController.text.replaceFirst("0", '+233');
-                            sendSms.sendMySms(num, "FNET", "Your code $oTP");
+                            sendSms.sendMySms(num,"Easy Agent","Your code $oTP");
 
                             setState(() {
                               isCustomer = true;

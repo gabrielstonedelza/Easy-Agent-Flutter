@@ -73,6 +73,40 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
   }
 
   final formKey = GlobalKey<FormState>();
+  static const maxSeconds = 60;
+  int seconds = maxSeconds;
+  Timer? timer;
+  bool isCompleted = false;
+  bool isResent = false;
+
+  void startTimer(){
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if(seconds > 0){
+          setState(() {
+            seconds --;
+          });
+        }
+        else{
+          stopTimer(reset: false);
+          setState(() {
+            isCompleted = true;
+          });
+        }
+      });
+  }
+
+  void resetTimer(){
+    setState(() {
+      seconds = maxSeconds;
+    });
+  }
+
+  void stopTimer({bool reset = true}){
+    if(reset){
+      resetTimer();
+    }
+    timer?.cancel();
+  }
 
   @override
   void initState(){
@@ -83,12 +117,11 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
       });
     }
     getUserDetails(uToken);
-
-
+    startTimer();
     generate5digit();
     Timer(const Duration(seconds: 10), () {
       String num = agentPhone.replaceFirst("0", '+233');
-      sendSms.sendMySms(num, "FNET", "Your code $oTP");
+      sendSms.sendMySms(num, "Easy Agent","Your code $oTP");
       // print(authController.phoneBrand);
       // print(authController.phoneModel);
       // print(authController.phoneId);
@@ -137,6 +170,37 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                   }
                 },
               ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Didn't receive code?",style:TextStyle(color:defaultWhite)),
+                const SizedBox(width: 20,),
+               isCompleted ? TextButton(
+                 onPressed: (){
+                   String num = agentPhone.replaceFirst("0", '+233');
+                   sendSms.sendMySms(num, "Easy Agent","Your code $oTP");
+                   Get.snackbar(
+                       "Check Phone","code was sent again",
+                     backgroundColor: snackBackground,
+                     colorText: defaultWhite,
+                     duration: const Duration(seconds: 5)
+                   );
+                   startTimer();
+                   resetTimer();
+                   setState(() {
+                     isResent = true;
+                     isCompleted = false;
+                   });
+                 },
+                 child: const Text("Resend Code",style:TextStyle(color:secondaryColor)),
+               ) : Text("00:${seconds.toString()}",style:const TextStyle(color:defaultWhite)),
+              ],
             ),
           )
         ],

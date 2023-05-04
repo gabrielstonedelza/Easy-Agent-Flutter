@@ -284,6 +284,7 @@ class _DashboardState extends State<Dashboard> {
     fetchFreeTrial();
     fetchAccountBalance();
     fetchMonthlyPayment();
+    print(endingDate);
     notificationsController.getAllNotifications(uToken);
     notificationsController.getAllUnReadNotifications(uToken);
     profileController.getUserDetails(uToken);
@@ -294,6 +295,7 @@ class _DashboardState extends State<Dashboard> {
       getAllTriggeredNotifications();
       notificationsController.getAllNotifications(uToken);
       notificationsController.getAllUnReadNotifications(uToken);
+
       getAllUnReadNotifications();
       for (var i in triggered) {
         localNotificationManager.showNotifications(
@@ -302,8 +304,9 @@ class _DashboardState extends State<Dashboard> {
     });
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      // fetchFreeTrial();
-      // fetchMonthlyPayment();
+      fetchFreeTrial();
+      fetchAccountBalance();
+      fetchMonthlyPayment();
       for (var e in triggered) {
         unTriggerNotifications(e["id"]);
       }
@@ -1103,7 +1106,11 @@ class _DashboardState extends State<Dashboard> {
                       title: "Trial Alert",
                       content: Column(
                         children: [
-                          Text("You are using a trial version of Easy Agent which is ending on ${tpController.endingDate}")
+                          const Text("You are using a trial version of Easy Agent which is ending on "),
+                          Padding(
+                            padding: const EdgeInsets.only(top:18.0),
+                            child: Text(endingDate,style: const TextStyle(fontWeight: FontWeight.bold),),
+                          )
                         ],
                       )
                   );

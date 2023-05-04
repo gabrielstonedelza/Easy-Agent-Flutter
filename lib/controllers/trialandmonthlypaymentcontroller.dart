@@ -40,7 +40,6 @@ class TrialAndMonthlyPaymentController extends GetxController {
           else{
             freeTrialEnded = false;
           }
-
           endingDate = i['end_date'];
         }
         update();
