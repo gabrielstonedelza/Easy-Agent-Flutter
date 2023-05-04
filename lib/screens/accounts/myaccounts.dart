@@ -71,7 +71,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
         //   )
         // ],
       ),
-      body: isLoading ? const LoadingUi() : ListView.builder(
+      body: isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView.builder(
         itemCount: accountBalanceDetailsToday != null ? accountBalanceDetailsToday.length:0,
           itemBuilder: (context,index){
             items = accountBalanceDetailsToday[index];
@@ -145,6 +145,19 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
               ),
             );
           }
+      ): Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("You have not added an account today",style: TextStyle(fontWeight: FontWeight.bold),),
+            TextButton(
+              onPressed: (){
+                Get.to(() => const AddAccountBalance());
+              },
+              child: const Text("Add Accounts"),
+            )
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: secondaryColor,

@@ -1083,11 +1083,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            accountBalanceDetailsToday.isNotEmpty ? Get.to(() => const MyAccountDashboard()) :Get.snackbar("Account balance error", "Please add account balance for today",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5));
+                             Get.to(() => const MyAccountDashboard());
                           },
                         ),
                       )
