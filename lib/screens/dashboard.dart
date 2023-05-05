@@ -61,15 +61,30 @@ class _DashboardState extends State<Dashboard> {
   }
 
   final Uri _url = Uri.parse('https://my247kiosk.com/');
-
+  final Uri _expressUrl = Uri.parse('https://xpresspoint.ecobank.com/agencybankingWEB/');
+  final Uri _fidelityWeb = Uri.parse('https://dpfbgl101.myfidelitybank.net:7101/solution.html');
+  final Uri _calBankWeb = Uri.parse('https://ams.caleservice.net/');
 
   Future<void> _launchInBrowser() async {
     if (!await launchUrl(_url)) {
       throw 'Could not launch $_url';
     }
   }
-
-
+  Future<void> _launchInExpress() async {
+    if (!await launchUrl(_expressUrl)) {
+      throw 'Could not launch $_expressUrl';
+    }
+  }
+  Future<void> _launchFidelityWeb() async {
+    if (!await launchUrl(_fidelityWeb)) {
+      throw 'Could not launch $_fidelityWeb';
+    }
+  }
+  Future<void> _launchCalWeb() async {
+    if (!await launchUrl(_calBankWeb)) {
+      throw 'Could not launch $_calBankWeb';
+    }
+  }
   final _advancedDrawerController = AdvancedDrawerController();
   SmsQuery query = SmsQuery();
   late List mySmss = [];
@@ -98,26 +113,6 @@ class _DashboardState extends State<Dashboard> {
   bool needsToMakePayment = false;
   late List accountBalanceDetailsToday = [];
 
-  Future<void> fetchAccountBalance() async {
-    const postUrl = "https://fnetagents.xyz/get_my_account_balance_started_today/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      accountBalanceDetailsToday.assignAll(allPosts);
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      // print(res.body);
-    }
-  }
 
   Future<void> getAllTriggeredNotifications() async {
     const url = "https://fnetagents.xyz/get_triggered_notifications/";
@@ -195,65 +190,148 @@ class _DashboardState extends State<Dashboard> {
     }
     // print(mySmss);
   }
-  late List myFreeTrialStatus = [];
-  late List myMonthlyPaymentStatus = [];
-  bool freeTrialEnded = false;
-  bool monthEnded = false;
-  late String endingDate = "";
+  // late List myFreeTrialStatus = [];
+  // late List myMonthlyPaymentStatus = [];
+  // bool freeTrialEnded = false;
+  // bool monthEnded = false;
+  // late String endingDate = "";
+  void showInstalled() {
+    showMaterialModalBottomSheet(
+      context: context,
+      builder: (context) => Card(
+        elevation: 12,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(10),
+                topLeft: Radius.circular(10))),
+        child: SizedBox(
+          height: 400,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Center(
+                  child: Text("Continue with mtn's financial services",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold))),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment:
+                MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      openFinancialServices();
+                      // Get.back();
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/momo.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("MTN",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 10,
+              ),
+              const Center(
+                  child: Text("Continue on the web",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold))),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment:
+                MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () async{
+                      await _launchInExpress();
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/xpresspoint.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Express Point",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
 
-  Future<void> fetchFreeTrial() async {
-    const postUrl = "https://fnetagents.xyz/get_my_free_trial/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      myFreeTrialStatus.assignAll(allPosts);
-      for(var i in myFreeTrialStatus){
-        freeTrialEnded = i['trial_ended'];
-        setState(() {
-          endingDate = i['end_date'];
-        });
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      // print(res.body);
-    }
+                  GestureDetector(
+                    onTap: () async{
+                      await _launchFidelityWeb();
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/fidelity-card.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Fidelity Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async{
+                      await _launchCalWeb();
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/calbank.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Cal Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
-  Future<void> fetchMonthlyPayment() async {
-    const postUrl = "https://fnetagents.xyz/get_my_monthly_payment_status/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      myMonthlyPaymentStatus.assignAll(allPosts);
-      for(var i in myMonthlyPaymentStatus){
-        monthEnded = i['month_ended'];
-      }
 
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      // print(res.body);
-    }
 
-  }
-
-  // }
   Future checkMtnBalance() async {
     fetchInbox();
     Get.defaultDialog(
@@ -292,9 +370,9 @@ class _DashboardState extends State<Dashboard> {
       });
     }
 
-    fetchFreeTrial();
-    fetchAccountBalance();
-    fetchMonthlyPayment();
+    tpController.fetchFreeTrial(uToken);
+    tpController.fetchAccountBalance(uToken);
+    tpController.fetchMonthlyPayment(uToken);
 
     notificationsController.getAllNotifications(uToken);
     notificationsController.getAllUnReadNotifications(uToken);
@@ -315,9 +393,9 @@ class _DashboardState extends State<Dashboard> {
     });
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      fetchFreeTrial();
-      fetchAccountBalance();
-      fetchMonthlyPayment();
+      tpController.fetchFreeTrial(uToken);
+      tpController.fetchAccountBalance(uToken);
+      tpController.fetchMonthlyPayment(uToken);
       for (var e in triggered) {
         unTriggerNotifications(e["id"]);
       }
@@ -351,8 +429,14 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void dispose(){
+    super.dispose();
+    _timer.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return isLoading ? const LoadingUi() : freeTrialEnded && monthEnded ? const MakeMonthlyPayment() : phoneNotAuthenticated
+    return tpController.freeTrialEnded && tpController.monthEnded ? const MakeMonthlyPayment() : phoneNotAuthenticated
         ?  AdvancedDrawer(
             backdropColor: snackBackground,
             controller: _advancedDrawerController,
@@ -809,7 +893,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            openFinancialServices();
+                            showInstalled();
                           },
                         ),
                       ),
@@ -1036,7 +1120,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
-              floatingActionButton: !freeTrialEnded ? FloatingActionButton(
+              floatingActionButton: !tpController.freeTrialEnded ? FloatingActionButton(
                 backgroundColor:defaultWhite,
                 onPressed: (){
                   Get.defaultDialog(
@@ -1047,7 +1131,7 @@ class _DashboardState extends State<Dashboard> {
                           const Text("You are using a trial version of Easy Agent which is ending on "),
                           Padding(
                             padding: const EdgeInsets.only(top:18.0),
-                            child: Text(endingDate,style: const TextStyle(fontWeight: FontWeight.bold),),
+                            child: Text(tpController.endingDate,style: const TextStyle(fontWeight: FontWeight.bold),),
                           )
                         ],
                       )

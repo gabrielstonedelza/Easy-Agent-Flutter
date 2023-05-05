@@ -264,7 +264,6 @@ class _BankDepositState extends State<BankDeposit> {
 
   }
 
-
   void showInstalled() {
     showMaterialModalBottomSheet(
       context: context,
@@ -298,13 +297,13 @@ class _BankDepositState extends State<BankDeposit> {
                     child: Column(
                       children: [
                         Image.asset(
-                          "assets/images/bank.png",
+                          "assets/images/momo.png",
                           width: 50,
                           height: 50,
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("Bank",
+                          child: Text("MTN",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -321,7 +320,7 @@ class _BankDepositState extends State<BankDeposit> {
                 height: 10,
               ),
               const Center(
-                  child: Text("Continue with installed apps",
+                  child: Text("Continue on the web",
                       style: TextStyle(
                           fontWeight: FontWeight.bold))),
               const SizedBox(
@@ -351,46 +350,7 @@ class _BankDepositState extends State<BankDeposit> {
                       ],
                     ),
                   ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     DeviceApps.openApp("com.unicornheights.agencybanking");
-                  //   },
-                  //   child: Column(
-                  //     children: [
-                  //       Image.asset(
-                  //         "assets/images/accessbank.png",
-                  //         width: 50,
-                  //         height: 50,
-                  //       ),
-                  //       const Padding(
-                  //         padding: EdgeInsets.only(top: 10.0),
-                  //         child: Text("Access Bank app",
-                  //             style: TextStyle(
-                  //                 fontWeight: FontWeight.bold)),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     DeviceApps.openApp("com.fidelity.mobile");
-                  //   },
-                  //   child: Column(
-                  //     children: [
-                  //       Image.asset(
-                  //         "assets/images/fidelity-card.png",
-                  //         width: 50,
-                  //         height: 50,
-                  //       ),
-                  //       const Padding(
-                  //         padding: EdgeInsets.only(top: 10.0),
-                  //         child: Text("Fidelity App",
-                  //             style: TextStyle(
-                  //                 fontWeight: FontWeight.bold)),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
+
                   GestureDetector(
                     onTap: () async{
                      await _launchInBrowser("https://dpfbgl101.myfidelitybank.net:7101/solution.html");
@@ -439,7 +399,6 @@ class _BankDepositState extends State<BankDeposit> {
       ),
     );
   }
-
 
   @override
   void initState(){
@@ -674,7 +633,7 @@ class _BankDepositState extends State<BankDeposit> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value.length > 3 && value != ""){
+                        if(value.length > 1 && value != ""){
                           setState(() {
                             amountIsNotEmpty = true;
                           });

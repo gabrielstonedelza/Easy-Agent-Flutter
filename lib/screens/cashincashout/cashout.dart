@@ -215,7 +215,7 @@ class _CashOutState extends State<CashOut> {
       "isStarted": "True",
     });
     if (response.statusCode == 201) {
-      Get.snackbar("Success", "You have added accounts for today",
+      Get.snackbar("Success", "Your accounts was updated",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
@@ -264,6 +264,41 @@ class _CashOutState extends State<CashOut> {
     oTP = rand.toInt();
   }
 
+  static const maxSeconds = 60;
+  int seconds = maxSeconds;
+  Timer? timer;
+  bool isCompleted = false;
+  bool isResent = false;
+
+  void startTimer(){
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if(seconds > 0){
+        setState(() {
+          seconds --;
+        });
+      }
+      else{
+        stopTimer(reset: false);
+        setState(() {
+          isCompleted = true;
+        });
+      }
+    });
+  }
+
+  void resetTimer(){
+    setState(() {
+      seconds = maxSeconds;
+    });
+  }
+
+  void stopTimer({bool reset = true}){
+    if(reset){
+      resetTimer();
+    }
+    timer?.cancel();
+  }
+
   @override
   void initState(){
     super.initState();
@@ -272,6 +307,7 @@ class _CashOutState extends State<CashOut> {
         uToken = storage.read("token");
       });
     }
+    startTimer();
     generate5digit();
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
@@ -355,8 +391,7 @@ class _CashOutState extends State<CashOut> {
                                 snackPosition: SnackPosition.TOP,
                                 backgroundColor: snackBackground);
                             String num = _customerPhoneController.text.replaceFirst("0", '+233');
-                            sendSms.sendMySms(num,"Easy Agent","Your code $oTP");
-
+                            sendSms.sendMySms(num,"EasyAgent","Your code $oTP");
                             setState(() {
                               isCustomer = true;
                               sentOTP = true;
@@ -435,6 +470,35 @@ class _CashOutState extends State<CashOut> {
                       }
                     },
                   ): Container(),
+                  const SizedBox(height: 20,),
+                  sentOTP  && !hasOTP ? Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Didn't receive code?"),
+                        const SizedBox(width: 20,),
+                        isCompleted ? TextButton(
+                          onPressed: (){
+                            String num = _customerPhoneController.text.replaceFirst("0", '+233');
+                            sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
+                            Get.snackbar(
+                                "Check Phone","code was sent again",
+                                backgroundColor: snackBackground,
+                                colorText: defaultWhite,
+                                duration: const Duration(seconds: 5)
+                            );
+                            startTimer();
+                            resetTimer();
+                            setState(() {
+                              isResent = true;
+                              isCompleted = false;
+                            });
+                          },
+                          child: const Text("Resend Code",style:TextStyle(color:secondaryColor)),
+                        ) : Text("00:${seconds.toString()}"),
+                      ],
+                    ),
+                  ) : Container(),
                   hasOTP ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(

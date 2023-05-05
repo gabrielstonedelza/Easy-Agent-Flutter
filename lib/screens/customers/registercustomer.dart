@@ -225,7 +225,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
             backgroundColor: snackBackground);
         String telnum = phoneController.text;
         telnum = telnum.replaceFirst("0", '+233');
-        sendSms.sendMySms(telnum,"Easy Agent",
+        sendSms.sendMySms(telnum,"EasyAgent",
             "Welcome ${name.text}, you are now registered on Easy Agent App.For more information please kindly call 0244950505.");
         Get.offAll(() => const Dashboard());
       }

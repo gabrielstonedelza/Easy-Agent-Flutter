@@ -53,7 +53,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
   final List bankType = [
     "Select bank type",
     "Interbank",
-    "Other"
+    "Easy Banking"
   ];
   var _currentSelectedBankType = "Select bank type";
 
@@ -97,9 +97,6 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
     "Cal Bank",
     "Fidelity Bank",
     "Ecobank",
-    "Mtn",
-    "AirtelTigo",
-    "Vodafone"
   ];
 
   var _currentSelectedBank = "Select bank";

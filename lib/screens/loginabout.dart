@@ -73,22 +73,22 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
                     child: Text("you can contact our customer service via "),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      const Text("Click to call"),
                       IconButton(
                         onPressed: (){
                           _callNumber();
                         },
                         icon: Image.asset("assets/images/telephone-call.png",width: 40,height: 40,),
                       ),
-                      IconButton(
-                        onPressed: (){
-                          launchWhatsapp(number:"+233550222888" ,message:"Hello from FNET");
-                          Get.back();
-                        },
-                        icon: Image.asset("assets/images/whatsapp.png",width: 40,height: 40,),
-                      ),
                     ],
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top:18.0),
+                    child: Center(
+                      child: Text("Reach us on Whatsapp 0550222888"),
+                    ),
                   )
                 ],
               )

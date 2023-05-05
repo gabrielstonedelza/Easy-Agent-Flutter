@@ -117,13 +117,13 @@ class _AccountBalanceSummaryState extends State<AccountBalanceSummary> {
               );
             }
         ),
-        floatingActionButton:FloatingActionButton(
-          backgroundColor: secondaryColor,
-          child: const Icon(Icons.add,size: 30,),
-          onPressed: (){
-            Get.to(() => const ReBalancing());
-          },
-        )
+        // floatingActionButton:FloatingActionButton(
+        //   backgroundColor: secondaryColor,
+        //   child: const Icon(Icons.add,size: 30,),
+        //   onPressed: (){
+        //     Get.to(() => const ReBalancing());
+        //   },
+        // )
     );
   }
 }

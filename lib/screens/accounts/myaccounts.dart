@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
+import 'package:easy_agent/screens/accounts/updateaccounts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -22,6 +23,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
   final storage = GetStorage();
   late String uToken = "";
   late List accountBalanceDetailsToday = [];
+  late List reversedAccountBalanceToday = List.of(accountBalanceDetailsToday.reversed);
   var items;
 
   Future<void> fetchAccountBalance() async {
@@ -54,6 +56,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       });
     }
     fetchAccountBalance();
+    print(reversedAccountBalanceToday);
   }
 
 
@@ -62,16 +65,17 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Account Today"),
-        // actions: [
-        //   IconButton(
-        //     onPressed: (){
-        //       Get.to(()=> const AddAccountBalance());
-        //     },
-        //     icon: const Icon(Icons.add_circle_rounded,size: 30,),
-        //   )
-        // ],
+        actions: [
+          IconButton(
+            onPressed: (){
+              Get.to(()=> const UpdateAccountBalance());
+            },
+            icon: const Icon(Icons.edit,size: 30,),
+          )
+        ],
       ),
       body: isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView.builder(
+        reverse: true,
         itemCount: accountBalanceDetailsToday != null ? accountBalanceDetailsToday.length:0,
           itemBuilder: (context,index){
             items = accountBalanceDetailsToday[index];

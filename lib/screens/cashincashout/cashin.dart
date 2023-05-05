@@ -182,7 +182,6 @@ class _CashInState extends State<CashIn> {
     }
   }
 
-
   Future<void> fetchAccountBalance() async {
     const postUrl = "https://fnetagents.xyz/get_my_account_balance_started_today/";
     final pLink = Uri.parse(postUrl);

@@ -184,7 +184,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                isCompleted ? TextButton(
                  onPressed: (){
                    String num = agentPhone.replaceFirst("0", '+233');
-                   sendSms.sendMySms(num, "Easy Agent","Your code $oTP");
+                   sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
                    Get.snackbar(
                        "Check Phone","code was sent again",
                      backgroundColor: snackBackground,

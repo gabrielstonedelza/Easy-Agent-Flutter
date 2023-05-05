@@ -10,6 +10,7 @@ import '../constants.dart';
 class TrialAndMonthlyPaymentController extends GetxController {
   late List myFreeTrialStatus = [];
   late List myMonthlyPaymentStatus = [];
+  late List accountBalanceDetailsToday = [];
   bool isLoading = false;
   bool isAuthenticated = false;
   bool freeTrialEnded = false;
@@ -17,74 +18,68 @@ class TrialAndMonthlyPaymentController extends GetxController {
   final storage = GetStorage();
   late String endingDate = "";
 
+  Future<void> fetchAccountBalance(String token) async {
+    const postUrl = "https://fnetagents.xyz/get_my_account_balance_started_today/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $token"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      accountBalanceDetailsToday.assignAll(allPosts);
 
-  Future<void> fetchFreeTrial(String token) async {
-    try {
-      const postUrl = "https://fnetagents.xyz/get_my_free_trial/";
-      final pLink = Uri.parse(postUrl);
-      http.Response res = await http.get(pLink, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        'Accept': 'application/json',
-        "Authorization": "Token $token"
-      });
-      if (res.statusCode == 200) {
-        final codeUnits = res.body;
-        var jsonData = jsonDecode(codeUnits);
-        var allPosts = jsonData;
-        myFreeTrialStatus.assignAll(allPosts);
-
-        for(var i in myFreeTrialStatus){
-          if(i['trial_ended'] == "true"){
-            freeTrialEnded = true;
-          }
-          else{
-            freeTrialEnded = false;
-          }
-          endingDate = i['end_date'];
-        }
-        update();
-      } else {
-        // print(res.body);
-      }
-    } catch (e) {
-      // Get.snackbar("Sorry", "please check your internet connection");
-    } finally {
-      isLoading = false;
-      update();
+    } else {
+      // print(res.body);
     }
   }
-  Future<void> fetchMonthlyPayment(String token) async {
-    try {
-      const postUrl = "https://fnetagents.xyz/get_my_monthly_payment_status/";
-      final pLink = Uri.parse(postUrl);
-      http.Response res = await http.get(pLink, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        'Accept': 'application/json',
-        "Authorization": "Token $token"
-      });
-      if (res.statusCode == 200) {
-        final codeUnits = res.body;
-        var jsonData = jsonDecode(codeUnits);
-        var allPosts = jsonData;
-        myMonthlyPaymentStatus.assignAll(allPosts);
-        for(var i in myMonthlyPaymentStatus){
-          if(i['month_ended'] == "true"){
-            monthEnded = true;
-          }
-          else{
-            monthEnded = false;
-          }
-        }
-        update();
-      } else {
-        // print(res.body);
+
+
+  Future<void> fetchFreeTrial(String token) async {
+    const postUrl = "https://fnetagents.xyz/get_my_free_trial/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $token"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      myFreeTrialStatus.assignAll(allPosts);
+      for(var i in myFreeTrialStatus){
+        freeTrialEnded = i['trial_ended'];
+        endingDate = i['end_date'];
       }
-    } catch (e) {
-      // Get.snackbar("Sorry", "please check your internet connection");
-    } finally {
-      isLoading = false;
-      update();
+    } else {
+      // print(res.body);
     }
+  }
+
+  Future<void> fetchMonthlyPayment(String token) async {
+    const postUrl = "https://fnetagents.xyz/get_my_monthly_payment_status/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $token"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      myMonthlyPaymentStatus.assignAll(allPosts);
+      for(var i in myMonthlyPaymentStatus){
+        monthEnded = i['month_ended'];
+      }
+    } else {
+      // print(res.body);
+    }
+
   }
 
   startFreeTrial(String token)async{
