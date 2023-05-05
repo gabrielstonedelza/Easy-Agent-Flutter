@@ -31,7 +31,6 @@ class TrialAndMonthlyPaymentController extends GetxController {
       var jsonData = jsonDecode(codeUnits);
       var allPosts = jsonData;
       accountBalanceDetailsToday.assignAll(allPosts);
-
     } else {
       // print(res.body);
     }

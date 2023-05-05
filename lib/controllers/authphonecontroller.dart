@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:easy_agent/screens/login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,6 +19,7 @@ class AuthPhoneController extends GetxController {
   bool isLoading = false;
   bool isAuthenticated = false;
   final storage = GetStorage();
+  bool isAuthDevice = false;
 
   Future<void> fetchDeviceInfo() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -31,7 +33,7 @@ class AuthPhoneController extends GetxController {
 
   Future<void> fetchAuthPhone(String token) async {
     try {
-      const postUrl = "https://fnetagents.xyz/get_my_phones_auth_details/";
+      const postUrl = "https://fnetagents.xyz/get_all_auth_phones/";
       final pLink = Uri.parse(postUrl);
       http.Response res = await http.get(pLink, headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -44,11 +46,25 @@ class AuthPhoneController extends GetxController {
         var allPosts = jsonData;
         authPhoneDetails.assignAll(allPosts);
         for(var i in authPhoneDetails){
-          if(i['phones_id'] == phoneId && i['phone_model'] == phoneModel && i['phone_brand'] && i['finger_print'] == phoneFingerprint && i['authenticated_phone'] == "True"){
-            isAuthenticated = true;
+          if(i['finger_print'] == phoneFingerprint){
+            isAuthDevice = true;
+            Get.snackbar("Device Auth Success 😀", "Your is already authenticated",
+                colorText: Colors.white,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: secondaryColor,
+                duration: const Duration(seconds: 5));
           }
           else{
-            isAuthenticated = false;
+            isAuthDevice = false;
+            storage.remove("token");
+            storage.remove("agent_code");
+            storage.remove("phoneAuthenticated");
+            Get.snackbar("Device Auth Error", "This is not your authenticated device,please contact the admin or login with the auth device",
+                colorText: Colors.white,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: warning,
+                duration: const Duration(seconds: 10));
+            Get.offAll(()=> const LoginView());
           }
         }
         update();
@@ -56,7 +72,6 @@ class AuthPhoneController extends GetxController {
         // print(res.body);
       }
     } catch (e) {
-      // Get.snackbar("Sorry", "please check your internet connection");
     } finally {
       isLoading = false;
       update();
@@ -87,13 +102,14 @@ class AuthPhoneController extends GetxController {
     }
     else{
       if (kDebugMode) {
-        print(response.body);
+        // print(response.body);
+        // Get.snackbar("AuthPhone Error", response.body.toString(),
+        //     colorText: Colors.white,
+        //     snackPosition: SnackPosition.BOTTOM,
+        //     backgroundColor: warning,
+        //     duration: const Duration(seconds: 10));
+        // return;
       }
-      // Get.snackbar("Authentication Error", "Your phone could not be authenticated. Please try again",
-      //   duration: const Duration(seconds:5),
-      //   colorText: Colors.white,
-      //   backgroundColor: secondaryColor,
-      // );
     }
   }
 }

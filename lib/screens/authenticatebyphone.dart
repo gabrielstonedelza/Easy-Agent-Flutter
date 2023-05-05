@@ -141,13 +141,13 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     getUserDetails(uToken);
     startTimer();
     generate5digit();
-    Timer(const Duration(seconds: 10), () {
-      String num = agentPhone.replaceFirst("0", '+233');
-      sendSms.sendMySms(num, "Easy Agent","Your code $oTP");
-      // print(authController.phoneBrand);
-      // print(authController.phoneModel);
-      // print(authController.phoneId);
-      // print(authController.phoneFingerprint);
+    authController.fetchAuthPhone(uToken);
+
+    Timer(const Duration(seconds: 5), () {
+      if(authController.isAuthDevice){
+        String num = agentPhone.replaceFirst("0", '+233');
+        sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
+      }
     }
     );
   }
@@ -157,7 +157,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: shadow,
-      body: isLoading  ? const LoadingUi() : authController.isAuthenticated ? Column(
+      body: isLoading  ? const LoadingUi() : Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Lottie.asset("assets/images/74569-two-factor-authentication.json",width: 300,height: 300),
@@ -179,8 +179,12 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                 validator: (pin) {
                   if (pin?.length == 4 && pin == oTP.toString()){
                     storage.write("phoneAuthenticated", "Authenticated");
-                    authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
+                    storage.write("phoneId", authController.phoneId);
+                    storage.write("phoneModel", authController.phoneModel);
+                    storage.write("phoneBrand", authController.phoneBrand);
+                    storage.write("phoneFingerprint", authController.phoneFingerprint);
                     tpController.startFreeTrial(uToken);
+                    authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
                     Get.offAll(()=> const Dashboard());
                   }
                   else{
@@ -225,18 +229,6 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
               ],
             ),
           )
-        ],
-      ) : Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("Sorry 😝,you have logged in with an unrecognized device"),
-          const SizedBox(height: 10,),
-          const Text("Contact the administrator or login with the authorized device,thank you."),
-          const SizedBox(height: 30,),
-          TextButton(onPressed: (){
-            logoutUser();
-            Get.offAll(() => const LoginView());
-          }, child: const Text("Login",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),))
         ],
       ),
     );

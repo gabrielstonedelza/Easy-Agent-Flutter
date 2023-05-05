@@ -110,8 +110,6 @@ class _DashboardState extends State<Dashboard> {
 
   bool isAuthenticated = false;
   bool isAuthenticatedAlready = false;
-  bool needsToMakePayment = false;
-  late List accountBalanceDetailsToday = [];
 
 
   Future<void> getAllTriggeredNotifications() async {
@@ -190,11 +188,6 @@ class _DashboardState extends State<Dashboard> {
     }
     // print(mySmss);
   }
-  // late List myFreeTrialStatus = [];
-  // late List myMonthlyPaymentStatus = [];
-  // bool freeTrialEnded = false;
-  // bool monthEnded = false;
-  // late String endingDate = "";
   void showInstalled() {
     showMaterialModalBottomSheet(
       context: context,
@@ -380,6 +373,7 @@ class _DashboardState extends State<Dashboard> {
     profileController.getUserProfile(uToken);
     getAllTriggeredNotifications();
 
+
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       getAllTriggeredNotifications();
       notificationsController.getAllNotifications(uToken);
@@ -409,6 +403,7 @@ class _DashboardState extends State<Dashboard> {
   logoutUser() async {
     storage.remove("token");
     storage.remove("agent_code");
+    storage.remove("phoneAuthenticated");
     Get.offAll(() => const LoginView());
     const logoutUrl = "https://www.fnetagents.xyz/auth/token/logout";
     final myLink = Uri.parse(logoutUrl);
@@ -436,7 +431,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return tpController.freeTrialEnded && tpController.monthEnded ? const MakeMonthlyPayment() : phoneNotAuthenticated
+    return  tpController.freeTrialEnded && tpController.monthEnded ? const MakeMonthlyPayment() : phoneNotAuthenticated
         ?  AdvancedDrawer(
             backdropColor: snackBackground,
             controller: _advancedDrawerController,
@@ -716,7 +711,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            accountBalanceDetailsToday.isNotEmpty ?
+                            tpController.accountBalanceDetailsToday.isNotEmpty ?
                             Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
@@ -741,7 +736,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            accountBalanceDetailsToday.isNotEmpty ? Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
+                            tpController.accountBalanceDetailsToday.isNotEmpty ? Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,
