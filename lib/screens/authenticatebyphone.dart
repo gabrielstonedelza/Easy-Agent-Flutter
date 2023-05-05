@@ -16,6 +16,7 @@ import '../controllers/authphonecontroller.dart';
 import '../controllers/profilecontroller.dart';
 import '../controllers/trialandmonthlypaymentcontroller.dart';
 import '../widgets/loadingui.dart';
+import 'login.dart';
 
 class AuthenticateByPhone extends StatefulWidget {
 
@@ -107,6 +108,27 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     }
     timer?.cancel();
   }
+  logoutUser() async {
+    storage.remove("token");
+    storage.remove("agent_code");
+    Get.offAll(() => const LoginView());
+    const logoutUrl = "https://www.fnetagents.xyz/auth/token/logout";
+    final myLink = Uri.parse(logoutUrl);
+    http.Response response = await http.post(myLink, headers: {
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+
+    if (response.statusCode == 200) {
+      Get.snackbar("Success", "You were logged out",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: snackBackground);
+      storage.remove("token");
+      storage.remove("agent_code");
+      Get.offAll(() => const LoginView());
+    }
+  }
 
   @override
   void initState(){
@@ -135,7 +157,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: shadow,
-      body: isLoading  ? const LoadingUi() : Column(
+      body: isLoading  ? const LoadingUi() : authController.isAuthenticated ? Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Lottie.asset("assets/images/74569-two-factor-authentication.json",width: 300,height: 300),
@@ -203,6 +225,18 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
               ],
             ),
           )
+        ],
+      ) : Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text("Sorry 😝,you have logged in with an unrecognized device"),
+          const SizedBox(height: 10,),
+          const Text("Contact the administrator or login with the authorized device,thank you."),
+          const SizedBox(height: 30,),
+          TextButton(onPressed: (){
+            logoutUser();
+            Get.offAll(() => const LoginView());
+          }, child: const Text("Login",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),))
         ],
       ),
     );

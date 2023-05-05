@@ -41,7 +41,6 @@ class LoginController extends GetxController {
           agentsCodes.add(i['agent_unique_code']);
         }
         update();
-
       }
     } catch (e) {
       Get.snackbar("Sorry",
