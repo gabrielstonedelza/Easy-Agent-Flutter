@@ -1,14 +1,13 @@
 
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:device_apps/device_apps.dart';
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -42,6 +41,14 @@ class _BankDepositState extends State<BankDeposit> {
   final _formKey = GlobalKey<FormState>();
   late List customersPhone = [];
   late List accountNames = [];
+
+
+  Future<void> _launchInBrowser(String url) async {
+    final appLink = Uri.parse(url);
+    if (!await launchUrl(appLink)) {
+      throw 'Could not launch $url';
+    }
+  }
 
 
   final List customerBanks = [
@@ -256,13 +263,7 @@ class _BankDepositState extends State<BankDeposit> {
     }
 
   }
-  fetchAllInstalled() async {
-    List<Application> apps = await DeviceApps.getInstalledApplications(
-        onlyAppsWithLaunchIntent: true, includeSystemApps: false);
-    if (kDebugMode) {
-      print(apps);
-    }
-  }
+
 
   void showInstalled() {
     showMaterialModalBottomSheet(
@@ -331,9 +332,8 @@ class _BankDepositState extends State<BankDeposit> {
                 MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      DeviceApps.openApp("com.ecobank.xpresspoint");
-                      // Get.back();
+                    onTap: () async{
+                      await _launchInBrowser("https://xpresspoint.ecobank.com/agencybankingWEB/");
                     },
                     child: Column(
                       children: [
@@ -392,19 +392,39 @@ class _BankDepositState extends State<BankDeposit> {
                   //   ),
                   // ),
                   GestureDetector(
-                    onTap: () {
-                      DeviceApps.openApp("com.m2i.gtexpressbyod");
+                    onTap: () async{
+                     await _launchInBrowser("https://dpfbgl101.myfidelitybank.net:7101/solution.html");
                     },
                     child: Column(
                       children: [
                         Image.asset(
-                          "assets/images/gtbank.jpg",
+                          "assets/images/fidelity-card.png",
                           width: 50,
                           height: 50,
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("GT Bank",
+                          child: Text("Fidelity Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async{
+                      await _launchInBrowser("https://ams.caleservice.net/");
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/calbank.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Cal Bank",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -429,7 +449,6 @@ class _BankDepositState extends State<BankDeposit> {
         uToken = storage.read("token");
       });
     }
-    fetchAllInstalled();
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _depositorNameController = TextEditingController();

@@ -1,14 +1,21 @@
 
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/snackbar/snackbar.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
-
+import 'dart:io';
 import '../../controllers/customerscontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../sendsms.dart';
@@ -22,7 +29,8 @@ class CustomerRegistration extends StatefulWidget {
 
 class _CustomerRegistrationState extends State<CustomerRegistration> {
   final _formKey = GlobalKey<FormState>();
-  final CustomersController controller = Get.find();
+  // final CustomersController controller = Get.find();
+  final controller = CustomersController.to;
 
   bool isPosting = false;
 
@@ -120,6 +128,124 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
     }
   }
 
+  File? image;
+  var dio = Dio();
+  bool isUpdating = false;
+  bool hasImageData = false;
+
+  Future _getFromGallery()async{
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 1080,
+        maxWidth: 1080
+    );
+    // PickedFile? pickedFile = await ImagePicker().getImage(
+    //     source: ImageSource.gallery,
+    //     maxHeight: 1080,
+    //     maxWidth: 1080
+    // );
+    _cropImage(image!.path);
+  }
+
+  Future _getFromCamera()async{
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(
+        source: ImageSource.camera,
+        maxHeight: 1080,
+        maxWidth: 1080
+    );
+    _cropImage(image!.path);
+  }
+
+
+  Future _cropImage(filePath)async{
+
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: filePath,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    );
+    if(croppedFile != null){
+      final File imageFile = File(croppedFile.path);
+      image = imageFile;
+      setState(() {
+        hasImageData = true;
+      });
+    }
+    else{
+      setState(() {
+        hasImageData = false;
+      });
+    }
+  }
+
+  void _updateAndUploadPhoto(File file) async {
+    try {
+      //updating user profile details
+      String fileName = file.path.split('/').last;
+      var formData1 = FormData.fromMap({
+        "name": name.text.trim(),
+        "phone": phoneController.text.trim(),
+        "unique_code": customerCode,
+        'customer_pic': await MultipartFile.fromFile(file.path, filename: fileName),
+      });
+      var response = await dio.post(
+        'https://fnetagents.xyz/register_customer/',
+        data: formData1,
+        options: Options(headers: {
+          "Authorization": "Token $uToken",
+          "HttpHeaders.acceptHeader": "accept: application/json",
+        }, contentType: Headers.formUrlEncodedContentType),
+      );
+      if (response.statusCode == 201) {
+        Get.snackbar("Congratulations", "Customer was created successfully",
+            colorText: defaultWhite,
+            snackPosition: SnackPosition.TOP,
+            duration: const Duration(seconds: 5),
+            backgroundColor: snackBackground);
+        String telnum = phoneController.text;
+        telnum = telnum.replaceFirst("0", '+233');
+        sendSms.sendMySms(telnum,"Easy Agent",
+            "Welcome ${name.text}, you are now registered on Easy Agent App.For more information please kindly call 0244950505.");
+        Get.offAll(() => const Dashboard());
+      }
+      else{
+        if (kDebugMode) {
+          print(response.data);
+        }
+        Get.snackbar("Sorry", "something happened",
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red);
+      }
+    } on DioError catch (e) {
+      Get.snackbar("Sorry", "something happened",
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -189,9 +315,79 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       },
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  !hasImageData ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Take customer's picture"),
+                      IconButton(
+                        onPressed: (){
+                          Get.defaultDialog(
+                              buttonColor: primaryColor,
+                              title: "Select",
+                              content: Row(
+                                children: [
+                                  Expanded(
+                                      child: Column(
+                                        children: [
+                                          GestureDetector(
+                                            child: const Icon(Icons.image,size: 30,),
+                                            onTap: () {
+                                              _getFromGallery();
+                                              Get.back();
+                                            },
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text(
+                                            "Gallery",
+                                            style: TextStyle(
+                                                // color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      )),
+                                  Expanded(
+                                      child: Column(
+                                        children: [
+                                          GestureDetector(
+                                            child: const Icon(Icons.camera_alt,size: 30,),
+                                            onTap: () {
+                                              _getFromCamera();
+                                              Get.back();
+                                            },
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text(
+                                            "Camera",
+                                            style: TextStyle(
+                                                // color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      )),
+                                ],
+                              )
+                          );
+                        },
+                        icon: const Icon(Icons.camera_alt_outlined,size: 30,),
+                      )
+                    ],
+                  ) : Card(
+                    elevation: 12,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)
+                    ),
+                    child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Image.file(image!),
+                    ),
+                  ),
                   const SizedBox(height: 30),
 
-                  !isInSystem ? isPosting  ? const LoadingUi() :NeoPopTiltedButton(
+                  !isInSystem ? isPosting  ? const LoadingUi() : hasImageData ? NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
                       _startPosting();
@@ -203,8 +399,14 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       if (!_formKey.currentState!.validate()) {
                         return;
                       } else {
-
-                        registerCustomer();
+                        if(image == null){
+                          Get.snackbar("Customer picture Error", "please upload customers picture",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: Colors.red);
+                          return;
+                        }
+                        _updateAndUploadPhoto(image!);
                       }
                     },
                     decoration: const NeoPopTiltedButtonDecoration(
@@ -223,7 +425,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                           fontSize: 20,
                           color: Colors.white)),
                     ),
-                  ) :Container(),
+                  ) :Container():Container(),
                 ],
               ),
             ),

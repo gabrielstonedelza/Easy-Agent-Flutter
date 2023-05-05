@@ -9,6 +9,8 @@ class CustomersController extends GetxController{
   late List customersNames = [];
   bool isLoading = true;
 
+  static CustomersController get to => Get.find<CustomersController>();
+
 
   Future<void> getAllCustomers(String token) async {
     try {

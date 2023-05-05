@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:pinput/pinput.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
@@ -109,7 +110,9 @@ class _CashOutState extends State<CashOut> {
   late List myCustomerDetails = [];
   late String customerName = "";
   late String cUniqueCode = "";
+  late String customerPic = "";
   late int oTP = 0;
+
 
   fetchCustomer(String customerPhone)async{
     final url = "https://fnetagents.xyz/customer_details_by_phone/$customerPhone/";
@@ -127,17 +130,15 @@ class _CashOutState extends State<CashOut> {
         setState(() {
           customerName = i['name'];
           cUniqueCode = i['unique_code'];
+          customerPic = i['get_customer_pic'];
         });
       }
       setState(() {
         isLoading = false;
       });
-      print(cUniqueCode);
-      print(myCustomerDetails);
     }
 
   }
-
 
   processMomoWithdrawal() async {
     const registerUrl = "https://fnetagents.xyz/post_momo_withdrawal/";
@@ -192,7 +193,7 @@ class _CashOutState extends State<CashOut> {
 
       Get.offAll(()=> const Dashboard());
     } else {
-      print(res.body);
+      // print(res.body);
       Get.snackbar("Withdrawal Error", "something went wrong please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -337,11 +338,6 @@ class _CashOutState extends State<CashOut> {
                           }).toList(),
                           onChanged: (newValueSelected) {
                             _onDropDownItemSelectedNetwork(newValueSelected);
-                            // if(newValueSelected == "Customer") {
-                            //   setState(() {
-                            //
-                            //   });
-                            // }
                           },
                           value: _currentSelectedNetwork,
                         ),
@@ -407,11 +403,24 @@ class _CashOutState extends State<CashOut> {
                         setState(() {
                           hasOTP = true;
                         });
-                        Get.defaultDialog(
-                          title: "Customer's Unique Code",
-                          content: Center(
-                            child: Text(cUniqueCode,style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w600)),
-                          )
+
+                        showMaterialModalBottomSheet(
+                          context: context,
+                          builder: (context) => SingleChildScrollView(
+                            controller: ModalScrollController.of(context),
+                            child: SizedBox(
+                              height: 300,
+                              child: Card(
+                                elevation: 12,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.network(customerPic,width: MediaQuery.of(context).size.width,height: 300,),
+                                  )),
+                            ),
+                          ),
                         );
                       }
                       else{

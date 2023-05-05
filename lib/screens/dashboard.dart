@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:device_apps/device_apps.dart';
+
 import 'package:easy_agent/screens/notifications.dart';
 import 'package:easy_agent/screens/summaries/balancingsummary.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
@@ -20,6 +20,7 @@ import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import '../about.dart';
 import '../controllers/authphonecontroller.dart';
@@ -58,6 +59,16 @@ class _DashboardState extends State<Dashboard> {
   Future<void> openFinancialServices() async {
     await UssdAdvanced.multisessionUssd(code: "*171*6*1*1#", subscriptionId: 1);
   }
+
+  final Uri _url = Uri.parse('https://my247kiosk.com/');
+
+
+  Future<void> _launchInBrowser() async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
+  }
+
 
   final _advancedDrawerController = AdvancedDrawerController();
   SmsQuery query = SmsQuery();
@@ -284,7 +295,7 @@ class _DashboardState extends State<Dashboard> {
     fetchFreeTrial();
     fetchAccountBalance();
     fetchMonthlyPayment();
-    print(endingDate);
+
     notificationsController.getAllNotifications(uToken);
     notificationsController.getAllUnReadNotifications(uToken);
     profileController.getUserDetails(uToken);
@@ -682,77 +693,8 @@ class _DashboardState extends State<Dashboard> {
                               const Text("Bundles"),
                             ],
                           ),
-                          onTap: () {
-                            DeviceApps.openApp("com.wMY247KIOSK_15547762");
-                            // showMaterialModalBottomSheet(
-                            //   context: context,
-                            //   builder: (context) => Card(
-                            //     elevation: 12,
-                            //     shape: const RoundedRectangleBorder(
-                            //         borderRadius: BorderRadius.only(
-                            //             topRight: Radius.circular(10),
-                            //             topLeft: Radius.circular(10))),
-                            //     child: SizedBox(
-                            //       height: 150,
-                            //       child: Column(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           const Center(
-                            //               child: Text("Select",
-                            //                   style: TextStyle(
-                            //                       fontWeight: FontWeight.bold))),
-                            //           Row(
-                            //             mainAxisAlignment:
-                            //                 MainAxisAlignment.spaceEvenly,
-                            //             children: [
-                            //               GestureDetector(
-                            //                 onTap: () {
-                            //                   Get.to(() => const Airtime());
-                            //                   // Get.back();
-                            //                 },
-                            //                 child: Column(
-                            //                   children: [
-                            //                     Image.asset(
-                            //                       "assets/images/telephone-call.png",
-                            //                       width: 50,
-                            //                       height: 50,
-                            //                     ),
-                            //                     const Padding(
-                            //                       padding: EdgeInsets.only(top: 10.0),
-                            //                       child: Text("Airtime",
-                            //                           style: TextStyle(
-                            //                               fontWeight: FontWeight.bold)),
-                            //                     )
-                            //                   ],
-                            //                 ),
-                            //               ),
-                            //               GestureDetector(
-                            //                 onTap: () {
-                            //                   Get.to(() => const PayToMerchant());
-                            //                 },
-                            //                 child: Column(
-                            //                   children: [
-                            //                     Image.asset(
-                            //                       "assets/images/internet.png",
-                            //                       width: 50,
-                            //                       height: 50,
-                            //                     ),
-                            //                     const Padding(
-                            //                       padding: EdgeInsets.only(top: 10.0),
-                            //                       child: Text("Internet Bundle",
-                            //                           style: TextStyle(
-                            //                               fontWeight: FontWeight.bold)),
-                            //                     )
-                            //                   ],
-                            //                 ),
-                            //               ),
-                            //             ],
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // );
+                          onTap: () async{
+                            await _launchInBrowser();
                           },
                         ),
                       ),
@@ -988,7 +930,7 @@ class _DashboardState extends State<Dashboard> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              const Text("Balancing"),
+                              const Text("ReBalancing"),
                             ],
                           ),
                           onTap: () {

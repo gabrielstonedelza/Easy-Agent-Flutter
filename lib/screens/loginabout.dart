@@ -53,7 +53,7 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
           Image.asset("assets/images/logo.png",width: 70,height: 70,),
           const Padding(
             padding: EdgeInsets.only(top:8.0,left: 18),
-            child: Center(child: Text("in partnership with Ghana Bankers Association of Ghana(ABAG)",style: TextStyle(fontWeight: FontWeight.bold),)),
+            child: Center(child: Text("in partnership with Agent Banks Association of Ghana(ABAG)",style: TextStyle(fontWeight: FontWeight.bold),)),
           ),
           const SizedBox(height: 20,),
           Image.asset("assets/images/abaglogo.png",width: 70,height: 70,),

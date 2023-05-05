@@ -37,7 +37,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   telephony: ^0.2.0
   animate_do:
-  get_time_ago: ^1.1.6
   ussd_advanced: ^1.0.0
   sim_data_plus: ^0.1.4
   ussd_service:
@@ -60,12 +59,14 @@ dependencies:
   sms_autofill: ^2.3.0
   neopop: ^1.0.2
   flutter_advanced_drawer: ^1.3.4
-  device_apps: ^2.1.1
   grouped_list:
 
   flutter_local_notifications: ^11.0.1
   flutter_phone_direct_caller: ^2.1.1
   device_info_plus: ^8.2.0
+  dio:
+  image_picker:
+  image_cropper:
 
 dev_dependencies:
   flutter_test:

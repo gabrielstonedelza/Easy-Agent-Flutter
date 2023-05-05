@@ -104,7 +104,6 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
 
   var _currentSelectedBank = "Select bank";
 
-  late final TextEditingController branchController;
   late final TextEditingController phone;
   late final TextEditingController accountName;
   late final TextEditingController accountNumber;
@@ -126,7 +125,6 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
       "bank": _currentSelectedBank,
       "customer": phone.text.trim(),
       "account_name": accountName.text.trim(),
-      "branch": branchController.text.trim(),
 
     });
     if(res.statusCode == 201){
@@ -154,7 +152,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
         uToken = storage.read("token");
       });
     }
-    branchController = TextEditingController();
+
     phone = TextEditingController();
     accountName = TextEditingController();
     accountNumber = TextEditingController();
@@ -163,7 +161,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
   @override
   void dispose(){
     super.dispose();
-    branchController.dispose();
+
     phone.dispose();
     accountName.dispose();
     accountNumber.dispose();
@@ -259,23 +257,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                       },
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      focusNode: branchFocusNode,
-                      controller: branchController,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Branch"),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter branch";
-                        }
-                      },
-                    ),
-                  ),
+
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(

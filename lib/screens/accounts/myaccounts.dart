@@ -149,7 +149,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("You have not added an account today",style: TextStyle(fontWeight: FontWeight.bold),),
+            const Text("You have not added an account for today",style: TextStyle(fontWeight: FontWeight.bold),),
             TextButton(
               onPressed: (){
                 Get.to(() => const AddAccountBalance());
