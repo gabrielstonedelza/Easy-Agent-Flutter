@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
-
+import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
@@ -31,6 +34,10 @@ class _PayToMerchantState extends State<PayToMerchant> {
   late final TextEditingController _amountController;
   late final TextEditingController _merchantIdController;
   late final TextEditingController _referenceController;
+
+  late String uToken = "";
+  final storage = GetStorage();
+  bool isLoading = false;
   FocusNode amountFocusNode = FocusNode();
   FocusNode merchantIdFocusNode = FocusNode();
   FocusNode referenceFocusNode = FocusNode();
@@ -39,12 +46,127 @@ class _PayToMerchantState extends State<PayToMerchant> {
     UssdAdvanced.multisessionUssd(code: "*171*1*2*$merchantId*$amount*$reference#",subscriptionId: 1);
   }
 
+  late List accountBalanceDetailsToday = [];
+  late List lastItem = [];
+  late double physical = 0.0;
+  late double mtn = 0.0;
+  late double airteltigo = 0.0;
+  late double vodafone = 0.0;
+  late double eCash = 0.0;
+  late double mtnNow = 0.0;
+  late double airtelTigoNow = 0.0;
+  late double vodafoneNow = 0.0;
+  late double physicalNow = 0.0;
+  late double eCashNow = 0.0;
+  bool isMtn = false;
+
+  processPayToMerchant() async {
+    const registerUrl = "https://fnetagents.xyz/add_pay_to/";
+    final myLink = Uri.parse(registerUrl);
+    final res = await http.post(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $uToken"
+    }, body: {
+      "amount": _amountController.text.trim(),
+      "customer": _merchantIdController.text.trim(),
+      "pay_to_type": "Merchant",
+    });
+
+    if (res.statusCode == 201) {
+      mtn = mtnNow - double.parse(_amountController.text);
+      physical = physicalNow + double.parse(_amountController.text);
+      airteltigo = airtelTigoNow;
+      vodafone = vodafoneNow;
+
+      addAccountsToday();
+
+      Get.snackbar("Congratulations", "Transaction was successful",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: snackBackground,
+          duration: const Duration(seconds: 5));
+      dialPayToMerchant(_merchantIdController.text.trim(),_amountController.text.trim(),_referenceController.text.trim());
+
+      Get.offAll(() => const Dashboard());
+    } else {
+
+      Get.snackbar("Deposit Error", "something went wrong please try again",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: warning);
+    }
+  }
+
+  Future<void> fetchAccountBalance() async {
+    const postUrl =
+        "https://fnetagents.xyz/get_my_account_balance_started_today/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      accountBalanceDetailsToday.assignAll(allPosts);
+      setState(() {
+        isLoading = false;
+        lastItem.assign(accountBalanceDetailsToday.last);
+        physicalNow = double.parse(lastItem[0]['physical']);
+        mtnNow = double.parse(lastItem[0]['mtn_e_cash']);
+        airtelTigoNow = double.parse(lastItem[0]['tigo_airtel_e_cash']);
+        vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
+        eCashNow = double.parse(lastItem[0]['mtn_e_cash']) +
+            double.parse(lastItem[0]['tigo_airtel_e_cash']) +
+            double.parse(lastItem[0]['vodafone_e_cash']);
+      });
+    } else {
+      // print(res.body);
+    }
+  }
+
+  addAccountsToday() async {
+    const accountUrl = "https://fnetagents.xyz/add_balance_to_start/";
+    final myLink = Uri.parse(accountUrl);
+    http.Response response = await http.post(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $uToken"
+    }, body: {
+      "physical": physical.toString(),
+      "mtn_e_cash": mtn.toString(),
+      "tigo_airtel_e_cash": airteltigo.toString(),
+      "vodafone_e_cash": vodafone.toString(),
+      "isStarted": "True",
+    });
+    if (response.statusCode == 201) {
+      Get.snackbar("Success", "You accounts is updated",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: snackBackground);
+
+      // Get.offAll(() => const Dashboard());
+    } else {
+      Get.snackbar("Account", "something happened",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: warning);
+    }
+  }
+
   @override
   void initState(){
     super.initState();
+    if (storage.read("token") != null) {
+      setState(() {
+        uToken = storage.read("token");
+      });
+    }
     _amountController = TextEditingController();
     _merchantIdController = TextEditingController();
     _referenceController = TextEditingController();
+    fetchAccountBalance();
   }
 
   @override
@@ -136,8 +258,17 @@ class _PayToMerchantState extends State<PayToMerchant> {
                       if (!_formKey.currentState!.validate()) {
                         return;
                       } else {
-                        dialPayToMerchant(_merchantIdController.text.trim(),_amountController.text.trim(),_referenceController.text.trim());
-                        Get.offAll(() => const Dashboard());
+                        if(int.parse(_amountController.text) > mtnNow){
+                          Get.snackbar("Amount Error", "Amount is greater than your Mtn Ecash,please check",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5));
+                          return;
+                        }
+                        else{
+                          processPayToMerchant();
+                        }
                       }
                     },
                     decoration: const NeoPopTiltedButtonDecoration(

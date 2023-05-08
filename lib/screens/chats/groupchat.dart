@@ -75,7 +75,7 @@ class _GroupChatState extends State<GroupChat> {
       });
     }
     fetchAllGroupMessages();
-    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       fetchAllGroupMessages();
     });
   }

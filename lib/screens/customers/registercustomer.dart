@@ -70,6 +70,13 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
   }
 
   late String customerCode = "";
+  bool canTakeCustomersPicture = false;
+  final List pictureOptions = [
+    "Please select Yes Or No for picture",
+    "Yes",
+    "No"
+  ];
+  var _currentSelectedPictureOption = "Please select Yes Or No for picture";
 
   @override
   void initState(){
@@ -116,8 +123,8 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
           backgroundColor: snackBackground);
       String telnum = phoneController.text;
       telnum = telnum.replaceFirst("0", '+233');
-      sendSms.sendMySms(telnum,"Easy Agent",
-          "Welcome ${name.text}, you are now registered on Easy Agent App.Your unique code for transactions is ($customerCode),please do not share this code with anyone,store it somewhere on your phone and delete this messages.For more information please kindly call 0244950505.");
+      sendSms.sendMySms(telnum,"EasyAgent",
+          "Welcome ${name.text}, you are now registered on Easy Agent App.Your unique code for transactions is ($customerCode),please do not share this code with anyone,store it somewhere on your phone and delete this messages.For more information please kindly call 0550222888.");
       Get.offAll(()=>const Dashboard());
     }
     else{
@@ -199,7 +206,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
     }
   }
 
-  void _updateAndUploadPhoto(File file) async {
+  void _registerCustomerWithPicture(File file) async {
     try {
       //updating user profile details
       String fileName = file.path.split('/').last;
@@ -226,7 +233,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
         String telnum = phoneController.text;
         telnum = telnum.replaceFirst("0", '+233');
         sendSms.sendMySms(telnum,"EasyAgent",
-            "Welcome ${name.text}, you are now registered on Easy Agent App.For more information please kindly call 0244950505.");
+            "Welcome ${name.text}, you are now registered on Easy Agent App.For more information please kindly call 0550222888.");
         Get.offAll(() => const Dashboard());
       }
       else{
@@ -245,6 +252,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
           backgroundColor: Colors.red);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -315,79 +323,121 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  !hasImageData ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Take customer's picture"),
-                      IconButton(
-                        onPressed: (){
-                          Get.defaultDialog(
-                              buttonColor: primaryColor,
-                              title: "Select",
-                              content: Row(
-                                children: [
-                                  Expanded(
-                                      child: Column(
-                                        children: [
-                                          GestureDetector(
-                                            child: const Icon(Icons.image,size: 30,),
-                                            onTap: () {
-                                              _getFromGallery();
-                                              Get.back();
-                                            },
-                                          ),
-                                          const SizedBox(height: 10),
-                                          const Text(
-                                            "Gallery",
-                                            style: TextStyle(
-                                                // color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15),
-                                          )
-                                        ],
-                                      )),
-                                  Expanded(
-                                      child: Column(
-                                        children: [
-                                          GestureDetector(
-                                            child: const Icon(Icons.camera_alt,size: 30,),
-                                            onTap: () {
-                                              _getFromCamera();
-                                              Get.back();
-                                            },
-                                          ),
-                                          const SizedBox(height: 10),
-                                          const Text(
-                                            "Camera",
-                                            style: TextStyle(
-                                                // color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15),
-                                          )
-                                        ],
-                                      )),
-                                ],
-                              )
-                          );
-                        },
-                        icon: const Icon(Icons.camera_alt_outlined,size: 30,),
-                      )
-                    ],
-                  ) : Card(
-                    elevation: 12,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)
-                    ),
-                    child: SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: Image.file(image!),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: DropdownButton(
+                          hint: const Text("Please select Yes Or No for picture"),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          // style: const TextStyle(
+                          //     color: Colors.black, fontSize: 20),
+                          items: pictureOptions.map((dropDownStringItem) {
+                            return DropdownMenuItem(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected) {
+                            if(newValueSelected == "Yes"){
+                              setState(() {
+                                canTakeCustomersPicture = true;
+                              });
+                            }
+                            else{
+                              setState(() {
+                                canTakeCustomersPicture = false;
+                              });
+                            }
+                            _onDropDownItemSelectedPictureOption(newValueSelected);
+                          },
+                          value: _currentSelectedPictureOption,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 30),
-
-                  !isInSystem ? isPosting  ? const LoadingUi() : hasImageData ? NeoPopTiltedButton(
+                  const SizedBox(height: 10),
+                  canTakeCustomersPicture ? Column(
+                    children: [
+                      !hasImageData  ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Take customer's picture"),
+                          IconButton(
+                            onPressed: (){
+                              Get.defaultDialog(
+                                  buttonColor: primaryColor,
+                                  title: "Select",
+                                  content: Row(
+                                    children: [
+                                      Expanded(
+                                          child: Column(
+                                            children: [
+                                              GestureDetector(
+                                                child: const Icon(Icons.image,size: 30,),
+                                                onTap: () {
+                                                  _getFromGallery();
+                                                  Get.back();
+                                                },
+                                              ),
+                                              const SizedBox(height: 10),
+                                              const Text(
+                                                "Gallery",
+                                                style: TextStyle(
+                                                    // color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15),
+                                              )
+                                            ],
+                                          )),
+                                      Expanded(
+                                          child: Column(
+                                            children: [
+                                              GestureDetector(
+                                                child: const Icon(Icons.camera_alt,size: 30,),
+                                                onTap: () {
+                                                  _getFromCamera();
+                                                  Get.back();
+                                                },
+                                              ),
+                                              const SizedBox(height: 10),
+                                              const Text(
+                                                "Camera",
+                                                style: TextStyle(
+                                                    // color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15),
+                                              )
+                                            ],
+                                          )),
+                                    ],
+                                  )
+                              );
+                            },
+                            icon: const Icon(Icons.camera_alt_outlined,size: 30,),
+                          )
+                        ],
+                      ) :
+                      Card(
+                        elevation: 12,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                        child: SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: Image.file(image!),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ) : Container(),
+                  !isInSystem ? isPosting  ? const LoadingUi() : NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
                       _startPosting();
@@ -399,14 +449,22 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       if (!_formKey.currentState!.validate()) {
                         return;
                       } else {
-                        if(image == null){
+                        if(image == null && _currentSelectedPictureOption == "Yes"){
                           Get.snackbar("Customer picture Error", "please upload customers picture",
                               colorText: defaultWhite,
                               snackPosition: SnackPosition.TOP,
                               backgroundColor: Colors.red);
                           return;
                         }
-                        _updateAndUploadPhoto(image!);
+                        if(_currentSelectedPictureOption == "Please select Yes Or No for picture"){
+                          Get.snackbar("Customer picture Error", "please upload yes or no",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: Colors.red);
+                          return;
+                        }
+                        canTakeCustomersPicture ?
+                        _registerCustomerWithPicture(image!) : registerCustomer();
                       }
                     },
                     decoration: const NeoPopTiltedButtonDecoration(
@@ -425,7 +483,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                           fontSize: 20,
                           color: Colors.white)),
                     ),
-                  ) :Container():Container(),
+                  ) :Container(),
                 ],
               ),
             ),
@@ -433,6 +491,12 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
         ],
       ),
     );
+  }
+
+  void _onDropDownItemSelectedPictureOption(newValueSelected) {
+    setState(() {
+      _currentSelectedPictureOption = newValueSelected;
+    });
   }
 
   InputDecoration buildInputDecoration(String text) {

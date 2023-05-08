@@ -92,7 +92,7 @@ class _PrivateChatState extends State<PrivateChat> {
     }
 
     fetchAllPrivateMessages();
-    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       fetchAllPrivateMessages();
     });
   }

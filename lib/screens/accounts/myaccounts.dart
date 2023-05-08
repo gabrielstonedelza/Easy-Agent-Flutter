@@ -56,7 +56,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       });
     }
     fetchAccountBalance();
-    print(reversedAccountBalanceToday);
+
   }
 
 
@@ -66,12 +66,12 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       appBar: AppBar(
         title: const Text("My Account Today"),
         actions: [
-          IconButton(
+          accountBalanceDetailsToday.isNotEmpty ? IconButton(
             onPressed: (){
               Get.to(()=> const UpdateAccountBalance());
             },
             icon: const Icon(Icons.edit,size: 30,),
-          )
+          ) : Container()
         ],
       ),
       body: isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView.builder(

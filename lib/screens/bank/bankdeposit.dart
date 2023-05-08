@@ -536,7 +536,8 @@ class _BankDepositState extends State<BankDeposit> {
                   ): isCustomer ? const Text("Please wait fetching customer's banks"):Container(),
                   isCustomer && isFetching ? Column(
                     children: [
-                      accountNumberSelected ? Container() : Padding(
+                      accountNumberSelected ? Container() :
+                      Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: Container(
                           decoration: BoxDecoration(

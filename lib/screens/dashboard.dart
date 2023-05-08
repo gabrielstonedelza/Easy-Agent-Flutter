@@ -8,6 +8,7 @@ import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';
 import 'package:easy_agent/screens/summaries/momocashinsummary.dart';
 import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
 import 'package:easy_agent/screens/summaries/paymentsummary.dart';
+import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/trialandnotpaid/makepayment.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -374,17 +375,17 @@ class _DashboardState extends State<Dashboard> {
     getAllTriggeredNotifications();
 
 
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      getAllTriggeredNotifications();
-      notificationsController.getAllNotifications(uToken);
-      notificationsController.getAllUnReadNotifications(uToken);
-
-      getAllUnReadNotifications();
-      for (var i in triggered) {
-        localNotificationManager.showNotifications(
-            i['notification_title'], i['notification_message']);
-      }
-    });
+    // _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    //   getAllTriggeredNotifications();
+    //   notificationsController.getAllNotifications(uToken);
+    //   notificationsController.getAllUnReadNotifications(uToken);
+    //
+    //   getAllUnReadNotifications();
+    //   for (var i in triggered) {
+    //     localNotificationManager.showNotifications(
+    //         i['notification_title'], i['notification_message']);
+    //   }
+    // });
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       tpController.fetchFreeTrial(uToken);
@@ -520,17 +521,41 @@ class _DashboardState extends State<Dashboard> {
                       title: const Text('Logout'),
                     ),
                     const Spacer(),
+                    Container(
+                      width: 140.0,
+                      height: 140.0,
+                      margin: const EdgeInsets.only(
+                        top: 10.0,
+                        bottom: 14.0,
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      decoration: const BoxDecoration(
+                        color: Colors.black26,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Image.asset(
+                        'assets/images/png.png',
+                        width: 50,
+                        height: 50,
+                      ),
+                    ),
                     DefaultTextStyle(
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.white54,
                       ),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                        ),
-                        child: const Text(
-                            'App created by Havens Software Development'),
+                      child: Column(
+                        children: [
+                          const Text(
+                              'App created by Havens Software Development'),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 16.0,
+                            ),
+                            child: const Text(
+                                '+233597565022'),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -617,81 +642,13 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            showMaterialModalBottomSheet(
-                              context: context,
-                              builder: (context) => Card(
-                                elevation: 12,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(10),
-                                        topLeft: Radius.circular(10))),
-                                child: SizedBox(
-                                  height: 150,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Center(
-                                          child: Text("Select",
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              Get.to(() => const PayToAgent());
-                                              // Get.back();
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Image.asset(
-                                                  "assets/images/boy.png",
-                                                  width: 50,
-                                                  height: 50,
-                                                ),
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10.0),
-                                                  child: Text("Agent",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Get.to(
-                                                  () => const PayToMerchant());
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Image.asset(
-                                                  "assets/images/cashier.png",
-                                                  width: 50,
-                                                  height: 50,
-                                                ),
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10.0),
-                                                  child: Text("Merchant",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
+                            tpController.accountBalanceDetailsToday.isNotEmpty ?
+                            Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5));
+                            // Get.to(() => const PayToSummary());
                           },
                         ),
                       ),
