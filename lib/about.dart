@@ -3,7 +3,6 @@ import 'package:easy_agent/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatefulWidget {
