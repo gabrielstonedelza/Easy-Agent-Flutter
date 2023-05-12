@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:easy_agent/screens/notifications.dart';
+import 'package:easy_agent/screens/paymentandrebalancing.dart';
+import 'package:easy_agent/screens/requestfromowner.dart';
 import 'package:easy_agent/screens/summaries/balancingsummary.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
 import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';
@@ -9,6 +11,7 @@ import 'package:easy_agent/screens/summaries/momocashinsummary.dart';
 import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
 import 'package:easy_agent/screens/summaries/paymentsummary.dart';
 import 'package:easy_agent/screens/summaries/paytosummary.dart';
+import 'package:easy_agent/screens/summaries/requestsummary.dart';
 import 'package:easy_agent/screens/trialandnotpaid/makepayment.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -31,6 +34,8 @@ import 'accounts/myaccounts.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
 import 'chats/groupchat.dart';
+import 'chats/privatechat.dart';
+import 'commissions.dart';
 import 'customers/customeraccounts.dart';
 import 'customers/mycustomers.dart';
 import 'customers/registercustomer.dart';
@@ -150,7 +155,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   unTriggerNotifications(int id) async {
-    final requestUrl = "https://fnetagents.xyz/user_read_notifications/$id/";
+    final requestUrl = "https://fnetagents.xyz/un_trigger_notification/$id/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.put(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -158,19 +163,19 @@ class _DashboardState extends State<Dashboard> {
       "Authorization": "Token $uToken"
     }, body: {
       "notification_trigger": "Not Triggered",
+      "read": "Read",
     });
     if (response.statusCode == 200) {}
   }
 
   updateReadNotification(int id) async {
-    final requestUrl = "https://fnetagents.xyz/user_read_notifications/$id/";
+    const requestUrl = "https://fnetagents.xyz/read_notification/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.put(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
     }, body: {
-      "read": "Read",
     });
     if (response.statusCode == 200) {}
   }
@@ -371,32 +376,25 @@ class _DashboardState extends State<Dashboard> {
     profileController.getUserProfile(uToken);
     getAllTriggeredNotifications();
 
-
-    // _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-    //   getAllTriggeredNotifications();
-    //   notificationsController.getAllNotifications(uToken);
-    //   notificationsController.getAllUnReadNotifications(uToken);
-    //
-    //   getAllUnReadNotifications();
-    //   for (var i in triggered) {
-    //     localNotificationManager.showNotifications(
-    //         i['notification_title'], i['notification_message']);
-    //   }
-    // });
-
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
+      getAllTriggeredNotifications();
+      getAllUnReadNotifications();
       tpController.fetchFreeTrial(uToken);
       tpController.fetchAccountBalance(uToken);
       tpController.fetchMonthlyPayment(uToken);
+      for (var i in triggered) {
+        NotificationService().showNotifications(title:i['notification_title'], body:i['notification_message']);
+      }
+
+    });
+    _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       for (var e in triggered) {
         unTriggerNotifications(e["id"]);
       }
     });
-    localNotificationManager
-        .setOnShowNotificationReceive(onNotificationReceive);
+
   }
 
-  onNotificationReceive(ReceiveNotification notification) {}
 
   logoutUser() async {
     storage.remove("token");
@@ -429,8 +427,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return  tpController.freeTrialEnded && tpController.monthEnded ? const MakeMonthlyPayment() : phoneNotAuthenticated
-        ?  AdvancedDrawer(
+    return   phoneNotAuthenticated ?  AdvancedDrawer(
             backdropColor: snackBackground,
             controller: _advancedDrawerController,
             animationCurve: Curves.easeInOut,
@@ -542,16 +539,13 @@ class _DashboardState extends State<Dashboard> {
                         color: Colors.white54,
                       ),
                       child: Column(
-                        children: [
-                          const Text(
-                              'App created by Havens Software Development'),
-                          Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 16.0,
-                            ),
-                            child: const Text(
-                                '+233597565022'),
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                                'App created by Havens Software Development'),
                           ),
+
                         ],
                       ),
                     ),
@@ -580,40 +574,12 @@ class _DashboardState extends State<Dashboard> {
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 backgroundColor: secondaryColor,
                 actions: [
-                  // IconButton(onPressed: () {  }, icon: const Icon(Icons.notifications),)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 23.0),
-                    child: Row(
-                      children: [
-                        GetBuilder<NotificationController>(
-                            builder: (controller) {
-                          return badges.Badge(
-                            position:
-                                badges.BadgePosition.topEnd(top: -10, end: -12),
-                            showBadge: true,
-                            badgeContent: Text(
-                                controller.notificationsUnread.length
-                                    .toString(),
-                                style: const TextStyle(color: defaultWhite)),
-                            badgeAnimation:
-                                const badges.BadgeAnimation.rotation(
-                              animationDuration: Duration(seconds: 1),
-                              colorChangeAnimationDuration:
-                                  Duration(seconds: 1),
-                              loopAnimation: false,
-                              curve: Curves.fastOutSlowIn,
-                              colorChangeAnimationCurve: Curves.easeInCubic,
-                            ),
-                            child: GestureDetector(
-                                onTap: () {
-                                  Get.to(() => const Notifications());
-                                },
-                                child: const Icon(Icons.notifications)),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
+                  IconButton(
+                    onPressed: (){
+                      Get.to(() => const Commissions());
+                    },
+                    icon: Image.asset("assets/images/commission.png"),
+                  )
                 ],
               ),
               body:  ListView(
@@ -943,11 +909,12 @@ class _DashboardState extends State<Dashboard> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              const Text("Payment"),
+                              const Text("Payment &"),
+                              const Text("Rebalancing"),
                             ],
                           ),
                           onTap: () {
-                            Get.to(() => const PaymentSummary());
+                            Get.to(() => const PaymentAndReBalancing());
                           },
                         ),
                       ),
@@ -956,52 +923,21 @@ class _DashboardState extends State<Dashboard> {
                           child: Column(
                             children: [
                               Image.asset(
-                                "assets/images/law.png",
+                                "assets/images/groupchat.png",
                                 width: 70,
                                 height: 70,
                               ),
                               const SizedBox(
                                 height: 10,
                               ),
-                              const Text("ReBalancing"),
+                              const Text("Chat"),
                             ],
                           ),
                           onTap: () {
-                            Get.to(() => const BalancingSummary());
+                            Get.to(()=> PrivateChat());
                           },
                         ),
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                "assets/images/exchanging.png",
-                                width: 70,
-                                height: 70,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Floats"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const Floats());
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
                       Expanded(
                         child: GestureDetector(
                           child: Column(
@@ -1022,26 +958,17 @@ class _DashboardState extends State<Dashboard> {
                           },
                         ),
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                "assets/images/groupchat.png",
-                                width: 70,
-                                height: 70,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Chat"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const GroupChat());
-                          },
-                        ),
-                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Divider(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
                       Expanded(
                         child: GestureDetector(
                           child: Column(
@@ -1061,7 +988,47 @@ class _DashboardState extends State<Dashboard> {
                              Get.to(() => const MyAccountDashboard());
                           },
                         ),
-                      )
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                "assets/images/ewallet.png",
+                                width: 70,
+                                height: 70,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text("Request"),
+                            ],
+                          ),
+                          onTap: () {
+                            Get.to(() => const RequestSummary());
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                "assets/images/notification1.png",
+                                width: 70,
+                                height: 70,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text("Notifications"),
+                            ],
+                          ),
+                          onTap: () {
+                            Get.to(() => const Notifications());
+                          },
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(
@@ -1069,29 +1036,27 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
-              floatingActionButton: !tpController.freeTrialEnded ? FloatingActionButton(
-                backgroundColor:defaultWhite,
-                onPressed: (){
-                  Get.defaultDialog(
-                      buttonColor: secondaryColor,
-                      title: "Trial Alert",
-                      content: Column(
-                        children: [
-                          const Text("You are using a trial version of Easy Agent which is ending on "),
-                          Padding(
-                            padding: const EdgeInsets.only(top:18.0),
-                            child: Text(tpController.endingDate,style: const TextStyle(fontWeight: FontWeight.bold),),
-                          )
-                        ],
-                      )
-                  );
-                },
-                child: Image.asset("assets/images/freetrial.png"),
-              ):Container(),
+              // floatingActionButton: FloatingActionButton(
+              //   backgroundColor:defaultWhite,
+              //   onPressed: (){
+              //     Get.defaultDialog(
+              //         buttonColor: secondaryColor,
+              //         title: "Trial Alert",
+              //         content: Column(
+              //           children: [
+              //             const Text("You are using a trial version of Easy Agent which is ending on "),
+              //             Padding(
+              //               padding: const EdgeInsets.only(top:18.0),
+              //               child: Text(tpController.endingDate,style: const TextStyle(fontWeight: FontWeight.bold),),
+              //             )
+              //           ],
+              //         )
+              //     );
+              //   },
+              //   child: Image.asset("assets/images/freetrial.png"),
+              // ),
             )
-    )
-        :
-    Scaffold(
+    ) : Scaffold(
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

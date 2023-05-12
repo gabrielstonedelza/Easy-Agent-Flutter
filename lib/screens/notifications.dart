@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import '../controllers/notificationController.dart';
 import '../widgets/loadingui.dart';
 
 
@@ -28,6 +27,7 @@ class _NotificationsState extends State<Notifications> {
   var items;
   bool isLoading = true;
   List notifications = [];
+  late List reversedNotifications = List.of(notifications.reversed);
 
   Future<void> getAllNotifications() async {
     const url = "https://fnetagents.xyz/get_my_notifications/";

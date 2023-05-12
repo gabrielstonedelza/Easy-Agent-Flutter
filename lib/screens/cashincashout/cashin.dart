@@ -1,17 +1,21 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
+import 'package:pinput/pinput.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
+import '../sendsms.dart';
 
 class CashIn extends StatefulWidget {
   const CashIn({Key? key}) : super(key: key);
@@ -53,6 +57,7 @@ class _CashInState extends State<CashIn> {
   var _currentSelectedDepositType = "Select deposit type";
 
   late final TextEditingController _amountController;
+  late final TextEditingController _amountReceivedController;
   late final TextEditingController _customerPhoneController;
   late final TextEditingController _depositorNameController;
   late final TextEditingController _depositorNumberController;
@@ -76,6 +81,7 @@ class _CashInState extends State<CashIn> {
   late int total = 0;
   bool amountNotEqualTotal = false;
   FocusNode amountFocusNode = FocusNode();
+  FocusNode amountReceivedFocusNode = FocusNode();
   FocusNode customerPhoneFocusNode = FocusNode();
   FocusNode depositorNameFocusNode = FocusNode();
   FocusNode depositorNumberFocusNode = FocusNode();
@@ -89,6 +95,7 @@ class _CashInState extends State<CashIn> {
   FocusNode d1FocusNode = FocusNode();
   bool isCustomer = false;
   bool isDirect = false;
+  bool isMtnLoading = false;
   double totalNow = 0.0;
   bool amountIsNotEmpty = false;
 
@@ -113,6 +120,40 @@ class _CashInState extends State<CashIn> {
   late double physicalNow = 0.0;
   late double eCashNow = 0.0;
   bool isMtn = false;
+  late List allFraudsters = [];
+  bool isFraudster = false;
+  late int oTP = 0;
+  bool hasOTP  = false;
+  bool sentOTP  = false;
+  final SendSmsController sendSms = SendSmsController();
+
+  generate5digit(){
+    var rng = Random();
+    var rand = rng.nextInt(9000) + 1000;
+    oTP = rand.toInt();
+  }
+
+  Future<void> getAllFraudsters() async {
+    try {
+      const url = "https://fnetagents.xyz/get_all_fraudsters/";
+      var link = Uri.parse(url);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $uToken"
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        allFraudsters.assignAll(jsonData);
+      }
+    } catch (e) {
+      Get.snackbar("Sorry",
+          "something happened or please check your internet connection");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   processMomoDeposit() async {
     const registerUrl = "https://fnetagents.xyz/post_momo_deposit/";
@@ -128,6 +169,7 @@ class _CashInState extends State<CashIn> {
       "type": _currentSelectedDepositType,
       "amount": _amountController.text.trim(),
       "customer": _customerPhoneController.text.trim(),
+      "cash_received": _amountReceivedController.text.trim(),
       "d_200": _d200Controller.text.trim(),
       "d_100": _d100Controller.text.trim(),
       "d_50": _d50Controller.text.trim(),
@@ -247,6 +289,7 @@ class _CashInState extends State<CashIn> {
         uToken = storage.read("token");
       });
     }
+    generate5digit();
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _depositorNameController = TextEditingController();
@@ -259,8 +302,10 @@ class _CashInState extends State<CashIn> {
     _d5Controller = TextEditingController();
     _d2Controller = TextEditingController();
     _d1Controller = TextEditingController();
+    _amountReceivedController = TextEditingController();
     controller.getAllCustomers(uToken);
     fetchAccountBalance();
+    getAllFraudsters();
   }
 
   @override
@@ -278,6 +323,7 @@ class _CashInState extends State<CashIn> {
     _d5Controller.dispose();
     _d2Controller.dispose();
     _d1Controller.dispose();
+    _amountReceivedController.dispose();
   }
 
   @override
@@ -296,6 +342,41 @@ class _CashInState extends State<CashIn> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
+                      onChanged: (value){
+                        if(value.length == 10 && allFraudsters.contains(value)){
+                          setState(() {
+                            isFraudster = true;
+                          });
+                          Get.snackbar("Customer Error", "This customer is in the fraud lists.",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              duration: const Duration(seconds: 10),
+                              backgroundColor: warning);
+                          return;
+                        }
+                        else{
+                          setState(() {
+                            isFraudster = false;
+                          });
+                        }
+                      },
+                      controller: _customerPhoneController,
+                      focusNode: customerPhoneFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Customer's Number"),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter customer's number";
+                        }
+                      },
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
@@ -343,7 +424,6 @@ class _CashInState extends State<CashIn> {
                         child: DropdownButton(
                           isExpanded: true,
                           underline: const SizedBox(),
-
                           items: depositTypes.map((dropDownStringItem) {
                             return DropdownMenuItem(
                               value: dropDownStringItem,
@@ -355,11 +435,17 @@ class _CashInState extends State<CashIn> {
                             if(newValueSelected == "Direct") {
                               setState(() {
                                 isDirect = true;
+                                isMtnLoading = false;
+                                sentOTP = false;
                               });
                             }
-                            else{
+                            if(newValueSelected == "Loading"){
+                              String num = _customerPhoneController.text.replaceFirst("0", '+233');
+                              sendSms.sendMySms(num,"EasyAgent","Your code $oTP");
                               setState(() {
                                 isDirect = false;
+                                isMtnLoading = true;
+                                sentOTP = true;
                               });
                             }
                           },
@@ -368,23 +454,30 @@ class _CashInState extends State<CashIn> {
                       ),
                     ),
                   ) : Container(),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      controller: _customerPhoneController,
-                      focusNode: customerPhoneFocusNode,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Customer's Number"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter customer's number";
-                        }
-                      },
-                    ),
-                  ),
+                  sentOTP  && !hasOTP ? const Text("An OTP was sent to the customers phone,enter it here",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),): Container(),
+                  sentOTP  && !hasOTP ? const SizedBox(height: 20,) : Container(),
+                  sentOTP && !hasOTP ? Pinput(
+                    // defaultPinTheme: defaultPinTheme,
+                    androidSmsAutofillMethod:  AndroidSmsAutofillMethod.smsRetrieverApi,
+                    validator: (pin) {
+                      if (pin?.length == 4 && pin == oTP.toString()){
+                        setState(() {
+                          hasOTP = true;
+                        });
+                      }
+                      else{
+                        setState(() {
+                          hasOTP = false;
+                        });
+                        Get.snackbar("Code Error", "you entered an invalid code",
+                            colorText: defaultWhite,
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: warning,
+                            duration: const Duration(seconds: 5));
+                      }
+                    },
+                  ): Container(),
+                  const SizedBox(height: 10,),
                   isDirect ? Column(
                     children: [
                       Padding(
@@ -417,6 +510,23 @@ class _CashInState extends State<CashIn> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Please enter depositors number";
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: TextFormField(
+                          controller: _amountReceivedController,
+                          focusNode: amountReceivedFocusNode,
+                          cursorRadius: const Radius.elliptical(10, 10),
+                          cursorWidth: 10,
+                          cursorColor: secondaryColor,
+                          decoration: buildInputDecoration("Cash Received"),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please enter amount received";
                             }
                           },
                         ),
@@ -718,7 +828,7 @@ class _CashInState extends State<CashIn> {
                   ) : Container(),
                   const SizedBox(height: 30,),
                   isPosting  ? const LoadingUi() :
-                  amountIsNotEmpty?  NeoPopTiltedButton(
+                  amountIsNotEmpty && !isFraudster ?  NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
                       _startPosting();
@@ -837,4 +947,13 @@ class _CashInState extends State<CashIn> {
           borderRadius: BorderRadius.circular(12)),
     );
   }
+  final defaultPinTheme = PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: const TextStyle(fontSize: 20, color: Colors.black,fontWeight: FontWeight.w600),
+    decoration: BoxDecoration(
+      border: Border.all(color: secondaryColor),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  );
 }

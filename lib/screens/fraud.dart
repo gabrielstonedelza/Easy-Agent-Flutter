@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:easy_agent/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,13 +23,13 @@ class _FraudState extends State<Fraud> {
   bool isLoading = true;
   late List allFraudsters = [];
 
-  Future<void> getAllFraudsters(String token) async {
+  Future<void> getAllFraudsters() async {
     try {
       const url = "https://fnetagents.xyz/get_all_fraudsters/";
       var link = Uri.parse(url);
       http.Response response = await http.get(link, headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Token $token"
+        "Authorization": "Token $uToken"
       });
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
@@ -54,7 +53,7 @@ class _FraudState extends State<Fraud> {
         uToken = storage.read("token");
       });
     }
-    getAllFraudsters(uToken);
+    getAllFraudsters();
   }
 
   @override

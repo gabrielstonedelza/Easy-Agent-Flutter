@@ -48,11 +48,7 @@ class _AllUsersState extends State<AllUsers> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // if (storage.read("username") != null) {
-    //   setState(() {
-    //     username = storage.read("username");
-    //   });
-    // }
+
     if (storage.read("token") != null) {
       setState(() {
         hasToken = true;
@@ -107,7 +103,7 @@ class _AllUsersState extends State<AllUsers> {
                           padding: const EdgeInsets.only(bottom: 1),
                           child: ListTile(
                             onTap: (){
-                              Get.to(()=> PrivateChat(receiverUserName:allUsers[i]['username'],receiverId:allUsers[i]['id'].toString()));
+                              Get.to(()=> PrivateChat());
                             },
                             leading: const CircleAvatar(
                                 backgroundColor: primaryColor,

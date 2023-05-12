@@ -1,54 +1,58 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:easy_agent/constants.dart';
-import 'package:easy_agent/screens/customers/registercustomer.dart';
-import 'package:easy_agent/screens/dashboard.dart';
-import 'package:flutter/material.dart';
 
-import 'package:get/get.dart';
+import 'package:easy_agent/constants.dart';
+import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
+import '../controllers/profilecontroller.dart';
+import '../widgets/loadingui.dart';
+import 'dashboard.dart';
 
-import '../../controllers/customerscontroller.dart';
-import '../../widgets/loadingui.dart';
-import '../sendsms.dart';
-
-
-class CustomerAccountRegistration extends StatefulWidget {
-  const CustomerAccountRegistration({Key? key}) : super(key: key);
+class RequestFromOwner extends StatefulWidget {
+  const RequestFromOwner({Key? key}) : super(key: key);
 
   @override
-  State<CustomerAccountRegistration> createState() => _UserRegistration();
+  State<RequestFromOwner> createState() => _RequestFromOwnerState();
 }
 
-class _UserRegistration extends State<CustomerAccountRegistration> {
-  final CustomersController controller = Get.find();
-  final _formKey = GlobalKey<FormState>();
+class _RequestFromOwnerState extends State<RequestFromOwner> {
+  bool isPosting = false;
+  bool isLoading = true;
+  final ProfileController controller = Get.find();
+
   void _startPosting()async{
     setState(() {
       isPosting = true;
     });
-    await Future.delayed(const Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 5));
     setState(() {
       isPosting = false;
     });
   }
 
-  bool isPosting = false;
-  late List allCustomers = [];
-  bool isLoading = true;
-  late List customersPhones = [];
-  late List customersNames = [];
-  late List customersAccountNumbers = [];
-  bool isInSystem = false;
-
-  late String uToken = "";
-  final storage = GetStorage();
-  late String username = "";
-  final SendSmsController sendSms = SendSmsController();
   bool isInterBank = false;
   bool isOtherBank = false;
+  bool isBank = false;
+  bool isNetwork = false;
+
+  final List networks = [
+    "Select Network",
+    "Mtn",
+    "AirtelTigo",
+    "Vodafone",
+  ];
+  final List requestType = [
+    "Select request type",
+    "Network",
+    "Bank"
+  ];
+
+  var _currentSelectedRequestType = "Select request type";
+  var _currentSelectedNetwork = "Select Network";
+  late final TextEditingController _amountController;
+  FocusNode amountFocusNode = FocusNode();
 
   final List bankType = [
     "Select bank type",
@@ -98,70 +102,81 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
     "Fidelity Bank",
     "Ecobank",
   ];
-
   var _currentSelectedBank = "Select bank";
+  late String uToken = "";
+  final storage = GetStorage();
+  late List supervisorDetails = [];
+  late String supervisorId = "";
+  final _formKey = GlobalKey<FormState>();
 
-  late final TextEditingController phone;
-  late final TextEditingController accountName;
-  late final TextEditingController accountNumber;
+  Future<void> fetchSuperVisorsDetails() async {
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.supervisorCode}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      supervisorDetails.assignAll(allPosts);
+      for(var i in supervisorDetails){
+        supervisorId = i['id'].toString();
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
-  FocusNode customerPhoneFocusNode = FocusNode();
-  FocusNode branchFocusNode = FocusNode();
-  FocusNode accountNumberFocusNode = FocusNode();
-  FocusNode accountNameFocusNode = FocusNode();
-
-
-  registerCustomerAccount()async{
-    const registerUrl = "https://fnetagents.xyz/register_customer_accounts/";
+  processRequest() async {
+    const registerUrl = "https://fnetagents.xyz/agent_request_from_owner/";
     final myLink = Uri.parse(registerUrl);
     final res = await http.post(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
-    }, body: {
-      "account_number": accountNumber.text.trim(),
-      "bank": _currentSelectedBank,
-      "customer": phone.text.trim(),
-      "account_name": accountName.text.trim(),
+    },
+        body: {
+          "owner": supervisorId,
+          "agent" : controller.userId,
+          "network": _currentSelectedNetwork,
+          "bank": _currentSelectedBank,
+          "amount": _amountController.text.trim(),
+        });
 
-    });
-    if(res.statusCode == 201){
-      Get.snackbar("Congratulations", "Accounts added successfully",
+    if (res.statusCode == 201) {
+
+      Get.snackbar("Congratulations", "request sent for approval",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
-          backgroundColor: snackBackground);
-      Get.offAll(()=>const Dashboard());
-    }
-    else{
+          backgroundColor: snackBackground,
+          duration: const Duration(seconds: 5));
 
-      Get.snackbar("Error", "Sorry,something happened,please try again",
+
+      Get.offAll(()=> const Dashboard());
+    } else {
+
+      Get.snackbar("Request Error", "something went wrong please try again",
           colorText: defaultWhite,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red);
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: warning);
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    if(storage.read("token") != null){
+    if (storage.read("token") != null) {
       setState(() {
         uToken = storage.read("token");
       });
     }
-
-    phone = TextEditingController();
-    accountName = TextEditingController();
-    accountNumber = TextEditingController();
-  }
-
-  @override
-  void dispose(){
-    super.dispose();
-
-    phone.dispose();
-    accountName.dispose();
-    accountNumber.dispose();
+    _amountController = TextEditingController();
+    fetchSuperVisorsDetails();
   }
 
 
@@ -169,10 +184,10 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text("Request"),
         backgroundColor: secondaryColor,
-        title: const Text("Add customer accounts"),
       ),
-      body: ListView(
+      body:isLoading ? const LoadingUi() :  ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -185,77 +200,69 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                   const SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      onChanged: (value){
-                        if(value.length == 10 && controller.customersNumbers.contains(value)){
-                          Get.snackbar("Success", "Customer is in the system",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: snackBackground);
-                          setState(() {
-                            isInSystem = true;
-                          });
-                        }
-                        else if(value.length == 10 && !controller.customersNumbers.contains(value)){
-                          Get.snackbar("Customer Error", "Customer is not in the system",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: Colors.red);
-                          setState(() {
-                            isInSystem = false;
-                          });
-                          Timer(const Duration(seconds: 3),()=> Get.to(()=> const CustomerRegistration()));
-                        }
-                      },
-                      controller: phone,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Customer's Number"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter customer phone number";
-                        }
-                      },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: DropdownButton(
+                          hint: const Text("Select request type"),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          items: requestType.map((dropDownStringItem) {
+                            return DropdownMenuItem(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected) {
+                            _onDropDownItemSelectedRequestType(newValueSelected);
+                            if(newValueSelected == "Network"){
+                              setState(() {
+                                isNetwork = true;
+                                isBank = false;
+                              });
+                            }
+                            if(newValueSelected == "Bank"){
+                              setState(() {
+                                isNetwork = false;
+                                isBank = true;
+                              });
+                            }
+                          },
+                          value: _currentSelectedRequestType,
+                        ),
+                      ),
                     ),
                   ),
-                  Padding(
+                 isNetwork ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      focusNode: accountNumberFocusNode,
-                      controller: accountNumber,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Account Number"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter account number";
-                        }
-                      },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: DropdownButton(
+                          hint: const Text("Select network"),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          items: networks.map((dropDownStringItem) {
+                            return DropdownMenuItem(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected) {
+                            _onDropDownItemSelectedNetwork(newValueSelected);
+                          },
+                          value: _currentSelectedNetwork,
+                        ),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      focusNode: accountNameFocusNode,
-                      controller: accountName,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Account Name"),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter account name";
-                        }
-                      },
-                    ),
-                  ),
-
-                  Padding(
+                  ) : Container(),
+                  isBank ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
                       decoration: BoxDecoration(
@@ -267,7 +274,6 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                           hint: const Text("Select bank type"),
                           isExpanded: true,
                           underline: const SizedBox(),
-
                           items: bankType.map((dropDownStringItem) {
                             return DropdownMenuItem(
                               value: dropDownStringItem,
@@ -293,7 +299,8 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                         ),
                       ),
                     ),
-                  ),
+                  ) : Container(),
+
                   isInterBank ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
@@ -333,7 +340,6 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                           hint: const Text("Select bank"),
                           isExpanded: true,
                           underline: const SizedBox(),
-
                           items: otherBanks.map((dropDownStringItem) {
                             return DropdownMenuItem(
                               value: dropDownStringItem,
@@ -348,9 +354,25 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                       ),
                     ),
                   ) : Container(),
-
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
+                      controller: _amountController,
+                      focusNode: amountFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Amount"),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter amount";
+                        }
+                      },
+                    ),
+                  ),
                   isPosting  ? const LoadingUi() :
-                 NeoPopTiltedButton(
+                  NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
                       _startPosting();
@@ -362,7 +384,25 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                       if (!_formKey.currentState!.validate()) {
                         return;
                       } else {
-                        registerCustomerAccount();
+                        if(isBank && _currentSelectedBank == "Select bank"){
+                          Get.snackbar("Bank Error", "please select bank",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5));
+                          return;
+                        }
+                        if(isNetwork && _currentSelectedNetwork == "Select Network"){
+                          Get.snackbar("Network Error", "please select network",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5));
+                          return;
+                        }
+                        else{
+                          processRequest();
+                        }
                       }
                     },
                     decoration: const NeoPopTiltedButtonDecoration(
@@ -376,7 +416,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                         horizontal: 70.0,
                         vertical: 15,
                       ),
-                      child: Text('Save',style: TextStyle(
+                      child: Text('Send',style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                           color: Colors.white)),
@@ -390,6 +430,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
       ),
     );
   }
+
   void _onDropDownItemSelectedBank(newValueSelected) {
     setState(() {
       _currentSelectedBank = newValueSelected;
@@ -398,6 +439,18 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
   void _onDropDownItemSelectedBankType(newValueSelected) {
     setState(() {
       _currentSelectedBankType = newValueSelected;
+    });
+  }
+
+  void _onDropDownItemSelectedNetwork(newValueSelected) {
+    setState(() {
+      _currentSelectedNetwork = newValueSelected;
+    });
+  }
+
+  void _onDropDownItemSelectedRequestType(newValueSelected) {
+    setState(() {
+      _currentSelectedRequestType = newValueSelected;
     });
   }
 
@@ -411,5 +464,4 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
           borderRadius: BorderRadius.circular(12)),
     );
   }
-
 }

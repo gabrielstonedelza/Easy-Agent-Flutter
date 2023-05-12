@@ -58,9 +58,9 @@ class _GroupChatState extends State<GroupChat> {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
       groupMessages = json.decode(jsonData);
-      // setState(() {
-      //   isLoading = false;
-      // });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -78,6 +78,12 @@ class _GroupChatState extends State<GroupChat> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       fetchAllGroupMessages();
     });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _timer.cancel();
   }
 
   @override

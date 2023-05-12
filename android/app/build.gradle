@@ -32,6 +32,9 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    defaultConfig {
+        multiDexEnabled true
+    }
     compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 

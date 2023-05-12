@@ -54,6 +54,30 @@ class _PayToAgentState extends State<PayToAgent> {
   late double physicalNow = 0.0;
   late double eCashNow = 0.0;
   bool isMtn = false;
+  late List allFraudsters = [];
+  bool isFraudster = false;
+
+  Future<void> getAllFraudsters() async {
+    try {
+      const url = "https://fnetagents.xyz/get_all_fraudsters/";
+      var link = Uri.parse(url);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $uToken"
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        allFraudsters.assignAll(jsonData);
+      }
+    } catch (e) {
+      Get.snackbar("Sorry",
+          "something happened or please check your internet connection");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   processPayToAgent() async {
     const registerUrl = "https://fnetagents.xyz/add_pay_to/";
@@ -171,6 +195,7 @@ class _PayToAgentState extends State<PayToAgent> {
     _agentPhoneController = TextEditingController();
     _referenceController = TextEditingController();
     fetchAccountBalance();
+    getAllFraudsters();
   }
 
   @override
@@ -201,6 +226,24 @@ class _PayToAgentState extends State<PayToAgent> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
+                      onChanged: (value){
+                        if(value.length == 10 && allFraudsters.contains(value)){
+                          setState(() {
+                            isFraudster = true;
+                          });
+                          Get.snackbar("Customer Error", "This customer is in the fraud lists.",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              duration: const Duration(seconds: 10),
+                              backgroundColor: warning);
+                          return;
+                        }
+                        else{
+                          setState(() {
+                            isFraudster = false;
+                          });
+                        }
+                      },
                       controller: _agentPhoneController,
                       focusNode: agentPhoneFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
@@ -252,9 +295,7 @@ class _PayToAgentState extends State<PayToAgent> {
                   const SizedBox(
                     height: 30,
                   ),
-                  isPosting
-                      ? const LoadingUi()
-                      : NeoPopTiltedButton(
+                  isPosting ? const LoadingUi() : !isFraudster ? NeoPopTiltedButton(
                           isFloating: true,
                           onTapUp: () {
                             _startPosting();
@@ -297,7 +338,7 @@ class _PayToAgentState extends State<PayToAgent> {
                                     fontSize: 20,
                                     color: Colors.white)),
                           ),
-                        ),
+                        ): Container(),
                 ],
               ),
             ),

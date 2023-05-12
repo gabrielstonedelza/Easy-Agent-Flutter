@@ -14,7 +14,6 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
-import '../accounts/addaccountbalance.dart';
 import '../customers/registercustomer.dart';
 import '../dashboard.dart';
 import '../sendsms.dart';
@@ -51,6 +50,7 @@ class _CashOutState extends State<CashOut> {
   var _currentSelectedNetwork = "Select Network";
 
   late final TextEditingController _amountController;
+  late final TextEditingController _amountPaidController;
   late final TextEditingController _customerPhoneController;
   late final TextEditingController _d200Controller;
   late final TextEditingController _d100Controller;
@@ -72,6 +72,7 @@ class _CashOutState extends State<CashOut> {
   late int total = 0;
   bool amountNotEqualTotal = false;
   FocusNode amountFocusNode = FocusNode();
+  FocusNode amountPaidFocusNode = FocusNode();
   FocusNode customerPhoneFocusNode = FocusNode();
   FocusNode d200FocusNode = FocusNode();
   FocusNode d100FocusNode = FocusNode();
@@ -112,6 +113,31 @@ class _CashOutState extends State<CashOut> {
   late String cUniqueCode = "";
   late String customerPic = "";
   late int oTP = 0;
+
+  late List allFraudsters = [];
+  bool isFraudster = false;
+
+  Future<void> getAllFraudsters() async {
+    try {
+      const url = "https://fnetagents.xyz/get_all_fraudsters/";
+      var link = Uri.parse(url);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $uToken"
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        allFraudsters.assignAll(jsonData);
+      }
+    } catch (e) {
+      Get.snackbar("Sorry",
+          "something happened or please check your internet connection");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
 
   fetchCustomer(String customerPhone)async{
@@ -258,6 +284,7 @@ class _CashOutState extends State<CashOut> {
   }
   bool hasOTP  = false;
   bool sentOTP  = false;
+
   generate5digit(){
     var rng = Random();
     var rand = rng.nextInt(9000) + 1000;
@@ -309,7 +336,9 @@ class _CashOutState extends State<CashOut> {
     }
     startTimer();
     generate5digit();
+    getAllFraudsters();
     _amountController = TextEditingController();
+    _amountPaidController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _d200Controller = TextEditingController();
     _d100Controller = TextEditingController();
@@ -336,6 +365,7 @@ class _CashOutState extends State<CashOut> {
     _d5Controller.dispose();
     _d2Controller.dispose();
     _d1Controller.dispose();
+    _amountPaidController.dispose();
   }
 
   @override
@@ -354,6 +384,70 @@ class _CashOutState extends State<CashOut> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
+                      onChanged: (value) {
+                        if(value.length == 10 && allFraudsters.contains(value)){
+                          setState(() {
+                            isFraudster = true;
+                          });
+                          Get.snackbar("Customer Error", "This customer is in the fraud lists.",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              duration: const Duration(seconds: 10),
+                              backgroundColor: warning);
+                          return;
+                        }
+                        else{
+                          setState(() {
+                            isFraudster = false;
+                          });
+                        }
+                        if (value.length == 10 &&
+                            controller.customersNumbers.contains(value)) {
+                          Get.snackbar("Success", "Customer is registered",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: snackBackground);
+                          String num = _customerPhoneController.text.replaceFirst("0", '+233');
+                          sendSms.sendMySms(num,"EasyAgent","Your code $oTP");
+                          setState(() {
+                            isCustomer = true;
+                            sentOTP = true;
+                            fetchCustomer(_customerPhoneController.text);
+                          });
+
+                        }
+                        else if (value.length == 10 &&
+                            !controller.customersNumbers.contains(value)) {
+                          Get.snackbar(
+                              "Customer Error", "Customer is not registered",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: Colors.red);
+                          setState(() {
+                            isCustomer = false;
+                            sentOTP = false;
+                          });
+                          Timer(const Duration(seconds: 3),
+                                  () => Get.to(() => const CustomerRegistration()));
+                        }
+                      },
+                      controller: _customerPhoneController,
+                      focusNode: customerPhoneFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Customer's Number"),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter customer's number";
+                        }
+                      },
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
@@ -378,53 +472,6 @@ class _CashOutState extends State<CashOut> {
                           value: _currentSelectedNetwork,
                         ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                        onChanged: (value) {
-                          if (value.length == 10 &&
-                              controller.customersNumbers.contains(value)) {
-                            Get.snackbar("Success", "Customer is registered",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.TOP,
-                                backgroundColor: snackBackground);
-                            String num = _customerPhoneController.text.replaceFirst("0", '+233');
-                            sendSms.sendMySms(num,"EasyAgent","Your code $oTP");
-                            setState(() {
-                              isCustomer = true;
-                              sentOTP = true;
-                              fetchCustomer(_customerPhoneController.text);
-                            });
-
-                          } else if (value.length == 10 &&
-                              !controller.customersNumbers.contains(value)) {
-                            Get.snackbar(
-                                "Customer Error", "Customer is not registered",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.TOP,
-                                backgroundColor: Colors.red);
-                            setState(() {
-                              isCustomer = false;
-                              sentOTP = false;
-                            });
-                            Timer(const Duration(seconds: 3),
-                                    () => Get.to(() => const CustomerRegistration()));
-                          }
-                        },
-                      controller: _customerPhoneController,
-                      focusNode: customerPhoneFocusNode,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Customer's Number"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter customer's number";
-                        }
-                      },
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -792,11 +839,28 @@ class _CashOutState extends State<CashOut> {
                               )
                             ],
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10.0),
+                            child: TextFormField(
+                              controller: _amountPaidController,
+                              focusNode: amountPaidFocusNode,
+                              cursorRadius: const Radius.elliptical(10, 10),
+                              cursorWidth: 10,
+                              cursorColor: secondaryColor,
+                              decoration: buildInputDecoration("Amount Paid"),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Please enter amount paid";
+                                }
+                              },
+                            ),
+                          ),
                         ],
                       ) : Container(),
                       const SizedBox(height: 30,),
                       isPosting  ? const LoadingUi() :
-                      amountIsNotEmpty ? NeoPopTiltedButton(
+                      amountIsNotEmpty && !isFraudster ? NeoPopTiltedButton(
                         isFloating: true,
                         onTapUp: () {
                           _startPosting();

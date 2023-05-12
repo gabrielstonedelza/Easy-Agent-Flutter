@@ -12,21 +12,17 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../../controllers/profilecontroller.dart';
+import '../../widgets/loadingui.dart';
 
 class PrivateChat extends StatefulWidget {
-  final receiverId;
-  String receiverUserName;
-  PrivateChat({Key? key,required this.receiverId,required this.receiverUserName}) : super(key: key);
+  PrivateChat({Key? key,}) : super(key: key);
 
   @override
-  State<PrivateChat> createState() => _PrivateChatState(receiverId:this.receiverId,receiverUserName:this.receiverUserName);
+  State<PrivateChat> createState() => _PrivateChatState();
 }
 
 class _PrivateChatState extends State<PrivateChat> {
   final ProfileController profileController = Get.find();
-  final receiverId;
-  String receiverUserName;
-  _PrivateChatState({required this.receiverId,required this.receiverUserName});
   late String username = "";
   String profileId = "";
   final storage = GetStorage();
@@ -38,6 +34,34 @@ class _PrivateChatState extends State<PrivateChat> {
   late final TextEditingController messageController = TextEditingController();
   final FocusNode messageFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
+  late List supervisorDetails = [];
+  late String supervisorId = "";
+  late String supervisorUsername = "";
+
+  Future<void> fetchSuperVisorsDetails() async {
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.supervisorCode}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      supervisorDetails.assignAll(allPosts);
+      for(var i in supervisorDetails){
+        supervisorId = i['id'].toString();
+        supervisorUsername = i['username'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
 
   sendPrivateMessage() async {
@@ -48,7 +72,7 @@ class _PrivateChatState extends State<PrivateChat> {
       "Authorization": "Token $uToken"
     }, body: {
       "sender": profileController.userId,
-      "receiver": receiverId,
+      "receiver": supervisorId,
       "message": messageController.text,
     });
     if (response.statusCode == 201) {
@@ -60,7 +84,7 @@ class _PrivateChatState extends State<PrivateChat> {
   }
 
   fetchAllPrivateMessages() async {
-    final url = "https://fnetagents.xyz/get_private_message/${profileController.userId}/$receiverId/";
+    final url = "https://fnetagents.xyz/get_private_message/${profileController.userId}/$supervisorId/";
     var myLink = Uri.parse(url);
     final response =
     await http.get(myLink, headers: {"Authorization": "Token $uToken"});
@@ -91,6 +115,7 @@ class _PrivateChatState extends State<PrivateChat> {
       });
     }
 
+    fetchSuperVisorsDetails();
     fetchAllPrivateMessages();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       fetchAllPrivateMessages();
@@ -103,10 +128,10 @@ class _PrivateChatState extends State<PrivateChat> {
         child:Scaffold(
             backgroundColor:Colors.grey,
             appBar: AppBar(
-              title: Text(receiverUserName),
+              title: Text(supervisorUsername),
               backgroundColor: secondaryColor,
             ),
-            body: Column(
+            body: isLoading ? const LoadingUi() : Column(
               children: [
                 Expanded(
                   child: GroupedListView<dynamic, String>(

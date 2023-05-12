@@ -21,7 +21,7 @@ class MtnDepositSummaryDetail extends StatefulWidget {
 class _MtnDepositSummaryDetailState extends State<MtnDepositSummaryDetail> {
   final deposit_date;
   _MtnDepositSummaryDetailState({required this.deposit_date});
-  late String username = "";
+
   final storage = GetStorage();
   bool hasToken = false;
   late String uToken = "";

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
@@ -101,6 +102,31 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
   late int d1 = 0;
   late int total = 0;
 
+  late List allFraudsters = [];
+  bool isFraudster = false;
+
+  Future<void> getAllFraudsters() async {
+    try {
+      const url = "https://fnetagents.xyz/get_all_fraudsters/";
+      var link = Uri.parse(url);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $uToken"
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        allFraudsters.assignAll(jsonData);
+      }
+    } catch (e) {
+      Get.snackbar("Sorry",
+          "something happened or please check your internet connection");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
 
   processWithdraw(context) async {
     const registerUrl = "https://fnetagents.xyz/post_bank_withdrawal/";
@@ -183,7 +209,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
         backgroundColor: secondaryColor,
         title: const Text("Bank Withdrawal"),
       ),
-      body: ListView(
+      body:isLoading ? const LoadingUi() : ListView(
         children: [
           const SizedBox(height: 30),
           Padding(
@@ -197,6 +223,22 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value) {
+                        if(value.length == 10 && allFraudsters.contains(value)){
+                          setState(() {
+                            isFraudster = true;
+                          });
+                          Get.snackbar("Customer Error", "This customer is in the fraud lists.",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              duration: const Duration(seconds: 10),
+                              backgroundColor: warning);
+                          return;
+                        }
+                        else{
+                          setState(() {
+                            isFraudster = false;
+                          });
+                        }
                         if (value.length == 10 &&
                             controller.customersNumbers.contains(value)) {
                           Get.snackbar("Success", "Customer is registered",

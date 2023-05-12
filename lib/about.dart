@@ -47,15 +47,45 @@ class _AboutPageState extends State<AboutPage> {
           const SizedBox(height: 20,),
           Image.asset("assets/images/forapp.png",width: 100,height: 100,),
           const SizedBox(height: 20,),
-          const Center(child: Text("Powered by",style: TextStyle(fontWeight: FontWeight.bold),)),
-          const SizedBox(height: 20,),
-          Image.asset("assets/images/logo.png",width: 70,height: 70,),
           const Padding(
-            padding: EdgeInsets.only(top:8.0,left: 18),
-            child: Center(child: Text("in partnership with Agent Banks Association of Ghana(ABAG)",style: TextStyle(fontWeight: FontWeight.bold),)),
+            padding: EdgeInsets.all(18.0),
+            child: Center(child: Text("App created by Havens Software Development, initiative of FNET",style: TextStyle(fontWeight: FontWeight.bold),)),
           ),
           const SizedBox(height: 20,),
-          Image.asset("assets/images/abaglogo.png",width: 70,height: 70,),
+          Container(
+            width: 140.0,
+            height: 140.0,
+            margin: const EdgeInsets.only(
+              top: 10.0,
+              bottom: 14.0,
+            ),
+            clipBehavior: Clip.antiAlias,
+            decoration: const BoxDecoration(
+              color: Colors.black26,
+              shape: BoxShape.circle,
+            ),
+            child: Image.asset(
+              'assets/images/png.png',
+              width: 50,
+              height: 50,
+            ),
+          ),
+          DefaultTextStyle(
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.white54,
+            ),
+            child: Column(
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                      'App created by Havens Software Development'),
+                ),
+
+              ],
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

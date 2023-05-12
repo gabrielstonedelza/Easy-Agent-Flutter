@@ -77,17 +77,17 @@ class _LoginViewState extends State<LoginView> {
               child: const Text("About",style: TextStyle(color: secondaryColor,fontSize: 18,fontWeight: FontWeight.bold),),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right:8.0),
-            child: TextButton(
-                onPressed: () {
-                  Get.to(() => const AgentPreRegistration());
-                },
-                child: const Text(
-                  "Register",
-                  style: TextStyle(color: secondaryColor,fontSize: 18,fontWeight: FontWeight.bold),
-                )),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.only(right:8.0),
+          //   child: TextButton(
+          //       onPressed: () {
+          //         Get.to(() => const AgentPreRegistration());
+          //       },
+          //       child: const Text(
+          //         "Register",
+          //         style: TextStyle(color: secondaryColor,fontSize: 18,fontWeight: FontWeight.bold),
+          //       )),
+          // )
         ],
       ),
       body: ListView(

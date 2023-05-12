@@ -399,6 +399,30 @@ class _BankDepositState extends State<BankDeposit> {
       ),
     );
   }
+  late List allFraudsters = [];
+  bool isFraudster = false;
+
+  Future<void> getAllFraudsters() async {
+    try {
+      const url = "https://fnetagents.xyz/get_all_fraudsters/";
+      var link = Uri.parse(url);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $uToken"
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        allFraudsters.assignAll(jsonData);
+      }
+    } catch (e) {
+      Get.snackbar("Sorry",
+          "something happened or please check your internet connection");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState(){
@@ -422,6 +446,7 @@ class _BankDepositState extends State<BankDeposit> {
     _d2Controller = TextEditingController();
     _d1Controller = TextEditingController();
     controller.getAllCustomers(uToken);
+    getAllFraudsters();
   }
 
   @override
@@ -461,6 +486,22 @@ class _BankDepositState extends State<BankDeposit> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value) {
+                        if(value.length == 10 && allFraudsters.contains(value)){
+                          setState(() {
+                            isFraudster = true;
+                          });
+                          Get.snackbar("Customer Error", "This customer is in the fraud lists.",
+                              colorText: defaultWhite,
+                              snackPosition: SnackPosition.TOP,
+                              duration: const Duration(seconds: 10),
+                              backgroundColor: warning);
+                          return;
+                        }
+                        else{
+                          setState(() {
+                            isFraudster = false;
+                          });
+                        }
                         if (value.length == 10 &&
                             controller.customersNumbers.contains(value)) {
                           Get.snackbar("Success", "Customer is registered",
@@ -925,7 +966,7 @@ class _BankDepositState extends State<BankDeposit> {
                   ) : Container(),
                   const SizedBox(height: 30,),
                   isPosting  ? const LoadingUi() :
-                  isCustomer ? NeoPopTiltedButton(
+                  isCustomer && !isFraudster ? NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
 

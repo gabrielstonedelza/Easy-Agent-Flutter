@@ -1,4 +1,7 @@
 
+import 'package:easy_agent/controllers/localnotificationcontroller.dart';
+import 'package:easy_agent/screens/dashboard.dart';
+import 'package:easy_agent/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
@@ -31,6 +34,7 @@ void main() async{
   Get.put(NotificationController());
   Get.put(AuthPhoneController());
   Get.put(TrialAndMonthlyPaymentController());
+  NotificationService().initNotification();
   runApp(const MyApp());
 }
 
@@ -46,12 +50,27 @@ class _MyAppState extends State<MyApp> {
   String _message = "";
   final telephony = Telephony.instance;
   final AuthPhoneController phoneController = Get.find();
+  final storage = GetStorage();
+  bool hasToken = false;
+  late String uToken = "";
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
     phoneController.fetchDeviceInfo();
+    if (storage.read("token") != null) {
+      uToken = storage.read("token");
+      setState(() {
+        hasToken = true;
+      });
+    }
+
+    else{
+      setState(() {
+        hasToken = false;
+      });
+    }
   }
 
   onMessage(SmsMessage message) async {
@@ -105,7 +124,7 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: secondaryColor,
         )
       ),
-      home: const SplashScreen(),
+      home:hasToken ? const Dashboard() : const LoginView(),
     );
   }
 }
