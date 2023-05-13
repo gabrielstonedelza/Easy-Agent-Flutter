@@ -7,8 +7,10 @@ import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
+import '../../controllers/customerscontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
+import '../sendsms.dart';
 
 class PayToMerchant extends StatefulWidget {
   const PayToMerchant({Key? key}) : super(key: key);
@@ -34,13 +36,16 @@ class _PayToMerchantState extends State<PayToMerchant> {
   late final TextEditingController _amountController;
   late final TextEditingController _merchantIdController;
   late final TextEditingController _referenceController;
+  late final TextEditingController _depositorPhoneController;
 
   late String uToken = "";
   final storage = GetStorage();
   bool isLoading = false;
   FocusNode amountFocusNode = FocusNode();
+  FocusNode agentPhoneFocusNode = FocusNode();
   FocusNode merchantIdFocusNode = FocusNode();
   FocusNode referenceFocusNode = FocusNode();
+  FocusNode depositorPhoneFocusNode = FocusNode();
 
   Future<void> dialPayToMerchant(String merchantId,String amount,String reference) async {
     UssdAdvanced.multisessionUssd(code: "*171*1*2*$merchantId*$amount*$reference#",subscriptionId: 1);
@@ -59,6 +64,8 @@ class _PayToMerchantState extends State<PayToMerchant> {
   late double physicalNow = 0.0;
   late double eCashNow = 0.0;
   bool isMtn = false;
+  final CustomersController controller = Get.find();
+  final SendSmsController sendSms = SendSmsController();
 
 
   processPayToMerchant() async {
@@ -70,6 +77,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
     }, body: {
       "amount": _amountController.text.trim(),
       "customer": _merchantIdController.text.trim(),
+      "depositor_number": _depositorPhoneController.text.trim(),
       "pay_to_type": "Merchant",
     });
 
@@ -80,6 +88,8 @@ class _PayToMerchantState extends State<PayToMerchant> {
       vodafone = vodafoneNow;
 
       addAccountsToday();
+      String num = _depositorPhoneController.text.replaceFirst("0", '+233');
+      sendSms.sendMySms(num, "EasyAgent","Amount GHC${_amountController.text} paid to merchant id ${_merchantIdController.text} transaction was successful,");
 
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
@@ -167,7 +177,9 @@ class _PayToMerchantState extends State<PayToMerchant> {
     _amountController = TextEditingController();
     _merchantIdController = TextEditingController();
     _referenceController = TextEditingController();
+    _depositorPhoneController = TextEditingController();
     fetchAccountBalance();
+    controller.getAllFraudsters(uToken);
   }
 
   @override
@@ -176,6 +188,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
     _amountController.dispose();
     _merchantIdController.dispose();
     _referenceController.dispose();
+    _depositorPhoneController.dispose();
   }
 
   @override
@@ -241,6 +254,23 @@ class _PayToMerchantState extends State<PayToMerchant> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Please enter reference";
+                        }
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
+                      controller: _depositorPhoneController,
+                      focusNode: depositorPhoneFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Depositor Phone"),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter phone";
                         }
                       },
                     ),

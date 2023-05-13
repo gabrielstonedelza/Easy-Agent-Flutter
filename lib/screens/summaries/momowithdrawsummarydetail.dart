@@ -45,7 +45,7 @@ class _MtnWithdrawalSummaryDetailState extends State<MtnWithdrawalSummaryDetail>
       for(var i in allMtnDeposits){
         if(i['date_of_withdrawal'].toString().split("T").first == date_of_withdrawal){
           withdrawalDates.add(i);
-          sum = sum + double.parse(i['amount']);
+          sum = sum + double.parse(i['cash_paid']);
         }
       }
     }
@@ -103,7 +103,8 @@ class _MtnWithdrawalSummaryDetailState extends State<MtnWithdrawalSummaryDetail>
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                buildRow("Amount: ", "amount"),
+                                buildRow("Cash Paid: ", "cash_paid"),
+                                buildRow("Amount Received: ", "amount_received"),
                                 buildRow("Network: ", "network"),
                                 items["d_200"] == 0 ? Container():
                                 Row(

@@ -3,16 +3,12 @@ import 'dart:convert';
 
 import 'package:easy_agent/screens/notifications.dart';
 import 'package:easy_agent/screens/paymentandrebalancing.dart';
-import 'package:easy_agent/screens/requestfromowner.dart';
-import 'package:easy_agent/screens/summaries/balancingsummary.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
 import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';
 import 'package:easy_agent/screens/summaries/momocashinsummary.dart';
 import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
-import 'package:easy_agent/screens/summaries/paymentsummary.dart';
 import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/summaries/requestsummary.dart';
-import 'package:easy_agent/screens/trialandnotpaid/makepayment.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_agent/constants.dart';
@@ -33,16 +29,14 @@ import '../controllers/trialandmonthlypaymentcontroller.dart';
 import 'accounts/myaccounts.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
-import 'chats/groupchat.dart';
 import 'chats/privatechat.dart';
 import 'commissions.dart';
 import 'customers/customeraccounts.dart';
 import 'customers/mycustomers.dart';
 import 'customers/registercustomer.dart';
-import 'floats.dart';
-import 'fraud.dart';
+import 'customerservice/customerservice.dart';
+import 'customerservice/fraud.dart';
 import 'login.dart';
-import 'package:badges/badges.dart' as badges;
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -573,14 +567,6 @@ class _DashboardState extends State<Dashboard> {
                 title: Text(agentCode,
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 backgroundColor: secondaryColor,
-                actions: [
-                  IconButton(
-                    onPressed: (){
-                      Get.to(() => const Commissions());
-                    },
-                    icon: Image.asset("assets/images/commission.png"),
-                  )
-                ],
               ),
               body:  ListView(
                 children: [
@@ -923,57 +909,6 @@ class _DashboardState extends State<Dashboard> {
                           child: Column(
                             children: [
                               Image.asset(
-                                "assets/images/groupchat.png",
-                                width: 70,
-                                height: 70,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Chat"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(()=> PrivateChat());
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                "assets/images/fraud-alert.png",
-                                width: 70,
-                                height: 70,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Fraud"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const Fraud());
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              Image.asset(
                                 "assets/images/mywallet.png",
                                 width: 70,
                                 height: 70,
@@ -985,7 +920,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                             Get.to(() => const MyAccountDashboard());
+                            Get.to(() => const MyAccountDashboard());
                           },
                         ),
                       ),
@@ -1009,23 +944,76 @@ class _DashboardState extends State<Dashboard> {
                           },
                         ),
                       ),
+
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Divider(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
                       Expanded(
                         child: GestureDetector(
                           child: Column(
                             children: [
                               Image.asset(
-                                "assets/images/notification1.png",
+                                "assets/images/groupchat.png",
                                 width: 70,
                                 height: 70,
                               ),
                               const SizedBox(
                                 height: 10,
                               ),
-                              const Text("Notifications"),
+                              const Text("Chat"),
                             ],
                           ),
                           onTap: () {
-                            Get.to(() => const Notifications());
+                            Get.to(()=> PrivateChat());
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                "assets/images/customer-care.png",
+                                width: 70,
+                                height: 70,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text("Customer"),
+                              const Text("Service"),
+                            ],
+                          ),
+                          onTap: () {
+                            Get.to(() => const CustomerService());
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                "assets/images/commission.png",
+                                width: 70,
+                                height: 70,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text("Commissions"),
+                            ],
+                          ),
+                          onTap: () {
+                            Get.to(() => const Commissions());
                           },
                         ),
                       ),

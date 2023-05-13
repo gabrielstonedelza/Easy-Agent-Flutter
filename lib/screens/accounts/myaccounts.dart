@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import '../../widgets/loadingui.dart';
 import '../summaries/accountsummary.dart';
 import 'addaccountbalance.dart';
+import 'closeaccount.dart';
 
 class MyAccountDashboard extends StatefulWidget {
   const MyAccountDashboard({Key? key}) : super(key: key);
@@ -23,8 +24,10 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
   final storage = GetStorage();
   late String uToken = "";
   late List accountBalanceDetailsToday = [];
+  late List accountBalanceDetailsClosedToday = [];
   late List reversedAccountBalanceToday = List.of(accountBalanceDetailsToday.reversed);
   var items;
+  bool hasClosedAccountToday = false;
 
   Future<void> fetchAccountBalance() async {
     const postUrl = "https://fnetagents.xyz/get_my_account_balance_started_today/";
@@ -46,6 +49,29 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       // print(res.body);
     }
   }
+  Future<void> fetchAccountBalanceClosed() async {
+    const postUrl = "https://fnetagents.xyz/get_my_account_balance_closed_today/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      accountBalanceDetailsClosedToday.assignAll(allPosts);
+      for(var i in accountBalanceDetailsClosedToday){
+        hasClosedAccountToday = i['isClosed'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
   @override
   void initState(){
@@ -56,7 +82,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       });
     }
     fetchAccountBalance();
-
+    fetchAccountBalanceClosed();
   }
 
 
@@ -64,13 +90,29 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Account Today"),
+        title: const Text("Account Today"),
         actions: [
           accountBalanceDetailsToday.isNotEmpty ? IconButton(
             onPressed: (){
+              hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
+                  colorText: defaultWhite,
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 5),
+                  backgroundColor: warning) :
+              Get.to(()=> const CloseAccountBalance());
+            },
+            icon: Image.asset("assets/images/closewallet.png"),
+          ) : Container(),
+          accountBalanceDetailsToday.isNotEmpty ? IconButton(
+            onPressed: (){
+              hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today therefore you can't edit.",
+                  colorText: defaultWhite,
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 5),
+                  backgroundColor: warning) :
               Get.to(()=> const UpdateAccountBalance());
             },
-            icon: const Icon(Icons.edit,size: 30,),
+            icon: Image.asset("assets/images/pencil.png"),
           ) : Container()
         ],
       ),

@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:pinput/pinput.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
@@ -57,6 +56,7 @@ class _CashInState extends State<CashIn> {
   var _currentSelectedDepositType = "Select deposit type";
 
   late final TextEditingController _amountController;
+  late final TextEditingController _cashReceivedController;
   late final TextEditingController _amountReceivedController;
   late final TextEditingController _customerPhoneController;
   late final TextEditingController _depositorNameController;
@@ -81,6 +81,7 @@ class _CashInState extends State<CashIn> {
   late int total = 0;
   bool amountNotEqualTotal = false;
   FocusNode amountFocusNode = FocusNode();
+  FocusNode cashReceivedFocusNode = FocusNode();
   FocusNode amountReceivedFocusNode = FocusNode();
   FocusNode customerPhoneFocusNode = FocusNode();
   FocusNode depositorNameFocusNode = FocusNode();
@@ -167,9 +168,9 @@ class _CashInState extends State<CashIn> {
       "depositor_number": _depositorNumberController.text.trim(),
       "network": _currentSelectedNetwork,
       "type": _currentSelectedDepositType,
-      "amount": _amountController.text.trim(),
+      "amount_sent": _amountController.text.trim(),
+      "cash_received": _cashReceivedController.text.trim(),
       "customer": _customerPhoneController.text.trim(),
-      "cash_received": _amountReceivedController.text.trim(),
       "d_200": _d200Controller.text.trim(),
       "d_100": _d100Controller.text.trim(),
       "d_50": _d50Controller.text.trim(),
@@ -291,6 +292,7 @@ class _CashInState extends State<CashIn> {
     }
     generate5digit();
     _amountController = TextEditingController();
+    _cashReceivedController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _depositorNameController = TextEditingController();
     _depositorNumberController = TextEditingController();
@@ -304,8 +306,8 @@ class _CashInState extends State<CashIn> {
     _d1Controller = TextEditingController();
     _amountReceivedController = TextEditingController();
     controller.getAllCustomers(uToken);
+    controller.getAllFraudsters(uToken);
     fetchAccountBalance();
-    getAllFraudsters();
   }
 
   @override
@@ -346,7 +348,7 @@ class _CashInState extends State<CashIn> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value.length == 10 && allFraudsters.contains(value)){
+                        if(value.length == 10 && controller.fraudsterNumbers.contains(value)){
                           setState(() {
                             isFraudster = true;
                           });
@@ -355,7 +357,30 @@ class _CashInState extends State<CashIn> {
                               snackPosition: SnackPosition.TOP,
                               duration: const Duration(seconds: 10),
                               backgroundColor: warning);
-                          return;
+                          Get.defaultDialog(
+                              buttonColor: primaryColor,
+                              title: "Fraud Alert",
+                              middleText: "This customer is in the fraud list,continue",
+                              confirm: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  child: const Text(
+                                    "Yes",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              cancel: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.offAll(() => const Dashboard());
+                                  },
+                                  child: const Text(
+                                    "No",
+                                    style: TextStyle(color: Colors.white),
+                                  )));
                         }
                         else{
                           setState(() {
@@ -536,6 +561,24 @@ class _CashInState extends State<CashIn> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
+
+                      controller: _amountController,
+                      focusNode: amountFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Amount Sent"),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter amount";
+                        }
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
                       onChanged: (value){
                         if(value.length > 1 && value != ""){
                           setState(() {
@@ -549,16 +592,16 @@ class _CashInState extends State<CashIn> {
                         }
 
                       },
-                      controller: _amountController,
-                      focusNode: amountFocusNode,
+                      controller: _cashReceivedController,
+                      focusNode: cashReceivedFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
                       cursorWidth: 10,
                       cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Amount"),
+                      decoration: buildInputDecoration("Cash Received"),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Please enter amount";
+                          return "Please enter cash received";
                         }
                       },
                     ),

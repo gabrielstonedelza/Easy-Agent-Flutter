@@ -54,25 +54,6 @@ class _MyAppState extends State<MyApp> {
   bool hasToken = false;
   late String uToken = "";
 
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-    phoneController.fetchDeviceInfo();
-    if (storage.read("token") != null) {
-      uToken = storage.read("token");
-      setState(() {
-        hasToken = true;
-      });
-    }
-
-    else{
-      setState(() {
-        hasToken = false;
-      });
-    }
-  }
-
   onMessage(SmsMessage message) async {
     setState(() {
       _message = message.body ?? "Error reading message body.";
@@ -108,8 +89,26 @@ class _MyAppState extends State<MyApp> {
     }
 
 
-
     if (!mounted) return;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+    phoneController.fetchDeviceInfo();
+    if (storage.read("token") != null) {
+      uToken = storage.read("token");
+      setState(() {
+        hasToken = true;
+      });
+    }
+
+    else{
+      setState(() {
+        hasToken = false;
+      });
+    }
   }
 
   @override

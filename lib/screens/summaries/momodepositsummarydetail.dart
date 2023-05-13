@@ -46,7 +46,7 @@ class _MtnDepositSummaryDetailState extends State<MtnDepositSummaryDetail> {
       for (var i in allMtnDeposits) {
         if (i['date_deposited'].toString().split("T").first == deposit_date) {
           depositsDates.add(i);
-          sum = sum + double.parse(i['amount']);
+          sum = sum + double.parse(i['amount_sent']);
         }
       }
     }
@@ -107,7 +107,8 @@ class _MtnDepositSummaryDetailState extends State<MtnDepositSummaryDetail> {
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    buildRow("Amount: ", "amount"),
+                                    buildRow("Amount Sent: ", "amount_sent"),
+                                    buildRow("Cash Received: ", "cash_received"),
                                     buildRow("Network: ", "network"),
                                     buildRow("Type: ", "type"),
                                     items['type'] == "Direct" ? Column(

@@ -7,8 +7,10 @@ import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
+import '../../controllers/customerscontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
+import '../sendsms.dart';
 
 class PayToAgent extends StatefulWidget {
   const PayToAgent({Key? key}) : super(key: key);
@@ -33,9 +35,11 @@ class _PayToAgentState extends State<PayToAgent> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController;
   late final TextEditingController _agentPhoneController;
+  late final TextEditingController _depositorPhoneController;
   late final TextEditingController _referenceController;
   FocusNode amountFocusNode = FocusNode();
   FocusNode agentPhoneFocusNode = FocusNode();
+  FocusNode depositorPhoneFocusNode = FocusNode();
   FocusNode referenceFocusNode = FocusNode();
   late String uToken = "";
   final storage = GetStorage();
@@ -56,6 +60,7 @@ class _PayToAgentState extends State<PayToAgent> {
   bool isMtn = false;
   late List allFraudsters = [];
   bool isFraudster = false;
+  final SendSmsController sendSms = SendSmsController();
 
   Future<void> getAllFraudsters() async {
     try {
@@ -88,6 +93,7 @@ class _PayToAgentState extends State<PayToAgent> {
     }, body: {
       "amount": _amountController.text.trim(),
       "customer": _agentPhoneController.text.trim(),
+      "depositor_number": _depositorPhoneController.text.trim(),
       "pay_to_type": "Agent",
     });
 
@@ -98,6 +104,8 @@ class _PayToAgentState extends State<PayToAgent> {
       vodafone = vodafoneNow;
 
       addAccountsToday();
+      String num = _depositorPhoneController.text.replaceFirst("0", '+233');
+      sendSms.sendMySms(num, "EasyAgent","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,");
 
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
@@ -123,7 +131,7 @@ class _PayToAgentState extends State<PayToAgent> {
         code: "*171*1*1*$agentNumber*$agentNumber*$amount*$reference#",
         subscriptionId: 1);
   }
-
+  final CustomersController controller = Get.find();
   Future<void> fetchAccountBalance() async {
     const postUrl =
         "https://fnetagents.xyz/get_my_account_balance_started_today/";
@@ -191,11 +199,12 @@ class _PayToAgentState extends State<PayToAgent> {
         uToken = storage.read("token");
       });
     }
+    controller.getAllFraudsters(uToken);
     _amountController = TextEditingController();
+    _depositorPhoneController = TextEditingController();
     _agentPhoneController = TextEditingController();
     _referenceController = TextEditingController();
     fetchAccountBalance();
-    getAllFraudsters();
   }
 
   @override
@@ -204,6 +213,7 @@ class _PayToAgentState extends State<PayToAgent> {
     _amountController.dispose();
     _agentPhoneController.dispose();
     _referenceController.dispose();
+    _depositorPhoneController.dispose();
   }
 
   @override
@@ -227,7 +237,7 @@ class _PayToAgentState extends State<PayToAgent> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value.length == 10 && allFraudsters.contains(value)){
+                        if(value.length == 10 && controller.fraudsterNumbers.contains(value)){
                           setState(() {
                             isFraudster = true;
                           });
@@ -236,7 +246,30 @@ class _PayToAgentState extends State<PayToAgent> {
                               snackPosition: SnackPosition.TOP,
                               duration: const Duration(seconds: 10),
                               backgroundColor: warning);
-                          return;
+                          Get.defaultDialog(
+                              buttonColor: primaryColor,
+                              title: "Fraud Alert",
+                              middleText: "This customer is in the fraud list,continue",
+                              confirm: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  child: const Text(
+                                    "Yes",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              cancel: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.offAll(() => const Dashboard());
+                                  },
+                                  child: const Text(
+                                    "No",
+                                    style: TextStyle(color: Colors.white),
+                                  )));
                         }
                         else{
                           setState(() {
@@ -288,6 +321,23 @@ class _PayToAgentState extends State<PayToAgent> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Please enter reference";
+                        }
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
+                      controller: _depositorPhoneController,
+                      focusNode: depositorPhoneFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Depositor Phone"),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter phone";
                         }
                       },
                     ),

@@ -49,8 +49,8 @@ class _CashOutState extends State<CashOut> {
 
   var _currentSelectedNetwork = "Select Network";
 
-  late final TextEditingController _amountController;
-  late final TextEditingController _amountPaidController;
+  late final TextEditingController _cashPaidController;
+  late final TextEditingController _amountReceivedController;
   late final TextEditingController _customerPhoneController;
   late final TextEditingController _d200Controller;
   late final TextEditingController _d100Controller;
@@ -71,8 +71,8 @@ class _CashOutState extends State<CashOut> {
   late int d1 = 0;
   late int total = 0;
   bool amountNotEqualTotal = false;
-  FocusNode amountFocusNode = FocusNode();
-  FocusNode amountPaidFocusNode = FocusNode();
+  FocusNode cashPaidFocusNode = FocusNode();
+  FocusNode amountReceivedFocusNode = FocusNode();
   FocusNode customerPhoneFocusNode = FocusNode();
   FocusNode d200FocusNode = FocusNode();
   FocusNode d100FocusNode = FocusNode();
@@ -92,7 +92,7 @@ class _CashOutState extends State<CashOut> {
     UssdAdvanced.multisessionUssd(code: "*171*2*1*$customerNumber*$customerNumber*$amount#",subscriptionId: 1);
   }
   late List accountBalanceDetailsToday = [];
-  bool isLoading =false;
+  bool isLoading =true;
   late List lastItem = [];
   late double physical = 0.0;
   late double mtn = 0.0;
@@ -114,31 +114,7 @@ class _CashOutState extends State<CashOut> {
   late String customerPic = "";
   late int oTP = 0;
 
-  late List allFraudsters = [];
   bool isFraudster = false;
-
-  Future<void> getAllFraudsters() async {
-    try {
-      const url = "https://fnetagents.xyz/get_all_fraudsters/";
-      var link = Uri.parse(url);
-      http.Response response = await http.get(link, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Token $uToken"
-      });
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        allFraudsters.assignAll(jsonData);
-      }
-    } catch (e) {
-      Get.snackbar("Sorry",
-          "something happened or please check your internet connection");
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
 
   fetchCustomer(String customerPhone)async{
     final url = "https://fnetagents.xyz/customer_details_by_phone/$customerPhone/";
@@ -175,7 +151,8 @@ class _CashOutState extends State<CashOut> {
     },
         body: {
       "network": _currentSelectedNetwork,
-      "amount": _amountController.text.trim(),
+      "cash_paid": _cashPaidController.text.trim(),
+      "amount_received": _amountReceivedController.text.trim(),
       "customer": _customerPhoneController.text.trim(),
       "d_200": _d200Controller.text.trim(),
       "d_100": _d100Controller.text.trim(),
@@ -189,21 +166,21 @@ class _CashOutState extends State<CashOut> {
 
     if (res.statusCode == 201) {
       if (_currentSelectedNetwork == "Mtn") {
-        mtn = mtnNow + double.parse(_amountController.text);
-        physical = physicalNow - double.parse(_amountController.text);
+        mtn = mtnNow + double.parse(_cashPaidController.text);
+        physical = physicalNow - double.parse(_cashPaidController.text);
       //
         airteltigo = airtelTigoNow;
         vodafone = vodafoneNow;
       }
       if (_currentSelectedNetwork == "AirtelTigo") {
-        airteltigo = airtelTigoNow + double.parse(_amountController.text);
-        physical = physicalNow - double.parse(_amountController.text);
+        airteltigo = airtelTigoNow + double.parse(_cashPaidController.text);
+        physical = physicalNow - double.parse(_cashPaidController.text);
         mtn = mtnNow;
         vodafone = vodafoneNow;
       }
       if (_currentSelectedNetwork == "Vodafone") {
-        vodafone = vodafoneNow + double.parse(_amountController.text);
-        physical = physicalNow - double.parse(_amountController.text);
+        vodafone = vodafoneNow + double.parse(_cashPaidController.text);
+        physical = physicalNow - double.parse(_cashPaidController.text);
         mtn = mtnNow;
         airteltigo = airtelTigoNow;
       }
@@ -214,7 +191,7 @@ class _CashOutState extends State<CashOut> {
           backgroundColor: snackBackground,
           duration: const Duration(seconds: 5));
       if(_currentSelectedNetwork == "Mtn"){
-        dialCashOutMtn(_customerPhoneController.text.trim(),_amountController.text.trim());
+        dialCashOutMtn(_customerPhoneController.text.trim(),_cashPaidController.text.trim());
       }
 
       Get.offAll(()=> const Dashboard());
@@ -336,9 +313,9 @@ class _CashOutState extends State<CashOut> {
     }
     startTimer();
     generate5digit();
-    getAllFraudsters();
-    _amountController = TextEditingController();
-    _amountPaidController = TextEditingController();
+    // getAllFraudsters();
+    _cashPaidController = TextEditingController();
+    _amountReceivedController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _d200Controller = TextEditingController();
     _d100Controller = TextEditingController();
@@ -349,13 +326,14 @@ class _CashOutState extends State<CashOut> {
     _d2Controller = TextEditingController();
     _d1Controller = TextEditingController();
     controller.getAllCustomers(uToken);
+    controller.getAllFraudsters(uToken);
     fetchAccountBalance();
   }
 
   @override
   void dispose(){
     super.dispose();
-    _amountController.dispose();
+    _cashPaidController.dispose();
     _customerPhoneController.dispose();
     _d200Controller.dispose();
     _d100Controller.dispose();
@@ -365,7 +343,7 @@ class _CashOutState extends State<CashOut> {
     _d5Controller.dispose();
     _d2Controller.dispose();
     _d1Controller.dispose();
-    _amountPaidController.dispose();
+    _amountReceivedController.dispose();
   }
 
   @override
@@ -388,7 +366,7 @@ class _CashOutState extends State<CashOut> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value) {
-                        if(value.length == 10 && allFraudsters.contains(value)){
+                        if(value.length == 10 && controller.fraudsterNumbers.contains(value)){
                           setState(() {
                             isFraudster = true;
                           });
@@ -397,15 +375,37 @@ class _CashOutState extends State<CashOut> {
                               snackPosition: SnackPosition.TOP,
                               duration: const Duration(seconds: 10),
                               backgroundColor: warning);
-                          return;
+                          Get.defaultDialog(
+                              buttonColor: primaryColor,
+                              title: "Fraud Alert",
+                              middleText: "This customer is in the fraud list,continue",
+                              confirm: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  child: const Text(
+                                    "Yes",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              cancel: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.offAll(() => const Dashboard());
+                                  },
+                                  child: const Text(
+                                    "No",
+                                    style: TextStyle(color: Colors.white),
+                                  )));
                         }
                         else{
                           setState(() {
                             isFraudster = false;
                           });
                         }
-                        if (value.length == 10 &&
-                            controller.customersNumbers.contains(value)) {
+                        if (!isFraudster && value.length == 10 && controller.customersNumbers.contains(value)) {
                           Get.snackbar("Success", "Customer is registered",
                               colorText: defaultWhite,
                               snackPosition: SnackPosition.TOP,
@@ -419,7 +419,7 @@ class _CashOutState extends State<CashOut> {
                           });
 
                         }
-                        else if (value.length == 10 &&
+                        else if (!isFraudster && value.length == 10 &&
                             !controller.customersNumbers.contains(value)) {
                           Get.snackbar(
                               "Customer Error", "Customer is not registered",
@@ -430,8 +430,30 @@ class _CashOutState extends State<CashOut> {
                             isCustomer = false;
                             sentOTP = false;
                           });
-                          Timer(const Duration(seconds: 3),
-                                  () => Get.to(() => const CustomerRegistration()));
+                          Get.defaultDialog(
+                              buttonColor: primaryColor,
+                              title: "Confirm customer",
+                              middleText: "Customer is not registered,register him",
+                              confirm: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.to(() => const CustomerRegistration());
+                                  },
+                                  child: const Text(
+                                    "Yes",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              cancel: RawMaterialButton(
+                                  shape: const StadiumBorder(),
+                                  fillColor: secondaryColor,
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  child: const Text(
+                                    "Cancel",
+                                    style: TextStyle(color: Colors.white),
+                                  )));
                         }
                       },
                       controller: _customerPhoneController,
@@ -546,37 +568,60 @@ class _CashOutState extends State<CashOut> {
                       ],
                     ),
                   ) : Container(),
-                  hasOTP ? Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      onChanged: (value){
-                        if(value.length > 1 && value != ""){
-                          setState(() {
-                            amountIsNotEmpty = true;
-                          });
-                        }
-                        if(value == ""){
-                          setState(() {
-                            amountIsNotEmpty = false;
-                          });
-                        }
+                  hasOTP ? Column(
 
-                      },
-                      controller: _amountController,
-                      focusNode: amountFocusNode,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Amount"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter amount";
-                        }
-                      },
-                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: TextFormField(
+                          controller: _cashPaidController,
+                          focusNode: cashPaidFocusNode,
+                          cursorRadius: const Radius.elliptical(10, 10),
+                          cursorWidth: 10,
+                          cursorColor: secondaryColor,
+                          decoration: buildInputDecoration("Cash Paid"),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please enter amount";
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: TextFormField(
+                          onChanged: (value){
+                            if(value.length > 1 && value != ""){
+                              setState(() {
+                                amountIsNotEmpty = true;
+                              });
+                            }
+                            if(value == ""){
+                              setState(() {
+                                amountIsNotEmpty = false;
+                              });
+                            }
+
+                          },
+                          controller: _amountReceivedController,
+                          focusNode: amountReceivedFocusNode,
+                          cursorRadius: const Radius.elliptical(10, 10),
+                          cursorWidth: 10,
+                          cursorColor: secondaryColor,
+                          decoration: buildInputDecoration("Amount Received GHC"),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please enter amount received";
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ) : Container(),
                  hasOTP ? Column(
+                   crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       amountIsNotEmpty ? Column(
                         children: [
@@ -839,23 +884,7 @@ class _CashOutState extends State<CashOut> {
                               )
                             ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: TextFormField(
-                              controller: _amountPaidController,
-                              focusNode: amountPaidFocusNode,
-                              cursorRadius: const Radius.elliptical(10, 10),
-                              cursorWidth: 10,
-                              cursorColor: secondaryColor,
-                              decoration: buildInputDecoration("Amount Paid"),
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please enter amount paid";
-                                }
-                              },
-                            ),
-                          ),
+
                         ],
                       ) : Container(),
                       const SizedBox(height: 30,),
@@ -873,7 +902,7 @@ class _CashOutState extends State<CashOut> {
                             return;
                           } else {
                             var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                            if(int.parse(_amountController.text) != mainTotal){
+                            if(int.parse(_cashPaidController.text) != mainTotal){
                               Get.snackbar("Total Error", "Your total should be equal to the amount",
                                   colorText: defaultWhite,
                                   backgroundColor: warning,
@@ -894,7 +923,7 @@ class _CashOutState extends State<CashOut> {
                                   duration: const Duration(seconds: 5));
                               return;
                             }
-                            else if(_currentSelectedNetwork == "Mtn" && int.parse(_amountController.text) > mtnNow){
+                            else if(_currentSelectedNetwork == "Mtn" && int.parse(_cashPaidController.text) > mtnNow){
                               Get.snackbar("Amount Error", "Amount is greater than your Mtn Ecash,please check",
                                   colorText: defaultWhite,
                                   backgroundColor: warning,
@@ -902,7 +931,7 @@ class _CashOutState extends State<CashOut> {
                                   duration: const Duration(seconds: 5));
                               return;
                             }
-                            else if(_currentSelectedNetwork == "AirtelTigo" && int.parse(_amountController.text) > airtelTigoNow){
+                            else if(_currentSelectedNetwork == "AirtelTigo" && int.parse(_cashPaidController.text) > airtelTigoNow){
                               Get.snackbar("Amount Error", "Amount is greater than your AirtelTigo Ecash,please check",
                                   colorText: defaultWhite,
                                   backgroundColor: warning,
@@ -910,7 +939,7 @@ class _CashOutState extends State<CashOut> {
                                   duration: const Duration(seconds: 5));
                               return;
                             }
-                            else if(_currentSelectedNetwork == "Vodafone" && int.parse(_amountController.text) > vodafoneNow){
+                            else if(_currentSelectedNetwork == "Vodafone" && int.parse(_cashPaidController.text) > vodafoneNow){
                               Get.snackbar("Amount Error", "Amount is greater than your Vodafone Ecash,please check",
                                   colorText: defaultWhite,
                                   backgroundColor: warning,

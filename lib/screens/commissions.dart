@@ -50,9 +50,9 @@ class _CommissionsState extends State<Commissions> {
       allMtnDeposits = json.decode(jsonData);
       for (var i in allMtnDeposits) {
         if(i['date_deposited'].toString().split("T").first == now.toString().split(" ").first){
-          cashInTotal = cashInTotal + double.parse(i['amount']);
+          cashInTotal = cashInTotal + double.parse(i['amount_sent']);
           cashReceived = cashReceived + double.parse(i['cash_received']);
-          cashInCommissionTotalForToday = cashReceived - cashInTotal;
+          cashInCommissionTotalForToday =  cashReceived - cashInTotal;
         }
       }
       setState(() {
@@ -75,7 +75,7 @@ class _CommissionsState extends State<Commissions> {
       allMtnWithdrawals = json.decode(jsonData);
       for (var i in allMtnWithdrawals) {
         if(i['date_of_withdrawal'].toString().split("T").first == now.toString().split(" ").first){
-          cashOutTotal = cashOutTotal + double.parse(i['amount']);
+          cashOutTotal = cashOutTotal + double.parse(i['cash_paid']);
           cashOutReceived = cashOutReceived + double.parse(i['amount_received']);
           cashOutCommissionTotalForToday = cashOutReceived - cashOutTotal;
         }
@@ -112,6 +112,15 @@ class _CommissionsState extends State<Commissions> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 30,),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Total : ",style: TextStyle(fontWeight: FontWeight.bold,color: warning,fontSize: 20)),
+                Text("${cashOutCommissionTotalForToday + cashInCommissionTotalForToday}",style: const TextStyle(fontWeight: FontWeight.bold,color: warning,fontSize: 20)),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: SizedBox(

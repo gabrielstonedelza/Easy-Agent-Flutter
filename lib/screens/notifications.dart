@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/chats/groupchat.dart';
-import 'package:easy_agent/screens/fraud.dart';
+import 'package:easy_agent/screens/customerservice/fraud.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -65,8 +65,8 @@ class NotificationService{
   final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<void> initNotification()async{
-    notificationsPlugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()?.requestPermission();
+    // notificationsPlugin.resolvePlatformSpecificImplementation<
+    //     AndroidFlutterLocalNotificationsPlugin>()?.requestPermission();
     AndroidInitializationSettings initializationSettingsAndroid = const AndroidInitializationSettings("ic_launcher");
     var initializationSettingsIOS = DarwinInitializationSettings();
 
