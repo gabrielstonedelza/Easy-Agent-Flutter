@@ -336,6 +336,43 @@ class _DashboardState extends State<Dashboard> {
               const Text("OK", style: TextStyle(fontWeight: FontWeight.bold)),
         ));
   }
+  late List allRequests = [];
+  bool hasSomePendings = false;
+  late List allPendingList = [];
+
+  Future<void>fetchAllRequests()async{
+    const url = "https://fnetagents.xyz/get_all_my_requests/";
+    var myLink = Uri.parse(url);
+    final response = await http.get(myLink, headers: {
+      "Authorization": "Token $uToken"
+    });
+
+    if(response.statusCode ==200){
+      final codeUnits = response.body.codeUnits;
+      var jsonData = const Utf8Decoder().convert(codeUnits);
+      allRequests = json.decode(jsonData);
+      for(var i in allRequests){
+          allPendingList.add(i['request_approved']);
+          allPendingList.add(i['request_paid']);
+          allPendingList.add(i['payment_approved']);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+    if(allPendingList.contains("Pending")){
+      setState(() {
+        hasSomePendings = true;
+      });
+    }
+    else{
+      setState(() {
+        hasSomePendings = false;
+      });
+    }
+
+
+  }
 
   @override
   void initState() {
@@ -369,6 +406,7 @@ class _DashboardState extends State<Dashboard> {
     profileController.getUserDetails(uToken);
     profileController.getUserProfile(uToken);
     getAllTriggeredNotifications();
+    fetchAllRequests();
 
     _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
       getAllTriggeredNotifications();
@@ -592,7 +630,12 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           onTap: () {
                             tpController.accountBalanceDetailsToday.isNotEmpty ?
-                            Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                            hasSomePendings ? Get.snackbar("Request Error", "You have a request that is not paid or approved.",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: warning,
+                              duration: const Duration(seconds: 5)
+                            ):  Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,
@@ -618,7 +661,12 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           onTap: () {
                             tpController.accountBalanceDetailsToday.isNotEmpty ?
-                            Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                            hasSomePendings ? Get.snackbar("Request Error", "You have a request that is not paid or approved.",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: warning,
+                                duration: const Duration(seconds: 5)
+                            ):      Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,
@@ -642,7 +690,12 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            tpController.accountBalanceDetailsToday.isNotEmpty ? Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
+                            tpController.accountBalanceDetailsToday.isNotEmpty ? hasSomePendings ? Get.snackbar("Request Error", "You have a request that is not paid or approved.",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: warning,
+                                duration: const Duration(seconds: 5)
+                            ): Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,

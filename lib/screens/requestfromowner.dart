@@ -106,8 +106,13 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
   late String uToken = "";
   final storage = GetStorage();
   late List supervisorDetails = [];
+  late List requestLimitDetails = [];
   late String supervisorId = "";
+  late int requestLimit = 0;
   final _formKey = GlobalKey<FormState>();
+  late List allRequests = [];
+  bool canRequestAgain = false;
+  bool requestFinished = false;
 
   Future<void> fetchSuperVisorsDetails() async {
     final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.supervisorCode}/";
@@ -131,6 +136,49 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
     } else {
       // print(res.body);
     }
+  }
+  Future<void> fetchMyRequestsLimit() async {
+    const postUrl = "https://fnetagents.xyz/get_all_my_request_limit/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      requestLimitDetails.assignAll(allPosts);
+
+      for(var i in requestLimitDetails){
+        requestLimit = i['request_limit'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+      print(requestLimit);
+    } else {
+      // print(res.body);
+    }
+  }
+
+  Future<void>fetchAllRequestsToday()async{
+    const url = "https://fnetagents.xyz/get_all_my_requests_today/";
+    var myLink = Uri.parse(url);
+    final response = await http.get(myLink, headers: {
+      "Authorization": "Token $uToken"
+    });
+
+    if(response.statusCode ==200){
+      final codeUnits = response.body.codeUnits;
+      var jsonData = const Utf8Decoder().convert(codeUnits);
+      allRequests = json.decode(jsonData);
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   processRequest() async {
@@ -177,6 +225,8 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
     }
     _amountController = TextEditingController();
     fetchSuperVisorsDetails();
+    fetchMyRequestsLimit();
+    fetchAllRequestsToday();
   }
 
 
@@ -189,6 +239,12 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
       ),
       body:isLoading ? const LoadingUi() :  ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: requestLimit > allRequests.length ?Text("You have a request limit of $requestLimit",style: const TextStyle(fontWeight: FontWeight.bold),) : const Text("You have used all your request for today or it's not set by your owner.",style: TextStyle(fontWeight: FontWeight.bold),),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Form(
@@ -372,7 +428,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
                     ),
                   ),
                   isPosting  ? const LoadingUi() :
-                  NeoPopTiltedButton(
+                  requestLimit > allRequests.length ? NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
                       _startPosting();
@@ -421,7 +477,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
                           fontSize: 20,
                           color: Colors.white)),
                     ),
-                  ),
+                  ) : Container(),
                 ],
               ),
             ),

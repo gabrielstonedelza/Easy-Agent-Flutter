@@ -29,7 +29,7 @@ class _RequestSummaryState extends State<RequestSummary> {
   late List requestsAmounts = [];
   late List requestsDates = [];
 
-  fetchAllRequests()async{
+  Future<void>fetchAllRequests()async{
     const url = "https://fnetagents.xyz/get_all_my_requests/";
     var myLink = Uri.parse(url);
     final response = await http.get(myLink, headers: {

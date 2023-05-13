@@ -200,6 +200,10 @@ class _PayToMerchantState extends State<PayToMerchant> {
       ),
       body: ListView(
         children: [
+          const Padding(
+            padding: EdgeInsets.all(18.0),
+            child: Text("Note: Please make sure to allow Easy Agent access in your phones accessibility before proceeding",style: TextStyle(fontWeight: FontWeight.bold,color: warning),),
+          ),
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: Form(

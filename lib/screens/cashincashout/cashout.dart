@@ -355,6 +355,11 @@ class _CashOutState extends State<CashOut> {
       ),
       body:isLoading ? const LoadingUi() : ListView(
         children: [
+          const SizedBox(height: 10,),
+          const Padding(
+            padding: EdgeInsets.all(18.0),
+            child: Text("Note: Please make sure to allow Easy Agent access in your phones accessibility before proceeding",style: TextStyle(fontWeight: FontWeight.bold,color: warning),),
+          ),
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: Form(
@@ -888,6 +893,7 @@ class _CashOutState extends State<CashOut> {
                         ],
                       ) : Container(),
                       const SizedBox(height: 30,),
+
                       isPosting  ? const LoadingUi() :
                       amountIsNotEmpty && !isFraudster ? NeoPopTiltedButton(
                         isFloating: true,
@@ -969,6 +975,7 @@ class _CashOutState extends State<CashOut> {
                               color: Colors.white)),
                         ),
                       ) : Container(),
+
                     ],
                   ) : Container(),
                 ],

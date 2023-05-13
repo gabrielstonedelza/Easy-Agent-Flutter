@@ -308,6 +308,7 @@ class _CashInState extends State<CashIn> {
     controller.getAllCustomers(uToken);
     controller.getAllFraudsters(uToken);
     fetchAccountBalance();
+
   }
 
   @override
@@ -337,6 +338,10 @@ class _CashInState extends State<CashIn> {
       ),
       body: isLoading ? const LoadingUi() :  ListView(
         children: [
+          const Padding(
+            padding: EdgeInsets.all(18.0),
+            child: Text("Note: Please make sure to allow Easy Agent access in your phones accessibility before proceeding",style: TextStyle(fontWeight: FontWeight.bold,color: warning),),
+          ),
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: Form(
@@ -959,6 +964,7 @@ class _CashInState extends State<CashIn> {
                           color: Colors.white)),
                     ),
                   ) : Container(),
+
                 ],
               ),
             ),
