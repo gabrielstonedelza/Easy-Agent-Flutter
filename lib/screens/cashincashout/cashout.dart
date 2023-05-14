@@ -576,19 +576,21 @@ class _CashOutState extends State<CashOut> {
                   hasOTP ? Column(
 
                     children: [
+
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: TextFormField(
-                          controller: _cashPaidController,
-                          focusNode: cashPaidFocusNode,
+
+                          controller: _amountReceivedController,
+                          focusNode: amountReceivedFocusNode,
                           cursorRadius: const Radius.elliptical(10, 10),
                           cursorWidth: 10,
                           cursorColor: secondaryColor,
-                          decoration: buildInputDecoration("Cash Paid"),
+                          decoration: buildInputDecoration("Amount Received GHC"),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return "Please enter amount";
+                              return "Please enter amount received";
                             }
                           },
                         ),
@@ -607,18 +609,17 @@ class _CashOutState extends State<CashOut> {
                                 amountIsNotEmpty = false;
                               });
                             }
-
                           },
-                          controller: _amountReceivedController,
-                          focusNode: amountReceivedFocusNode,
+                          controller: _cashPaidController,
+                          focusNode: cashPaidFocusNode,
                           cursorRadius: const Radius.elliptical(10, 10),
                           cursorWidth: 10,
                           cursorColor: secondaryColor,
-                          decoration: buildInputDecoration("Amount Received GHC"),
+                          decoration: buildInputDecoration("Cash Paid GHC "),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return "Please enter amount received";
+                              return "Please enter amount";
                             }
                           },
                         ),

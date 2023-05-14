@@ -417,7 +417,6 @@ class _DashboardState extends State<Dashboard> {
       for (var i in triggered) {
         NotificationService().showNotifications(title:i['notification_title'], body:i['notification_message']);
       }
-
     });
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       for (var e in triggered) {

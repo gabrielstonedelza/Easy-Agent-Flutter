@@ -55,9 +55,8 @@ class _HoldAccountState extends State<HoldAccount> {
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
-
+      sendSms.sendMySms("+233550222888", "EasyAgent","Made a wrong transaction of amount GHC${_amountController.text} to this number ${_customerPhoneNumberController.text},can you please hold that account for me?Thank you.");
       Get.offAll(() => const Dashboard());
-      sendSms.sendMySms("+550222888", "EasyAgent","Made a wrong transaction of amount GHC${_amountController.text} to this number ${_customerPhoneNumberController.text},can you please hold that account for me?Thank you.");
     } else {
 
       Get.snackbar("Error", "something happened",

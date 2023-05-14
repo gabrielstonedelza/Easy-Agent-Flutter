@@ -99,6 +99,8 @@ class _CashInState extends State<CashIn> {
   bool isMtnLoading = false;
   double totalNow = 0.0;
   bool amountIsNotEmpty = false;
+  double commission = 0.0;
+
 
   Future<void> dialCashInMtn(String customerNumber,String amount) async {
     UssdAdvanced.multisessionUssd(code: "*171*3*1*$customerNumber*$customerNumber*$amount#",subscriptionId: 1);
@@ -544,23 +546,6 @@ class _CashInState extends State<CashIn> {
                           },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: TextFormField(
-                          controller: _amountReceivedController,
-                          focusNode: amountReceivedFocusNode,
-                          cursorRadius: const Radius.elliptical(10, 10),
-                          cursorWidth: 10,
-                          cursorColor: secondaryColor,
-                          decoration: buildInputDecoration("Cash Received"),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please enter amount received";
-                            }
-                          },
-                        ),
-                      ),
                     ],
                   ) : Container(),
                   Padding(
@@ -581,7 +566,7 @@ class _CashInState extends State<CashIn> {
                       },
                     ),
                   ),
-                  Padding(
+                  isMtnLoading ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
@@ -605,12 +590,21 @@ class _CashInState extends State<CashIn> {
                       decoration: buildInputDecoration("Cash Received"),
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value!.isEmpty) {
+                        if (value!.isEmpty && isMtnLoading) {
                           return "Please enter cash received";
                         }
                       },
                     ),
-                  ),
+                  ) : Container(),
+                  isMtnLoading ? Padding(
+                    padding: const EdgeInsets.only(bottom:8.0),
+                    child: Row(
+                      children: [
+                        const Text("Commission is : "),
+                        Text("${double.parse(_cashReceivedController.text) - double.parse(_amountController.text)}"),
+                      ],
+                    ),
+                  ) : Container(),
                   amountIsNotEmpty ? Column(
                     children: [
                       Row(
