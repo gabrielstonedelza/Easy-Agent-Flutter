@@ -111,7 +111,6 @@ class _RequestsSummaryDetailState extends State<RequestsSummaryDetail> {
                                 buildRow("Network: ", "network"),
                                 buildRow("Approved: ", "request_approved"),
                                 buildRow("Paid: ", "request_paid"),
-                                buildRow("Payment Approved: ", "payment_approved"),
                                 items["reference"] == "" ? Container():
                                 buildRow("Reference: ", "reference"),
                                 Padding(

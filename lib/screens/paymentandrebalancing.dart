@@ -1,4 +1,5 @@
 import 'package:easy_agent/constants.dart';
+import 'package:easy_agent/screens/payments/unpaidrequests.dart';
 import 'package:easy_agent/screens/summaries/balancingsummary.dart';
 import 'package:easy_agent/screens/summaries/paymentsummary.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,26 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                   child: Column(
                     children: [
                       Image.asset(
+                        "assets/images/cash-payment.png",
+                        width: 70,
+                        height: 70,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Text("Unpaid Request"),
+                    ],
+                  ),
+                  onTap: () {
+                    Get.to(() => const UnPaidRequests());
+                  },
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  child: Column(
+                    children: [
+                      Image.asset(
                         "assets/images/law.png",
                         width: 70,
                         height: 70,
@@ -64,7 +85,6 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                   },
                 ),
               ),
-
             ],
           ),
         ],

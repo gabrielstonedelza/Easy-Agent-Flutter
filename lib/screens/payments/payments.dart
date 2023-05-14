@@ -6,10 +6,10 @@ import 'package:get_storage/get_storage.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import '../../constants.dart';
-import '../../widgets/loadingui.dart';
-import 'balancing.dart';
-import 'dashboard.dart';
+import '../../../constants.dart';
+import '../../../widgets/loadingui.dart';
+import '../balancing.dart';
+import '../dashboard.dart';
 
 
 class Payments extends StatefulWidget {

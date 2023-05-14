@@ -2,10 +2,12 @@ import 'package:easy_agent/controllers/logincontroller.dart';
 import 'package:easy_agent/screens/preregistration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
+import '../controllers/authphonecontroller.dart';
 import '../widgets/loadingui.dart';
 import 'loginabout.dart';
 
@@ -25,6 +27,9 @@ class _LoginViewState extends State<LoginView> {
   late final TextEditingController _passwordController;
   FocusNode agentCodeFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
+  final AuthPhoneController authController = Get.find();
+  final storage = GetStorage();
+  late String uToken = "";
 
   final Uri _url = Uri.parse('https://fnetagents.xyz/password-reset/');
 
@@ -53,6 +58,12 @@ class _LoginViewState extends State<LoginView> {
     _agentCodeController = TextEditingController();
     _passwordController = TextEditingController();
     controller.getAllAgents();
+    if (storage.read("token") != null) {
+      setState(() {
+        uToken = storage.read("token");
+      });
+    }
+    authController.fetchAuthPhone(uToken);
   }
 
   @override
@@ -179,6 +190,12 @@ class _LoginViewState extends State<LoginView> {
                      } else {
                        controller.loginUser(_agentCodeController.text.trim(),
                          _passwordController.text.trim(),);
+                       storage.write("phoneAuthenticated", "Authenticated");
+                       storage.write("phoneId", authController.phoneId);
+                       storage.write("phoneModel", authController.phoneModel);
+                       storage.write("phoneBrand", authController.phoneBrand);
+                       storage.write("phoneFingerprint", authController.phoneFingerprint);
+                       authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
                      }
                    },
                    decoration: const NeoPopTiltedButtonDecoration(

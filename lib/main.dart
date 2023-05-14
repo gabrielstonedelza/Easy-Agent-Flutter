@@ -53,6 +53,8 @@ class _MyAppState extends State<MyApp> {
   final storage = GetStorage();
   bool hasToken = false;
   late String uToken = "";
+  late String authDevice = "";
+  bool isAuthDevice = false;
 
   onMessage(SmsMessage message) async {
     setState(() {
@@ -103,6 +105,12 @@ class _MyAppState extends State<MyApp> {
         hasToken = true;
       });
     }
+    if (storage.read("phoneFingerprint") != null) {
+      authDevice = storage.read("phoneFingerprint");
+      setState(() {
+        isAuthDevice = true;
+      });
+    }
 
     else{
       setState(() {
@@ -123,7 +131,7 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: secondaryColor,
         )
       ),
-      home:hasToken ? const Dashboard() : const LoginView(),
+      home:hasToken && isAuthDevice ? const Dashboard() : const LoginView(),
     );
   }
 }
