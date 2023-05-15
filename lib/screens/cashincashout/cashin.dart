@@ -171,7 +171,7 @@ class _CashInState extends State<CashIn> {
       "network": _currentSelectedNetwork,
       "type": _currentSelectedDepositType,
       "amount_sent": _amountController.text.trim(),
-      "cash_received": _cashReceivedController.text.trim(),
+      "cash_received":_currentSelectedDepositType == "Loading" ? _amountController.text.trim(): _cashReceivedController.text.trim(),
       "customer": _customerPhoneController.text.trim(),
       "d_200": _d200Controller.text.trim(),
       "d_100": _d100Controller.text.trim(),
@@ -551,7 +551,18 @@ class _CashInState extends State<CashIn> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
-
+                      onChanged: (value){
+                        if(value.length > 1 && value != "" && _currentSelectedDepositType == "Loading"){
+                          setState(() {
+                            amountIsNotEmpty = true;
+                          });
+                        }
+                        if(value == ""){
+                          setState(() {
+                            amountIsNotEmpty = false;
+                          });
+                        }
+                      },
                       controller: _amountController,
                       focusNode: amountFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
@@ -566,7 +577,7 @@ class _CashInState extends State<CashIn> {
                       },
                     ),
                   ),
-                  isMtnLoading ? Padding(
+                  isDirect ? Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
@@ -580,7 +591,6 @@ class _CashInState extends State<CashIn> {
                             amountIsNotEmpty = false;
                           });
                         }
-
                       },
                       controller: _cashReceivedController,
                       focusNode: cashReceivedFocusNode,
@@ -596,7 +606,7 @@ class _CashInState extends State<CashIn> {
                       },
                     ),
                   ) : Container(),
-                  isMtnLoading ? Padding(
+                  isDirect ? _cashReceivedController.text != "" ? Padding(
                     padding: const EdgeInsets.only(bottom:8.0),
                     child: Row(
                       children: [
@@ -604,7 +614,7 @@ class _CashInState extends State<CashIn> {
                         Text("${double.parse(_cashReceivedController.text) - double.parse(_amountController.text)}"),
                       ],
                     ),
-                  ) : Container(),
+                  ) : Container() : Container(),
                   amountIsNotEmpty ? Column(
                     children: [
                       Row(
