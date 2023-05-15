@@ -453,6 +453,9 @@ class _CashOutState extends State<CashOut> {
                                   shape: const StadiumBorder(),
                                   fillColor: secondaryColor,
                                   onPressed: () {
+                                    setState(() {
+                                      hasOTP = true;
+                                    });
                                     Get.back();
                                   },
                                   child: const Text(
@@ -576,25 +579,6 @@ class _CashOutState extends State<CashOut> {
                   hasOTP ? Column(
 
                     children: [
-
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: TextFormField(
-
-                          controller: _amountReceivedController,
-                          focusNode: amountReceivedFocusNode,
-                          cursorRadius: const Radius.elliptical(10, 10),
-                          cursorWidth: 10,
-                          cursorColor: secondaryColor,
-                          decoration: buildInputDecoration("Amount Received GHC"),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please enter amount received";
-                            }
-                          },
-                        ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: TextFormField(
@@ -624,6 +608,25 @@ class _CashOutState extends State<CashOut> {
                           },
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: TextFormField(
+
+                          controller: _amountReceivedController,
+                          focusNode: amountReceivedFocusNode,
+                          cursorRadius: const Radius.elliptical(10, 10),
+                          cursorWidth: 10,
+                          cursorColor: secondaryColor,
+                          decoration: buildInputDecoration("Amount Received GHC"),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please enter amount received";
+                            }
+                          },
+                        ),
+                      ),
+
                     ],
                   ) : Container(),
                  hasOTP ? Column(
@@ -909,7 +912,7 @@ class _CashOutState extends State<CashOut> {
                             return;
                           } else {
                             var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                            if(int.parse(_cashPaidController.text) != mainTotal){
+                            if(int.parse(_amountReceivedController.text) != mainTotal){
                               Get.snackbar("Total Error", "Your total should be equal to the amount",
                                   colorText: defaultWhite,
                                   backgroundColor: warning,
