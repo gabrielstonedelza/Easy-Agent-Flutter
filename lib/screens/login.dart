@@ -1,5 +1,4 @@
 import 'package:easy_agent/controllers/logincontroller.dart';
-import 'package:easy_agent/screens/preregistration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -23,7 +22,7 @@ class _LoginViewState extends State<LoginView> {
   bool isObscured = true;
 
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _agentCodeController;
+  late final TextEditingController usernameController;
   late final TextEditingController _passwordController;
   FocusNode agentCodeFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
@@ -55,7 +54,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-    _agentCodeController = TextEditingController();
+    usernameController = TextEditingController();
     _passwordController = TextEditingController();
     controller.getAllAgents();
     if (storage.read("token") != null) {
@@ -69,7 +68,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   void dispose() {
     super.dispose();
-    _agentCodeController.dispose();
+    usernameController.dispose();
     _passwordController.dispose();
   }
 
@@ -119,16 +118,16 @@ class _LoginViewState extends State<LoginView> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
-                      controller: _agentCodeController,
+                      controller: usernameController,
                       focusNode: agentCodeFocusNode,
                       cursorColor: secondaryColor,
                       cursorRadius: const Radius.elliptical(10, 10),
                       cursorWidth: 10,
-                      decoration: buildInputDecoration("Agent Code"),
+                      decoration: buildInputDecoration("Username"),
                       keyboardType: TextInputType.text,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Please enter agent code";
+                          return "Please enter username";
                         }
                       },
                     ),
@@ -188,7 +187,7 @@ class _LoginViewState extends State<LoginView> {
                      if (!_formKey.currentState!.validate()) {
                        return;
                      } else {
-                       controller.loginUser(_agentCodeController.text.trim(),
+                       controller.loginUser(usernameController.text.trim(),
                          _passwordController.text.trim(),);
                        storage.write("phoneAuthenticated", "Authenticated");
                        storage.write("phoneId", authController.phoneId);

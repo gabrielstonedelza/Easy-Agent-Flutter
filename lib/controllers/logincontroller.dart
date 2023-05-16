@@ -16,7 +16,7 @@ class LoginController extends GetxController {
   bool isUser = false;
   late List allAgents = [];
   late List agentsCodes = [];
-  late List agentsEmails = [];
+  late List agentsUsernames = [];
   late int oTP = 0;
   late String myToken = "";
 
@@ -37,7 +37,7 @@ class LoginController extends GetxController {
         var jsonData = jsonDecode(response.body);
         allAgents.assignAll(jsonData);
         for (var i in allAgents) {
-          agentsCodes.add(i['agent_unique_code']);
+          agentsUsernames.add(i['username']);
         }
         update();
       }
@@ -49,12 +49,12 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> loginUser(String agentCode, String password) async {
+  Future<void> loginUser(String username, String password) async {
     const loginUrl = "https://fnetagents.xyz/auth/token/login/";
     final myLink = Uri.parse(loginUrl);
     http.Response response = await client.post(myLink,
         headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: {"agent_unique_code": agentCode, "password": password});
+        body: {"username": username, "password": password});
 
     if (response.statusCode == 200) {
       final resBody = response.body;
@@ -62,11 +62,11 @@ class LoginController extends GetxController {
       var userToken = jsonData['auth_token'];
 
       storage.write("token", userToken);
-      storage.write("agent_code", agentCode);
+      storage.write("agent_code", username);
       isLoggingIn = false;
       isUser = true;
 
-      if (agentsCodes.contains(agentCode)) {
+      if (agentsUsernames.contains(username)) {
         Get.offAll(() => const AuthenticateByPhone());
       } else {
         Get.snackbar(
@@ -90,65 +90,6 @@ class LoginController extends GetxController {
       isUser = false;
       storage.remove("token");
       storage.remove("agent_code");
-    }
-  }
-
-  addAgentPreRegistration(
-      String name, String phoneNum, String digitAddress) async {
-    const requestUrl = "https://fnetagents.xyz/add_agent_pre_reg/";
-    final myLink = Uri.parse(requestUrl);
-    final response = await http.post(myLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-    }, body: {
-      "name": name,
-      "phone_number": phoneNum,
-      "digital_address": digitAddress,
-    });
-    if (response.statusCode == 201) {
-      Get.snackbar("Hurray 😀", "Details sent successfully,we will contact you soon",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: secondaryColor,
-          duration: const Duration(seconds: 5));
-      Get.offAll(() => const RegisterSuccess());
-      update();
-    } else {
-      Get.snackbar(
-        "Agent Error",
-        "Agent with same details already exists or check your internet connection",
-        duration: const Duration(seconds: 5),
-        colorText: Colors.white,
-        backgroundColor: warning,
-      );
-    }
-  }
-
-  resetPassword(String email) async {
-    const requestUrl = "https://fnetagents.xyz/add_agent_pre_reg/";
-    final myLink = Uri.parse(requestUrl);
-    final response = await http.post(myLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-    }, body: {
-      "email": email,
-    });
-    if (response.statusCode == 201) {
-      Get.snackbar("Hurray 😀", "Please check your email and reset your password",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: primaryColor,
-          duration: const Duration(seconds: 5));
-      Get.offAll(() => const RegisterSuccess());
-      update();
-    } else {
-      Get.snackbar(
-        "Agent Error",
-        "Email does not exists or check your internet connection",
-        duration: const Duration(seconds: 5),
-        colorText: Colors.white,
-        backgroundColor: primaryColor,
-      );
     }
   }
 }

@@ -39,7 +39,7 @@ class _PrivateChatState extends State<PrivateChat> {
   late String supervisorUsername = "";
 
   Future<void> fetchSuperVisorsDetails() async {
-    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.supervisorCode}/";
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
     final pLink = Uri.parse(postUrl);
     http.Response res = await http.get(pLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",

@@ -115,7 +115,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
   bool requestFinished = false;
 
   Future<void> fetchSuperVisorsDetails() async {
-    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.supervisorCode}/";
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.ownerCode}/";
     final pLink = Uri.parse(postUrl);
     http.Response res = await http.get(pLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -203,8 +203,6 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
           snackPosition: SnackPosition.TOP,
           backgroundColor: snackBackground,
           duration: const Duration(seconds: 5));
-
-
       Get.offAll(()=> const Dashboard());
     } else {
 // print(res.body);

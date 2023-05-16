@@ -601,8 +601,10 @@ class _DashboardState extends State<Dashboard> {
                     },
                   ),
                 ),
-                title: Text(agentCode,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                title: GetBuilder<ProfileController>(builder: (controller){
+                  return Text(controller.agentUniqueCode,
+                      style: const TextStyle(fontWeight: FontWeight.bold));
+                },),
                 backgroundColor: secondaryColor,
               ),
               body:  ListView(

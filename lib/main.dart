@@ -16,7 +16,6 @@ import 'controllers/logincontroller.dart';
 import 'controllers/notificationcontroller.dart';
 import 'controllers/profilecontroller.dart';
 import 'controllers/trialandmonthlypaymentcontroller.dart';
-import 'newsplash.dart';
 
 onBackgroundMessage(SmsMessage message) {
   debugPrint("onBackgroundMessage called");

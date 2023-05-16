@@ -10,7 +10,8 @@ class ProfileController extends GetxController{
   List profileDetails = [];
   late String userId = "";
   late String agentPhone = "";
-  late String supervisorCode = "";
+  late String ownerCode = "";
+  late String agentUniqueCode = "";
 
   Future<void> getUserProfile(String token) async {
     try {
@@ -58,9 +59,11 @@ class ProfileController extends GetxController{
         for(var i in profileDetails){
           userId = i['id'].toString();
           agentPhone = i['phone_number'];
-          supervisorCode = i['supervisor'];
+          ownerCode = i['owner'];
+          agentUniqueCode = i['agent_unique_code'];
         }
         update();
+        // print(profileDetails);
       }
       else{
         if (kDebugMode) {
