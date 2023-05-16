@@ -183,7 +183,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                     storage.write("phoneModel", authController.phoneModel);
                     storage.write("phoneBrand", authController.phoneBrand);
                     storage.write("phoneFingerprint", authController.phoneFingerprint);
-                    tpController.startFreeTrial(uToken);
+                    // tpController.startFreeTrial(uToken);
                     authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
                     Get.offAll(()=> const Dashboard());
                   }

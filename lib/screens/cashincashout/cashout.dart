@@ -582,6 +582,24 @@ class _CashOutState extends State<CashOut> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: TextFormField(
+
+                          controller: _amountReceivedController,
+                          focusNode: amountReceivedFocusNode,
+                          cursorRadius: const Radius.elliptical(10, 10),
+                          cursorWidth: 10,
+                          cursorColor: secondaryColor,
+                          decoration: buildInputDecoration("Amount Received GHC"),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please enter amount received";
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: TextFormField(
                           onChanged: (value){
                             if(value.length > 1 && value != ""){
                               setState(() {
@@ -608,25 +626,6 @@ class _CashOutState extends State<CashOut> {
                           },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: TextFormField(
-
-                          controller: _amountReceivedController,
-                          focusNode: amountReceivedFocusNode,
-                          cursorRadius: const Radius.elliptical(10, 10),
-                          cursorWidth: 10,
-                          cursorColor: secondaryColor,
-                          decoration: buildInputDecoration("Amount Received GHC"),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please enter amount received";
-                            }
-                          },
-                        ),
-                      ),
-
                     ],
                   ) : Container(),
                  hasOTP ? Column(

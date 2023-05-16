@@ -893,19 +893,37 @@ class _CashInState extends State<CashIn> {
                         return;
                       } else {
                         var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                        if(int.parse(_cashReceivedController.text) != mainTotal){
-                          Get.snackbar("Total Error", "Your total should be equal to the amount",
-                              colorText: defaultWhite,
-                              backgroundColor: warning,
-                              snackPosition: SnackPosition.BOTTOM,
-                              duration: const Duration(seconds: 5)
-                          );
-                          setState(() {
-                            total = mainTotal;
-                            amountNotEqualTotal = true;
-                          });
-                          return;
+                        if(_currentSelectedDepositType == "Loading"){
+                          if(double.parse(_amountController.text) != mainTotal){
+                            Get.snackbar("Total Error", "Your total should be equal to the amount",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5)
+                            );
+                            setState(() {
+                              total = mainTotal;
+                              amountNotEqualTotal = true;
+                            });
+                            return;
+                          }
                         }
+                        if(_currentSelectedDepositType == "Direct"){
+                          if(double.parse(_cashReceivedController.text) != mainTotal){
+                            Get.snackbar("Total Error", "Your total should be equal to the amount",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5)
+                            );
+                            setState(() {
+                              total = mainTotal;
+                              amountNotEqualTotal = true;
+                            });
+                            return;
+                          }
+                        }
+
                         else if(_currentSelectedDepositType == "Select deposit type" && _currentSelectedNetwork == "Mtn"){
                           Get.snackbar("Network or Type Error", "please select network and type",
                           colorText: defaultWhite,

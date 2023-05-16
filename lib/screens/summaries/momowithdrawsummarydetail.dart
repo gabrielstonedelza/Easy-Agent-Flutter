@@ -104,7 +104,7 @@ class _MtnWithdrawalSummaryDetailState extends State<MtnWithdrawalSummaryDetail>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 buildRow("Cash Paid: ", "cash_paid"),
-                                buildRow("Amount Received: ", "amount_received"),
+                                // buildRow("Amount Received: ", "amount_received"),
                                 buildRow("Network: ", "network"),
                                 items["d_200"] == 0 ? Container():
                                 Row(
