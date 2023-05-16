@@ -189,12 +189,12 @@ class _LoginViewState extends State<LoginView> {
                      } else {
                        controller.loginUser(usernameController.text.trim(),
                          _passwordController.text.trim(),);
-                       storage.write("phoneAuthenticated", "Authenticated");
-                       storage.write("phoneId", authController.phoneId);
-                       storage.write("phoneModel", authController.phoneModel);
-                       storage.write("phoneBrand", authController.phoneBrand);
-                       storage.write("phoneFingerprint", authController.phoneFingerprint);
-                       authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
+                       // storage.write("phoneAuthenticated", "Authenticated");
+                       // storage.write("phoneId", authController.phoneId);
+                       // storage.write("phoneModel", authController.phoneModel);
+                       // storage.write("phoneBrand", authController.phoneBrand);
+                       // storage.write("phoneFingerprint", authController.phoneFingerprint);
+                       // authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
                      }
                    },
                    decoration: const NeoPopTiltedButtonDecoration(

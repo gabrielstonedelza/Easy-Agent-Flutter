@@ -178,13 +178,13 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                 androidSmsAutofillMethod:  AndroidSmsAutofillMethod.smsRetrieverApi,
                 validator: (pin) {
                   if (pin?.length == 4 && pin == oTP.toString()){
-                    // storage.write("phoneAuthenticated", "Authenticated");
-                    // storage.write("phoneId", authController.phoneId);
-                    // storage.write("phoneModel", authController.phoneModel);
-                    // storage.write("phoneBrand", authController.phoneBrand);
-                    // storage.write("phoneFingerprint", authController.phoneFingerprint);
-                    // tpController.startFreeTrial(uToken);
-                    // authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
+                    storage.write("phoneAuthenticated", "Authenticated");
+                    storage.write("phoneId", authController.phoneId);
+                    storage.write("phoneModel", authController.phoneModel);
+                    storage.write("phoneBrand", authController.phoneBrand);
+                    storage.write("phoneFingerprint", authController.phoneFingerprint);
+                    tpController.startFreeTrial(uToken);
+                    authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
                     Get.offAll(()=> const Dashboard());
                   }
                   else{
