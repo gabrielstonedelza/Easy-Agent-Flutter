@@ -920,7 +920,7 @@ class _CashOutState extends State<CashOut> {
                             return;
                           } else {
                             var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                            if(int.parse(_amountReceivedController.text) != mainTotal){
+                            if(int.parse(_cashPaidController.text) != mainTotal){
                               Get.snackbar("Total Error", "Your total should be equal to the amount",
                                   colorText: defaultWhite,
                                   backgroundColor: warning,

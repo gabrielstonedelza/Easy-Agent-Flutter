@@ -897,7 +897,11 @@ class _CashInState extends State<CashIn> {
                     onTapUp: () {
                       _startPosting();
                       FocusScopeNode currentFocus = FocusScope.of(context);
-                      _cashReceivedController.text = _amountController.text;
+                      if(_currentSelectedDepositType == "Loading"){
+                        _cashReceivedController.text = _amountController.text;
+                      }
+                      // _cashReceivedController.text = _amountController.text;
+                      print("Cash received is ${_cashReceivedController.text}");
 
                       if (!currentFocus.hasPrimaryFocus) {
                         currentFocus.unfocus();

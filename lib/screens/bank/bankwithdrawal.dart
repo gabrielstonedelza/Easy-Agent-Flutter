@@ -24,6 +24,12 @@ class BankWithdrawal extends StatefulWidget {
 
 class _BankWithdrawalState extends State<BankWithdrawal> {
   final CustomersController controller = Get.find();
+  final List bankType = [
+    "Select bank type",
+    "Interbank",
+    "Easy Banking"
+  ];
+  var _currentSelectedBankType = "Select bank type";
   final List banks = [
     "Select bank",
     "Access Bank",
@@ -37,6 +43,47 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
     "Kwumawuman Bank",
     "Omini bank",
   ];
+  final List interBanks = [
+    "Select bank",
+    "Pan Africa",
+    "SGSSB",
+    "Atwima Rural Bank",
+    "Omnibsic Bank",
+    "Omini bank",
+    "Stanbic Bank",
+    "First Bank of Nigeria",
+    "Adehyeman Savings and loans",
+    "ARB Apex Bank Limited",
+    "Absa Bank",
+    "Agriculture Development bank",
+    "Bank of Africa",
+    "Bank of Ghana",
+    "Consolidated Bank Ghana",
+    "First Atlantic Bank",
+    "First National Bank",
+    "G-Money",
+    "GCB BanK LTD",
+    "Ghana Pay",
+    "GHL Bank Ltd",
+    "National Investment Bank",
+    "Opportunity International Savings And Loans",
+    "Prudential Bank",
+    "Republic Bank Ltd",
+    "Sahel Sahara Bank",
+    "Sinapi Aba Savings and Loans",
+    "Societe Generale Ghana Ltd",
+    "Standard Chartered",
+    "universal Merchant Bank",
+    "Zenith Bank",
+  ];
+  final List otherBanks = [
+    "Select bank",
+    "GT Bank",
+    "Access Bank",
+    "Cal Bank",
+    "Fidelity Bank",
+    "Ecobank",
+  ];
   var _currentSelectedBank = "Select bank";
   final List withDrawalTypes = [
     "Select Withdrawal Type",
@@ -45,6 +92,8 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
   ];
 
   var _currrentWithDrawalType = "Select Withdrawal Type";
+  bool isInterBank = false;
+  bool isOtherBank = false;
 
   bool amountIsNotEmpty = false;
   bool isPosting = false;
@@ -277,11 +326,50 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0, right: 10),
                         child: DropdownButton(
+                          hint: const Text("Select bank type"),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+
+                          items: bankType.map((dropDownStringItem) {
+                            return DropdownMenuItem(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected) {
+                            _onDropDownItemSelectedBankType(newValueSelected);
+                            if(_currentSelectedBankType == "Interbank"){
+                              setState(() {
+                                isInterBank = true;
+                                isOtherBank = false;
+                              });
+                            }
+                            if(_currentSelectedBankType == "Easy Banking"){
+                              setState(() {
+                                isOtherBank = true;
+                                isInterBank = false;
+                              });
+                            }
+                          },
+                          value: _currentSelectedBankType,
+                        ),
+                      ),
+                    ),
+                  ),
+                  isInterBank ? Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: DropdownButton(
                           hint: const Text("Select bank"),
                           isExpanded: true,
                           underline: const SizedBox(),
 
-                          items: banks.map((dropDownStringItem) {
+                          items: interBanks.map((dropDownStringItem) {
                             return DropdownMenuItem(
                               value: dropDownStringItem,
                               child: Text(dropDownStringItem),
@@ -294,7 +382,34 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                         ),
                       ),
                     ),
-                  ),
+                  ) : Container(),
+                  isOtherBank ?  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: DropdownButton(
+                          hint: const Text("Select bank"),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+
+                          items: otherBanks.map((dropDownStringItem) {
+                            return DropdownMenuItem(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected) {
+                            _onDropDownItemSelectedBank(newValueSelected);
+                          },
+                          value: _currentSelectedBank,
+                        ),
+                      ),
+                    ),
+                  ) : Container(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Container(
@@ -326,7 +441,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value.length > 3 && value != ""){
+                        if(value.length > 1 && value != ""){
                           setState(() {
                             amountIsNotEmpty = true;
                           });
@@ -693,6 +808,12 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
   void _onDropDownItemSelectedIdWithDrawalType(newValueSelected) {
     setState(() {
       _currrentWithDrawalType = newValueSelected;
+    });
+  }
+
+  void _onDropDownItemSelectedBankType(newValueSelected) {
+    setState(() {
+      _currentSelectedBankType = newValueSelected;
     });
   }
 
