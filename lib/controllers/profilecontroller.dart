@@ -63,7 +63,6 @@ class ProfileController extends GetxController{
           agentUniqueCode = i['agent_unique_code'];
         }
         update();
-        // print(profileDetails);
       }
       else{
         if (kDebugMode) {

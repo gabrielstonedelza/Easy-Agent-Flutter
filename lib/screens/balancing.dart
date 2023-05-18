@@ -229,12 +229,7 @@ class _ReBalancingState extends State<ReBalancing> {
                                 isBank = false;
                               });
                             }
-                            else{
-                              setState(() {
-                                isNetwork = false;
-                                isBank = false;
-                              });
-                            }
+
                           },
                           value: _currentSelectedExchangeType,
                         ),

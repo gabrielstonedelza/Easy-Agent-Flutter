@@ -626,6 +626,15 @@ class _CashOutState extends State<CashOut> {
                           },
                         ),
                       ),
+                      _amountReceivedController.text != "" && double.parse(_amountReceivedController.text) > double.parse(_cashPaidController.text)? Padding(
+                        padding: const EdgeInsets.only(bottom:8.0),
+                        child: Row(
+                          children: [
+                            const Text("Commission is : "),
+                            Text("${double.parse(_amountReceivedController.text) - double.parse(_cashPaidController.text)}"),
+                          ],
+                        ),
+                      ) : Container()
                     ],
                   ) : Container(),
                  hasOTP ? Column(

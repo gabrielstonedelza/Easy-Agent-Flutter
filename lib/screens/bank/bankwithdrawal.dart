@@ -106,21 +106,15 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
   bool isFraudster = false;
 
   Future<void> getAllFraudsters() async {
-    try {
-      const url = "https://fnetagents.xyz/get_all_fraudsters/";
-      var link = Uri.parse(url);
-      http.Response response = await http.get(link, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Token $uToken"
-      });
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        allFraudsters.assignAll(jsonData);
-      }
-    } catch (e) {
-      Get.snackbar("Sorry",
-          "something happened or please check your internet connection");
-    } finally {
+    const url = "https://fnetagents.xyz/get_all_fraudsters/";
+    var link = Uri.parse(url);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $uToken"
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      allFraudsters.assignAll(jsonData);
       setState(() {
         isLoading = false;
       });
@@ -185,6 +179,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
     _d2Controller = TextEditingController();
     _d1Controller = TextEditingController();
     controller.getAllCustomers(uToken);
+    getAllFraudsters();
   }
 
   @override

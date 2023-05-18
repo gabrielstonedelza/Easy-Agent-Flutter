@@ -1,4 +1,5 @@
 import 'package:easy_agent/constants.dart';
+import 'package:easy_agent/controllers/profilecontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
@@ -17,17 +18,20 @@ class HoldAccount extends StatefulWidget {
 
 class _HoldAccountState extends State<HoldAccount> {
   final SendSmsController sendSms = SendSmsController();
+  final ProfileController controller = Get.find();
   late String uToken = "";
   final storage = GetStorage();
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController;
   late final TextEditingController _customerPhoneNumberController;
   late final TextEditingController _reasonController;
-  late final TextEditingController _merchantIdController;
+  late final TextEditingController _agentPhoneNumberController;
   late final TextEditingController _transactionIdController;
   FocusNode amountFocusNode = FocusNode();
   FocusNode customerPhoneNumberFocusNode = FocusNode();
   FocusNode reasonFocusNode = FocusNode();
+  FocusNode agentPhoneNumberFocusNode = FocusNode();
+  FocusNode transactionIdFocusNode = FocusNode();
 
   bool isPosting = false;
 
@@ -51,7 +55,7 @@ class _HoldAccountState extends State<HoldAccount> {
       "amount": _amountController.text.trim(),
       "customer_number": _customerPhoneNumberController.text.trim(),
       "reason": _reasonController.text.trim(),
-      "merchant_id": _merchantIdController.text.trim(),
+      "merchant_id": _agentPhoneNumberController.text.trim(),
       "transaction_id": _transactionIdController.text.trim()
     });
     if (response.statusCode == 201) {
@@ -59,7 +63,7 @@ class _HoldAccountState extends State<HoldAccount> {
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
-      sendSms.sendMySms("+233550222888", "EasyAgent","Made a wrong transaction of amount GHC${_amountController.text} to this number ${_customerPhoneNumberController.text},my agent id is ${_merchantIdController.text.trim()} and the transaction id is ${_transactionIdController.text.trim()}can you please hold that account for me?Thank you.");
+      sendSms.sendMySms("+233550222888", "EasyAgent","Made a wrong transaction of amount GHC${_amountController.text} to this number ${_customerPhoneNumberController.text},my agent id is ${_agentPhoneNumberController.text.trim()} and the transaction id is ${_transactionIdController.text.trim()}can you please hold that account for me?Thank you.");
       Get.offAll(() => const Dashboard());
     } else {
 
@@ -81,7 +85,7 @@ class _HoldAccountState extends State<HoldAccount> {
     _amountController = TextEditingController();
     _customerPhoneNumberController = TextEditingController();
     _reasonController = TextEditingController();
-    _merchantIdController = TextEditingController();
+    _agentPhoneNumberController = TextEditingController(text: controller.agentPhone);
     _transactionIdController = TextEditingController();
   }
 
@@ -91,7 +95,7 @@ class _HoldAccountState extends State<HoldAccount> {
     _amountController.dispose();
     _customerPhoneNumberController.dispose();
     _reasonController.dispose();
-    _merchantIdController.dispose();
+    _agentPhoneNumberController.dispose();
     _transactionIdController.dispose();
   }
 
@@ -147,6 +151,42 @@ class _HoldAccountState extends State<HoldAccount> {
                       },
                     ),
                   ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: _agentPhoneNumberController,
+                      focusNode: agentPhoneNumberFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Your number"),
+                      keyboardType: TextInputType.text,
+                      // validator: (value) {
+                      //   if (value!.isEmpty) {
+                      //     return "Please enter agent id";
+                      //   }
+                      // },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: TextFormField(
+                      controller: _transactionIdController,
+                      focusNode: transactionIdFocusNode,
+                      cursorRadius: const Radius.elliptical(10, 10),
+                      cursorWidth: 10,
+                      cursorColor: secondaryColor,
+                      decoration: buildInputDecoration("Transaction Id"),
+                      keyboardType: TextInputType.text,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter transaction id";
+                        }
+                      },
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
@@ -161,42 +201,6 @@ class _HoldAccountState extends State<HoldAccount> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Please enter reason";
-                        }
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      maxLines: 3,
-                      controller: _merchantIdController,
-                      focusNode: reasonFocusNode,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Agent Id"),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter agent id";
-                        }
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      maxLines: 3,
-                      controller: _merchantIdController,
-                      focusNode: reasonFocusNode,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Transaction Id"),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter transaction id";
                         }
                       },
                     ),

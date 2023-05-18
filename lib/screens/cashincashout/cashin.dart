@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:pinput/pinput.dart';
+import 'package:telephony/telephony.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,13 @@ class CashIn extends StatefulWidget {
 class _CashInState extends State<CashIn> {
   final CustomersController controller = Get.find();
   bool isPosting = false;
+  final telephony = Telephony.instance;
+  sendSMS(){
+    telephony.sendSms(
+      to: "0593380008",
+      message: "The Lord bless you and keep you",
+    );
+  }
 
   void _startPosting()async{
     setState(() {
@@ -337,6 +345,9 @@ class _CashInState extends State<CashIn> {
       appBar: AppBar(
         title: const Text("Cash In",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
+        // actions: [
+        //   TextButton(onPressed: () { sendSMS(); },child: Text("Hello"),)
+        // ],
       ),
       body: isLoading ? const LoadingUi() :  ListView(
         children: [
@@ -478,6 +489,7 @@ class _CashInState extends State<CashIn> {
                                 isDirect = false;
                                 isMtnLoading = true;
                                 sentOTP = true;
+                                _cashReceivedController.text = _amountController.text;
                               });
                             }
                           },
@@ -606,7 +618,7 @@ class _CashInState extends State<CashIn> {
                       },
                     ),
                   ) : Container(),
-                  isDirect ? _cashReceivedController.text != "" ? Padding(
+                  isDirect ? _cashReceivedController.text != "" && double.parse(_cashReceivedController.text) > double.parse(_amountController.text)? Padding(
                     padding: const EdgeInsets.only(bottom:8.0),
                     child: Row(
                       children: [
@@ -885,6 +897,7 @@ class _CashInState extends State<CashIn> {
                     onTapUp: () {
                       _startPosting();
                       FocusScopeNode currentFocus = FocusScope.of(context);
+                      _cashReceivedController.text = _amountController.text;
 
                       if (!currentFocus.hasPrimaryFocus) {
                         currentFocus.unfocus();
@@ -893,35 +906,18 @@ class _CashInState extends State<CashIn> {
                         return;
                       } else {
                         var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                        if(_currentSelectedDepositType == "Loading"){
-                          if(double.parse(_amountController.text) != mainTotal){
-                            Get.snackbar("Total Error", "Your total should be equal to the amount",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5)
-                            );
-                            setState(() {
-                              total = mainTotal;
-                              amountNotEqualTotal = true;
-                            });
-                            return;
-                          }
-                        }
-                        if(_currentSelectedDepositType == "Direct"){
-                          if(double.parse(_cashReceivedController.text) != mainTotal){
-                            Get.snackbar("Total Error", "Your total should be equal to the amount",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5)
-                            );
-                            setState(() {
-                              total = mainTotal;
-                              amountNotEqualTotal = true;
-                            });
-                            return;
-                          }
+                        if(double.parse(_cashReceivedController.text) != mainTotal){
+                          Get.snackbar("Total Error", "Your total should be equal to the amount",
+                              colorText: defaultWhite,
+                              backgroundColor: warning,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 5)
+                          );
+                          setState(() {
+                            total = mainTotal;
+                            amountNotEqualTotal = true;
+                          });
+                          return;
                         }
 
                         else if(_currentSelectedDepositType == "Select deposit type" && _currentSelectedNetwork == "Mtn"){

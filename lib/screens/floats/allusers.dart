@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 
 import '../../constants.dart';
+import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../chats/privatechat.dart';
 
@@ -17,31 +18,39 @@ class AllUsers extends StatefulWidget {
 }
 
 class _AllUsersState extends State<AllUsers> {
-  late List allUsers = [];
+  late List allMyOwnersAgents = [];
+  late List allAgents = [];
   bool isLoading = true;
   late var items;
-  late List customerNumber = [];
-  // late String username = "";
+
   String profileId = "";
   final storage = GetStorage();
-  bool hasToken = false;
   late String uToken = "";
+  final ProfileController controller = Get.find();
 
-  fetchAllUsers()async{
-    const url = "https://fnetagents.xyz/get_all_user/";
+  fetchAllMyOwnerAgents()async{
+    final url = "https://fnetagents.xyz/get_supervisor_agents/${controller.ownerCode}/";
     var myLink = Uri.parse(url);
     final response = await http.get(myLink,headers: {"Authorization": "Token $uToken"});
 
     if(response.statusCode ==200){
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
-      allUsers = json.decode(jsonData);
+      allMyOwnersAgents = json.decode(jsonData);
+      // for(var i in allMyOwnersAgents){
+      //   if(i['phone_number'] != controller.agentPhone){
+      //    if(!allAgents.contains(i)){
+      //      allAgents.add(i);
+      //    }
+      //   }
+      //
+      //   print(allAgents);
+      // }
+      setState(() {
+        isLoading = false;
+      });
     }
 
-    setState(() {
-      isLoading = false;
-      allUsers = allUsers;
-    });
   }
 
   @override
@@ -51,46 +60,46 @@ class _AllUsersState extends State<AllUsers> {
 
     if (storage.read("token") != null) {
       setState(() {
-        hasToken = true;
+
         uToken = storage.read("token");
       });
     }
     if (storage.read("profile_id") != null) {
       setState(() {
-        hasToken = true;
+
         profileId = storage.read("profile_id");
       });
     }
-    fetchAllUsers();
+    fetchAllMyOwnerAgents();
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: secondaryColor,
-        title: const Text("All Users"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () {
-              setState(() {
-                isLoading = true;
-              });
-              fetchAllUsers();
-            },
-          )
-        ],
+        title: const Text("Private chat agents"),
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.refresh_rounded),
+        //     onPressed: () {
+        //       setState(() {
+        //         isLoading = true;
+        //       });
+        //       fetchAllMyOwnerAgents();
+        //     },
+        //   )
+        // ],
       ),
       body: SafeArea(
           child:
           isLoading ? const LoadingUi() : ListView.builder(
-              itemCount: allUsers != null ? allUsers.length : 0,
+              itemCount: allMyOwnersAgents != null ? allMyOwnersAgents.length : 0,
               itemBuilder: (context,i){
-                items = allUsers[i];
+                items = allMyOwnersAgents[i];
                 return Column(
                   children: [
                     const SizedBox(height: 10,),
-                    Padding(
+                    items['phone_number']  == controller.agentPhone ? Container() :  Padding(
                       padding: const EdgeInsets.only(left: 8.0,right: 8),
                       child: Card(
                         color: secondaryColor,

@@ -67,6 +67,8 @@ dependencies:
   dio:
   image_picker:
   image_cropper:
+  videosdk: ^1.1.0
+  flutter_vlc_player: ^7.2.0
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
-import 'package:easy_agent/screens/chats/groupchat.dart';
+import 'package:easy_agent/screens/chats/agentsGroupchat.dart';
 import 'package:easy_agent/screens/customerservice/fraud.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -104,10 +104,10 @@ class _NotificationsState extends State<Notifications> {
                         Get.to(() => const Fraud());
                   }
                   if(notifications[index]['notification_title'] == "New group message"){
-                    Get.to(() => const GroupChat());
+                    Get.to(() => const AgentsGroupChat());
                   }
                   if(notifications[index]['notification_title'] == "New private message"){
-                    Get.to(() => const GroupChat());
+                    Get.to(() => const AgentsGroupChat());
                   }
                 },
                 title: Text(items['notification_title'],style: const TextStyle(fontWeight: FontWeight.bold,)),

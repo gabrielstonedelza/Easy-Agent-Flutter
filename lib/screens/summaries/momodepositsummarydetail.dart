@@ -108,7 +108,7 @@ class _MtnDepositSummaryDetailState extends State<MtnDepositSummaryDetail> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     buildRow("Amount Sent: ", "amount_sent"),
-                                    // buildRow("Cash Received: ", "cash_received"),
+                                    buildRow("Cash Received: ", "cash_received"),
                                     buildRow("Network: ", "network"),
                                     buildRow("Type: ", "type"),
                                     items['type'] == "Direct" ? Column(

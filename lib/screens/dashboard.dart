@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:easy_agent/join_screen.dart';
 import 'package:easy_agent/screens/notifications.dart';
 import 'package:easy_agent/screens/paymentandrebalancing.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
@@ -29,6 +30,7 @@ import '../controllers/trialandmonthlypaymentcontroller.dart';
 import 'accounts/myaccounts.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
+import 'chats/agentsGroupchat.dart';
 import 'chats/privatechat.dart';
 import 'commissions.dart';
 import 'customers/customeraccounts.dart';
@@ -450,6 +452,7 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+
   @override
   void dispose(){
     super.dispose();
@@ -606,6 +609,14 @@ class _DashboardState extends State<Dashboard> {
                       style: const TextStyle(fontWeight: FontWeight.bold));
                 },),
                 backgroundColor: secondaryColor,
+                // actions: [
+                //   IconButton(
+                //     onPressed: (){
+                //       Get.to(() => JoinScreen());
+                //     },
+                //     icon: Image.asset("assets/images/live-stream.png"),
+                //   )
+                // ],
               ),
               body:  ListView(
                 children: [
@@ -1026,7 +1037,60 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            Get.to(()=> PrivateChat());
+                            showMaterialModalBottomSheet(
+                              context: context,
+                              builder: (context) => SizedBox(
+                                height: 200,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top:25.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: GestureDetector(
+                                          child: Column(
+                                            children: [
+                                              Image.asset(
+                                                "assets/images/cashier.png",
+                                                width: 70,
+                                                height: 70,
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              const Text("Owner"),
+                                            ],
+                                          ),
+                                          onTap: () {
+                                            Get.to(()=> PrivateChat());
+                                          },
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          child: Column(
+                                            children: [
+                                              Image.asset(
+                                                "assets/images/team1.png",
+                                                width: 70,
+                                                height: 70,
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              const Text("Agent Chat"),
+                                            ],
+                                          ),
+                                          onTap: () {
+                                            Get.to(() => const AgentsGroupChat());
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+
                           },
                         ),
                       ),
@@ -1078,25 +1142,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
-              // floatingActionButton: FloatingActionButton(
-              //   backgroundColor:defaultWhite,
-              //   onPressed: (){
-              //     Get.defaultDialog(
-              //         buttonColor: secondaryColor,
-              //         title: "Trial Alert",
-              //         content: Column(
-              //           children: [
-              //             const Text("You are using a trial version of Easy Agent which is ending on "),
-              //             Padding(
-              //               padding: const EdgeInsets.only(top:18.0),
-              //               child: Text(tpController.endingDate,style: const TextStyle(fontWeight: FontWeight.bold),),
-              //             )
-              //           ],
-              //         )
-              //     );
-              //   },
-              //   child: Image.asset("assets/images/freetrial.png"),
-              // ),
+
             )
     ) : Scaffold(
             body: Column(
