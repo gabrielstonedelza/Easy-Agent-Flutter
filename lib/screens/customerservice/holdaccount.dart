@@ -63,7 +63,7 @@ class _HoldAccountState extends State<HoldAccount> {
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
-      sendSms.sendMySms("+233550222888", "EasyAgent","Made a wrong transaction of amount GHC${_amountController.text} to this number ${_customerPhoneNumberController.text},my agent id is ${_agentPhoneNumberController.text.trim()} and the transaction id is ${_transactionIdController.text.trim()}can you please hold that account for me?Thank you.");
+      sendSms.sendMySms("+233550222888", "EasyAgent","Made a wrong transaction of amount GHC${_amountController.text} to this number ${_customerPhoneNumberController.text},my agent number is ${_agentPhoneNumberController.text.trim()} and the transaction id is ${_transactionIdController.text.trim()},can you please hold that account for me?Thank you.");
       Get.offAll(() => const Dashboard());
     } else {
 

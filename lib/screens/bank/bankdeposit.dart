@@ -12,10 +12,12 @@ import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
+import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../customers/customeraccounts.dart';
 import '../customers/registercustomer.dart';
 import '../dashboard.dart';
+import '../sendsms.dart';
 
 class BankDeposit extends StatefulWidget {
   const BankDeposit({Key? key}) : super(key: key);
@@ -212,6 +214,7 @@ class _BankDepositState extends State<BankDeposit> {
       isLoading = false;
     });
   }
+  final SendSmsController sendSms = SendSmsController();
 
 
   late String uToken = "";
@@ -221,6 +224,36 @@ class _BankDepositState extends State<BankDeposit> {
         code: "*171*6*1*1#", subscriptionId: 1);
   }
 
+  ProfileController profileController = Get.find();
+  late List ownerDetails = [];
+  late String ownerId = "";
+  late String ownerUsername = "";
+
+  Future<void> fetchOwnersDetails() async {
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      ownerDetails.assignAll(allPosts);
+      for(var i in ownerDetails){
+        ownerId = i['id'].toString();
+        ownerUsername = i['username'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
+
   processBankDeposit() async {
     const registerUrl = "https://fnetagents.xyz/post_bank_deposit/";
     final myLink = Uri.parse(registerUrl);
@@ -228,6 +261,8 @@ class _BankDepositState extends State<BankDeposit> {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
+      "owner": ownerId,
+      "agent": profileController.userId,
       "depositor_name": _depositorNameController.text.trim(),
       "depositor_number": _depositorNumberController.text.trim(),
       "bank": _currentSelectedBank,
@@ -246,6 +281,8 @@ class _BankDepositState extends State<BankDeposit> {
     });
 
     if (res.statusCode == 201) {
+      String num = _customerPhoneController.text.replaceFirst("0", '+233');
+      sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} into your $_currentSelectedBank was successful.Thank you for working with Easy Agent.");
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -432,6 +469,7 @@ class _BankDepositState extends State<BankDeposit> {
         uToken = storage.read("token");
       });
     }
+    fetchOwnersDetails();
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _depositorNameController = TextEditingController();

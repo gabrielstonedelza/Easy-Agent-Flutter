@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 
 import '../../controllers/customerscontroller.dart';
+import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../customers/registercustomer.dart';
 
@@ -169,6 +170,35 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
       });
     }
   }
+  ProfileController profileController = Get.find();
+  late List ownerDetails = [];
+  late String ownerId = "";
+  late String ownerUsername = "";
+
+  Future<void> fetchOwnersDetails() async {
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      ownerDetails.assignAll(allPosts);
+      for(var i in ownerDetails){
+        ownerId = i['id'].toString();
+        ownerUsername = i['username'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
 
   processWithdraw(context) async {
@@ -178,6 +208,8 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
+      "owner": ownerId,
+      "agent": profileController.userId,
       "customer": _customerPhoneController.text.trim(),
       "bank": _currentSelectedBank,
       "withdrawal_type": _currrentWithDrawalType,
@@ -217,6 +249,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
         uToken = storage.read("token");
       });
     }
+    fetchOwnersDetails();
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _d200Controller = TextEditingController();

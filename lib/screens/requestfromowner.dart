@@ -114,7 +114,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
   bool canRequestAgain = false;
   bool requestFinished = false;
 
-  Future<void> fetchSuperVisorsDetails() async {
+  Future<void> fetchOwnersDetails() async {
     final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.ownerCode}/";
     final pLink = Uri.parse(postUrl);
     http.Response res = await http.get(pLink, headers: {
@@ -205,7 +205,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
           duration: const Duration(seconds: 5));
       Get.offAll(()=> const Dashboard());
     } else {
-// print(res.body);
+print(res.body);
       Get.snackbar("Request Error", "something went wrong please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -222,7 +222,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
       });
     }
     _amountController = TextEditingController();
-    fetchSuperVisorsDetails();
+    fetchOwnersDetails();
     fetchMyRequestsLimit();
     fetchAllRequestsToday();
   }
@@ -237,12 +237,12 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
       ),
       body:isLoading ? const LoadingUi() :  ListView(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: requestLimit > allRequests.length ?Text("You have a request limit of $requestLimit",style: const TextStyle(fontWeight: FontWeight.bold),) : const Text("You have used all your request for today or it's not set by your owner.",style: TextStyle(fontWeight: FontWeight.bold),),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Center(
+          //     child: requestLimit > allRequests.length ?Text("You have a request limit of $requestLimit",style: const TextStyle(fontWeight: FontWeight.bold),) : const Text("You have used all your request for today or it's not set by your owner.",style: TextStyle(fontWeight: FontWeight.bold),),
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Form(
@@ -426,7 +426,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
                     ),
                   ),
                   isPosting  ? const LoadingUi() :
-                  requestLimit > allRequests.length ? NeoPopTiltedButton(
+                  NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () {
                       _startPosting();
@@ -475,7 +475,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
                           fontSize: 20,
                           color: Colors.white)),
                     ),
-                  ) : Container(),
+                  ),
                 ],
               ),
             ),

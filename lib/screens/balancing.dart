@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../widgets/loadingui.dart';
+import '../controllers/profilecontroller.dart';
 import 'dashboard.dart';
 
 
@@ -87,6 +88,7 @@ class _ReBalancingState extends State<ReBalancing> {
 
   FocusNode amountFocusNode = FocusNode();
 
+
   late String uToken = "";
   final storage = GetStorage();
   final List networks = [
@@ -105,6 +107,35 @@ class _ReBalancingState extends State<ReBalancing> {
 
   var _currentSelectedNetwork = "Select Network";
   var _currentSelectedExchangeType = "Select exchange type";
+  ProfileController profileController = Get.find();
+  late List ownerDetails = [];
+  late String ownerId = "";
+  late String ownerUsername = "";
+
+  Future<void> fetchOwnersDetails() async {
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      ownerDetails.assignAll(allPosts);
+      for(var i in ownerDetails){
+        ownerId = i['id'].toString();
+        ownerUsername = i['username'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
 
   processBalancing() async {
@@ -114,6 +145,8 @@ class _ReBalancingState extends State<ReBalancing> {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
+      "owner": ownerId,
+      "agent": profileController.userId,
       "amount": _amountController.text.trim(),
       "bank": _currentSelectedBank,
       "network": _currentSelectedNetwork,
@@ -147,6 +180,7 @@ class _ReBalancingState extends State<ReBalancing> {
     }
     _amountController = TextEditingController();
     getAllMyAccounts(uToken);
+    fetchOwnersDetails();
   }
 
   @override
@@ -216,7 +250,7 @@ class _ReBalancingState extends State<ReBalancing> {
                             );
                           }).toList(),
                           onChanged: (newValueSelected) {
-                            _onDropDownItemSelectedNetwork(newValueSelected);
+                            _onDropDownItemSelectedExchangeType(newValueSelected);
                             if(newValueSelected == "Bank") {
                               setState(() {
                                 isBank = true;
@@ -381,6 +415,10 @@ class _ReBalancingState extends State<ReBalancing> {
                           color: Colors.white)),
                     ),
                   ),
+                  const SizedBox(height: 30,),
+                  const Center(
+                    child: Text("Click on the home button to go your dashboard if you decide not proceed."),
+                  )
                 ],
               ),
             ),

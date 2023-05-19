@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../../constants.dart';
 import '../../../widgets/loadingui.dart';
+import '../../controllers/profilecontroller.dart';
 import '../balancing.dart';
 import '../dashboard.dart';
 
@@ -34,6 +36,36 @@ class _PaymentsState extends State<Payments> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  late List ownerDetails = [];
+  late String ownerId = "";
+  late String ownerUsername = "";
+  bool isLoading = true;
+  ProfileController profileController = Get.find();
+
+  Future<void> fetchOwnersDetails() async {
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      ownerDetails.assignAll(allPosts);
+      for(var i in ownerDetails){
+        ownerId = i['id'].toString();
+        ownerUsername = i['username'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
 
   late final TextEditingController _amountController;
@@ -54,6 +86,8 @@ class _PaymentsState extends State<Payments> {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
+      "owner": ownerId,
+      "agent": profileController.userId,
       "amount": _amountController.text.trim(),
       "transaction_id": _transactionIdController.text.trim(),
       "reason_for_payment": _reasonForPaymentController.text.trim(),
@@ -83,6 +117,7 @@ class _PaymentsState extends State<Payments> {
         uToken = storage.read("token");
       });
     }
+    fetchOwnersDetails();
     _amountController = TextEditingController();
     _transactionIdController = TextEditingController();
     _reasonForPaymentController = TextEditingController();
@@ -103,7 +138,7 @@ class _PaymentsState extends State<Payments> {
         title: const Text("Make Payment",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
       ),
-      body: ListView(
+      body:isLoading ? const LoadingUi() : ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(18.0),
