@@ -28,12 +28,14 @@ class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetai
   late List allBalancing = [];
   bool isLoading = true;
   late var items;
+  late var itemsClosed;
   late List amounts = [];
   late List amountResults = [];
   late List balancingDates = [];
   double sum = 0.0;
+  late List accountBalanceDetailsClosed = [];
 
-  fetchAllAccountBalance() async {
+  Future<void>fetchAllAccountBalance() async {
     const url = "https://fnetagents.xyz/get_my_account_balance_started";
     var myLink = Uri.parse(url);
     final response =
@@ -57,6 +59,7 @@ class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetai
       balancingDates = balancingDates;
     });
   }
+
 
   @override
   void initState() {
@@ -123,26 +126,14 @@ class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetai
                                     ],
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0,top: 2),
-                                  child: Row(
-                                    children: [
-                                      const Text("Time : ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
-                                      ),
-                                      Text(items['date_posted'].toString().split("T").last.toString().split(".").first, style: const TextStyle(
-                                          fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                               ],
                             ),
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
-                );
+                );;
               })),
       floatingActionButton: !isLoading
           ? FloatingActionButton(
@@ -178,6 +169,21 @@ class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetai
           Text(mainTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           Text(items[subtitle].toString(), style: const TextStyle(
+              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Padding buildClosedRow(String mainTitle,String subtitle) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Text(mainTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Text(itemsClosed[subtitle].toString(), style: const TextStyle(
               fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ],

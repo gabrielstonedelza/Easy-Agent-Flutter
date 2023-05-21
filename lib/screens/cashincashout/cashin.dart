@@ -742,11 +742,19 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 200;
-                                                    setState(() {
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d200 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                      dt = int.parse(value) * 200;
                                                       d200 = dt;
-                                                    });
+                                                      });
+                                                    }
                                                   },
                                                   focusNode: d200FocusNode,
                                                   controller: _d200Controller,
@@ -788,11 +796,25 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 100;
-                                                    setState(() {
-                                                      d100 = dt;
-                                                    });
+                                                    // var dt =
+                                                    //     int.parse(value) * 100;
+                                                    // setState(() {
+                                                    //   d100 = dt;
+                                                    // });
+
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d100 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                        dt = int.parse(value) * 100;
+                                                        d100 = dt;
+                                                      });
+                                                    }
                                                   },
                                                   controller: _d100Controller,
                                                   focusNode: d100FocusNode,
@@ -835,11 +857,25 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 50;
-                                                    setState(() {
-                                                      d50 = dt;
-                                                    });
+                                                    // var dt =
+                                                    //     int.parse(value) * 50;
+                                                    // setState(() {
+                                                    //   d50 = dt;
+                                                    // });
+
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d50 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                        dt = int.parse(value) * 50;
+                                                        d50 = dt;
+                                                      });
+                                                    }
                                                   },
                                                   focusNode: d50FocusNode,
                                                   controller: _d50Controller,
@@ -881,11 +917,25 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 20;
-                                                    setState(() {
-                                                      d20 = dt;
-                                                    });
+                                                    // var dt =
+                                                    //     int.parse(value) * 20;
+                                                    // setState(() {
+                                                    //   d20 = dt;
+                                                    // });
+                                                    //
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d20 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                        dt = int.parse(value) * 20;
+                                                        d20 = dt;
+                                                      });
+                                                    }
                                                   },
                                                   focusNode: d20FocusNode,
                                                   controller: _d20Controller,
@@ -928,11 +978,24 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 10;
-                                                    setState(() {
-                                                      d10 = dt;
-                                                    });
+                                                    // var dt =
+                                                    //     int.parse(value) * 10;
+                                                    // setState(() {
+                                                    //   d10 = dt;
+                                                    // });
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d10 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                        dt = int.parse(value) * 10;
+                                                        d10 = dt;
+                                                      });
+                                                    }
                                                   },
                                                   focusNode: d10FocusNode,
                                                   controller: _d10Controller,
@@ -974,11 +1037,25 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 5;
-                                                    setState(() {
-                                                      d5 = dt;
-                                                    });
+                                                    // var dt =
+                                                    //     int.parse(value) * 5;
+                                                    // setState(() {
+                                                    //   d5 = dt;
+                                                    // });
+
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d5 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                        dt = int.parse(value) * 5;
+                                                        d5 = dt;
+                                                      });
+                                                    }
                                                   },
                                                   focusNode: d5FocusNode,
                                                   controller: _d5Controller,
@@ -1021,11 +1098,25 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 2;
-                                                    setState(() {
-                                                      d2 = dt;
-                                                    });
+                                                    // var dt =
+                                                    //     int.parse(value) * 2;
+                                                    // setState(() {
+                                                    //   d2 = dt;
+                                                    // });
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d2 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                        dt = int.parse(value) * 2;
+                                                        d2 = dt;
+                                                      });
+                                                    }
+
                                                   },
                                                   focusNode: d2FocusNode,
                                                   controller: _d2Controller,
@@ -1067,11 +1158,24 @@ class _CashInState extends State<CashIn> {
                                               children: [
                                                 TextFormField(
                                                   onChanged: (value) {
-                                                    var dt =
-                                                        int.parse(value) * 1;
-                                                    setState(() {
-                                                      d1 = dt;
-                                                    });
+                                                    // var dt =
+                                                    //     int.parse(value) * 1;
+                                                    // setState(() {
+                                                    //   d1 = dt;
+                                                    // });
+                                                    var dt = 0;
+                                                    if(value.isEmpty){
+                                                      setState(() {
+                                                        dt = 0;
+                                                        d1 = 0;
+                                                      });
+                                                    }
+                                                    else{
+                                                      setState(() {
+                                                        dt = int.parse(value) * 1;
+                                                        d1 = dt;
+                                                      });
+                                                    }
                                                   },
                                                   focusNode: d1FocusNode,
                                                   controller: _d1Controller,

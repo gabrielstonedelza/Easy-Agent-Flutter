@@ -28,6 +28,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
   late List reversedAccountBalanceToday = List.of(accountBalanceDetailsToday.reversed);
   var items;
   bool hasClosedAccountToday = false;
+  DateTime now = DateTime.now();
 
   Future<void> fetchAccountBalance() async {
     const postUrl = "https://fnetagents.xyz/get_my_account_balance_started_today/";
@@ -42,6 +43,11 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       var jsonData = jsonDecode(codeUnits);
       var allPosts = jsonData;
       accountBalanceDetailsToday.assignAll(allPosts);
+      for(var i in accountBalanceDetailsToday){
+        if(i['date_posted'] == now.toString().split(" ").first && i['isClosed'] == true){
+          hasClosedAccountToday = true;
+        }
+      }
       setState(() {
         isLoading = false;
       });
@@ -63,7 +69,9 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       var allPosts = jsonData;
       accountBalanceDetailsClosedToday.assignAll(allPosts);
       for(var i in accountBalanceDetailsClosedToday){
-        hasClosedAccountToday = i['isClosed'];
+        if(i['date_closed'] == now.toString().split(" ").first && i['isClosed'] == true){
+          hasClosedAccountToday = true;
+        }
       }
       setState(() {
         isLoading = false;

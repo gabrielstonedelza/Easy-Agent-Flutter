@@ -9,6 +9,7 @@ import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';
 import 'package:easy_agent/screens/summaries/momocashinsummary.dart';
 import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
 import 'package:easy_agent/screens/summaries/paytosummary.dart';
+import 'package:easy_agent/screens/summaries/reportsummary.dart';
 import 'package:easy_agent/screens/summaries/requestsummary.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -27,6 +28,7 @@ import '../controllers/localnotificationcontroller.dart';
 import '../controllers/notificationcontroller.dart';
 import '../controllers/profilecontroller.dart';
 import '../controllers/trialandmonthlypaymentcontroller.dart';
+import '../widgets/loadingui.dart';
 import 'accounts/myaccounts.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
@@ -37,7 +39,6 @@ import 'customers/customeraccounts.dart';
 import 'customers/mycustomers.dart';
 import 'customers/registercustomer.dart';
 import 'customerservice/customerservice.dart';
-import 'customerservice/fraud.dart';
 import 'login.dart';
 
 class Dashboard extends StatefulWidget {
@@ -48,6 +49,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  DateTime now = DateTime.now();
   NotificationController notificationsController = Get.find();
   final ProfileController profileController = Get.find();
   final storage = GetStorage();
@@ -109,7 +111,34 @@ class _DashboardState extends State<Dashboard> {
 
   bool isAuthenticated = false;
   bool isAuthenticatedAlready = false;
+  late List accountBalanceDetailsClosedToday = [];
+  bool hasClosedAccountToday = false;
 
+  Future<void> fetchAccountBalanceClosed() async {
+    const postUrl = "https://fnetagents.xyz/get_my_account_balance_closed_today/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      accountBalanceDetailsClosedToday.assignAll(allPosts);
+      for(var i in accountBalanceDetailsClosedToday){
+        if(i['date_closed'] == now.toString().split(" ").first && i['isClosed'] == true){
+          hasClosedAccountToday = true;
+        }
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
   Future<void> getAllTriggeredNotifications() async {
     const url = "https://fnetagents.xyz/get_triggered_notifications/";
@@ -409,6 +438,7 @@ class _DashboardState extends State<Dashboard> {
     profileController.getUserProfile(uToken);
     getAllTriggeredNotifications();
     fetchAllRequests();
+    fetchAccountBalanceClosed();
 
     _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
       getAllTriggeredNotifications();
@@ -425,7 +455,6 @@ class _DashboardState extends State<Dashboard> {
         unTriggerNotifications(e["id"]);
       }
     });
-
   }
 
 
@@ -609,16 +638,16 @@ class _DashboardState extends State<Dashboard> {
                       style: const TextStyle(fontWeight: FontWeight.bold));
                 },),
                 backgroundColor: secondaryColor,
-                // actions: [
-                //   IconButton(
-                //     onPressed: (){
-                //       Get.to(() => JoinScreen());
-                //     },
-                //     icon: Image.asset("assets/images/live-stream.png"),
-                //   )
-                // ],
+                actions: [
+                  IconButton(
+                    onPressed: (){
+                      Get.to(() => const MyReports());
+                    },
+                    icon: Image.asset("assets/images/market-analysis.png"),
+                  )
+                ],
               ),
-              body:  ListView(
+              body: isLoading ? const LoadingUi() : ListView(
                 children: [
                   const SizedBox(
                     height: 30,
@@ -647,12 +676,15 @@ class _DashboardState extends State<Dashboard> {
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: warning,
                               duration: const Duration(seconds: 5)
-                            ):  Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                            ): hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5),
+                                backgroundColor: warning) : Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5));
-                            // Get.to(() => const PayToSummary());
                           },
                         ),
                       ),
@@ -678,7 +710,11 @@ class _DashboardState extends State<Dashboard> {
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: warning,
                                 duration: const Duration(seconds: 5)
-                            ):      Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                            ):   hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5),
+                                backgroundColor: warning) :   Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,
@@ -707,7 +743,11 @@ class _DashboardState extends State<Dashboard> {
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: warning,
                                 duration: const Duration(seconds: 5)
-                            ): Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
+                            ):hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5),
+                                backgroundColor: warning) : Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,

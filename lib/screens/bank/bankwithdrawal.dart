@@ -499,62 +499,117 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                       },
                     ),
                   ),
-                  amountIsNotEmpty ? Column(
+                  amountIsNotEmpty
+                      ? Column(
                     children: [
                       Row(
                         children: [
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 200;
-                                      setState(() {
-                                        d200 = dt;
-                                      });
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d200 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 200;
+                                          d200 = dt;
+                                        });
+                                      }
                                     },
                                     focusNode: d200FocusNode,
                                     controller: _d200Controller,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("200 GHC Notes"),
-                                    keyboardType: TextInputType.number,
+                                    decoration:
+                                    buildInputDecoration(
+                                        "200 GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d200.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d200.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10,),
+                          const SizedBox(
+                            width: 10,
+                          ),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 100;
-                                      setState(() {
-                                        d100 = dt;
-                                      });
+                                      // var dt =
+                                      //     int.parse(value) * 100;
+                                      // setState(() {
+                                      //   d100 = dt;
+                                      // });
+
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d100 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 100;
+                                          d100 = dt;
+                                        });
+                                      }
                                     },
                                     controller: _d100Controller,
                                     focusNode: d100FocusNode,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("100 GHC Notes"),
-                                    keyboardType: TextInputType.number,
+                                    decoration:
+                                    buildInputDecoration(
+                                        "100 GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d100.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d100.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
@@ -566,57 +621,116 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 50;
-                                      setState(() {
-                                        d50 = dt;
-                                      });
+                                      // var dt =
+                                      //     int.parse(value) * 50;
+                                      // setState(() {
+                                      //   d50 = dt;
+                                      // });
+
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d50 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 50;
+                                          d50 = dt;
+                                        });
+                                      }
                                     },
                                     focusNode: d50FocusNode,
                                     controller: _d50Controller,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("50 GHC Notes"),
-                                    keyboardType: TextInputType.number,
+                                    decoration:
+                                    buildInputDecoration(
+                                        "50 GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d50.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d50.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10,),
+                          const SizedBox(
+                            width: 10,
+                          ),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 20;
-                                      setState(() {
-                                        d20 = dt;
-                                      });
+                                      // var dt =
+                                      //     int.parse(value) * 20;
+                                      // setState(() {
+                                      //   d20 = dt;
+                                      // });
+                                      //
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d20 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 20;
+                                          d20 = dt;
+                                        });
+                                      }
                                     },
                                     focusNode: d20FocusNode,
                                     controller: _d20Controller,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("20 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
+                                    decoration:
+                                    buildInputDecoration(
+                                        "20 GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d20.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d20.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
@@ -628,58 +742,115 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 10;
-                                      setState(() {
-                                        d10 = dt;
-                                      });
+                                      // var dt =
+                                      //     int.parse(value) * 10;
+                                      // setState(() {
+                                      //   d10 = dt;
+                                      // });
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d10 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 10;
+                                          d10 = dt;
+                                        });
+                                      }
                                     },
                                     focusNode: d10FocusNode,
                                     controller: _d10Controller,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("10 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
+                                    decoration:
+                                    buildInputDecoration(
+                                        "10 GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d10.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d10.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10,),
+                          const SizedBox(
+                            width: 10,
+                          ),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 5;
-                                      setState(() {
-                                        d5 = dt;
-                                      });
+                                      // var dt =
+                                      //     int.parse(value) * 5;
+                                      // setState(() {
+                                      //   d5 = dt;
+                                      // });
+
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d5 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 5;
+                                          d5 = dt;
+                                        });
+                                      }
                                     },
                                     focusNode: d5FocusNode,
                                     controller: _d5Controller,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("5 GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
+                                    decoration:
+                                    buildInputDecoration(
+                                        "5 GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d5.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d5.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
@@ -691,57 +862,115 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 2;
-                                      setState(() {
-                                        d2 = dt;
-                                      });
+                                      // var dt =
+                                      //     int.parse(value) * 2;
+                                      // setState(() {
+                                      //   d2 = dt;
+                                      // });
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d2 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 2;
+                                          d2 = dt;
+                                        });
+                                      }
+
                                     },
                                     focusNode: d2FocusNode,
                                     controller: _d2Controller,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("2GHC Notes"),
-                                    keyboardType: TextInputType.number,
-
+                                    decoration:
+                                    buildInputDecoration(
+                                        "2GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d2.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d2.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10,),
+                          const SizedBox(
+                            width: 10,
+                          ),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 10.0),
                               child: Column(
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      var dt = int.parse(value) * 1;
-                                      setState(() {
-                                        d1 = dt;
-                                      });
+                                      // var dt =
+                                      //     int.parse(value) * 1;
+                                      // setState(() {
+                                      //   d1 = dt;
+                                      // });
+                                      var dt = 0;
+                                      if(value.isEmpty){
+                                        setState(() {
+                                          dt = 0;
+                                          d1 = 0;
+                                        });
+                                      }
+                                      else{
+                                        setState(() {
+                                          dt = int.parse(value) * 1;
+                                          d1 = dt;
+                                        });
+                                      }
                                     },
                                     focusNode: d1FocusNode,
                                     controller: _d1Controller,
                                     cursorColor: secondaryColor,
-                                    cursorRadius: const Radius.elliptical(10, 10),
+                                    cursorRadius:
+                                    const Radius.elliptical(
+                                        10, 10),
                                     cursorWidth: 10,
-                                    decoration: buildInputDecoration("1 GHC Notes"),
-                                    keyboardType: TextInputType.number,
+                                    decoration:
+                                    buildInputDecoration(
+                                        "1 GHC Notes"),
+                                    keyboardType:
+                                    TextInputType.number,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 12.0,bottom: 12),
-                                    child: Text(d1.toString(),style: const TextStyle(fontWeight: FontWeight.bold),),
+                                    padding:
+                                    const EdgeInsets.only(
+                                        top: 12.0,
+                                        bottom: 12),
+                                    child: Text(
+                                      d1.toString(),
+                                      style: const TextStyle(
+                                          fontWeight:
+                                          FontWeight.bold),
+                                    ),
                                   )
                                 ],
                               ),
@@ -752,16 +981,25 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                       Row(
                         children: [
                           Expanded(
-                              child: amountNotEqualTotal ? Text("TOTAL: $total",style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.red,fontSize: 20),) : const Text("")
+                              child: amountNotEqualTotal
+                                  ? Text(
+                                "TOTAL: $total",
+                                style: const TextStyle(
+                                    fontWeight:
+                                    FontWeight.bold,
+                                    color: Colors.red,
+                                    fontSize: 20),
+                              )
+                                  : const Text("")),
+                          const SizedBox(
+                            width: 10,
                           ),
-                          const SizedBox(width: 10,),
-                          const Expanded(
-                              child:  Text("")
-                          )
+                          const Expanded(child: Text(""))
                         ],
                       ),
                     ],
-                  ) : Container(),
+                  )
+                      : Container(),
                   const SizedBox(height: 30,),
 
                   isPosting  ? const LoadingUi() :
