@@ -110,7 +110,7 @@ class _MyReportsState extends State<MyReports> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left:8.0,top: 8,bottom: 8),
-                      child: Text(items['report'],style: TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
+                      child: Text(items['report'],style: const TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
                     )
                   ],
                 ),
