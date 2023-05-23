@@ -110,7 +110,7 @@ class _AddNewReportState extends State<AddNewReport> {
 
       Get.offAll(() => const Dashboard());
     } else {
-      print(response.body);
+
       Get.snackbar("Error", "something happened",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -165,11 +165,13 @@ class _AddNewReportState extends State<AddNewReport> {
                       cursorWidth: 10,
                       cursorColor: secondaryColor,
                       decoration: buildInputDecoration("Report"),
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Please enter report";
                         }
+                        return null;
                       },
                     ),
                   ),

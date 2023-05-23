@@ -141,7 +141,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     getUserDetails(uToken);
     startTimer();
     generate5digit();
-    authController.fetchAuthPhone(uToken);
+    authController.fetchAuthPhone();
 
     Timer(const Duration(seconds: 10), () {
       if(authController.isAuthDevice){

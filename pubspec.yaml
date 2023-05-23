@@ -63,12 +63,11 @@ dependencies:
 
   flutter_local_notifications: ^14.0.0+2
   flutter_phone_direct_caller: ^2.1.1
-  device_info_plus: ^8.2.0
+  device_info_plus: ^9.0.0
   dio:
   image_picker:
   image_cropper:
-  videosdk: ^1.1.0
-  flutter_vlc_player: ^7.2.0
+  upgrader: ^7.0.0
 
 dev_dependencies:
   flutter_test:

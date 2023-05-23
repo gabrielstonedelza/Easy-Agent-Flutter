@@ -31,14 +31,13 @@ class AuthPhoneController extends GetxController {
     phoneFingerprint = androidInfo.fingerprint;
   }
 
-  Future<void> fetchAuthPhone(String token) async {
+  Future<void> fetchAuthPhone() async {
     try {
       const postUrl = "https://fnetagents.xyz/get_all_auth_phones/";
       final pLink = Uri.parse(postUrl);
       http.Response res = await http.get(pLink, headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         'Accept': 'application/json',
-        "Authorization": "Token $token"
       });
       if (res.statusCode == 200) {
         final codeUnits = res.body;
@@ -54,18 +53,18 @@ class AuthPhoneController extends GetxController {
                 backgroundColor: secondaryColor,
                 duration: const Duration(seconds: 5));
           }
-          else{
-            isAuthDevice = false;
-            storage.remove("token");
-            storage.remove("agent_code");
-            storage.remove("phoneAuthenticated");
-            Get.snackbar("Device Auth Error", "This is not your authenticated device,please contact the admin or login with the auth device",
-                colorText: Colors.white,
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: warning,
-                duration: const Duration(seconds: 10));
-            Get.offAll(()=> const LoginView());
-          }
+          // else{
+          //   isAuthDevice = false;
+          //   storage.remove("token");
+          //   storage.remove("agent_code");
+          //   storage.remove("phoneAuthenticated");
+          //   Get.snackbar("Device Auth Error", "This is not your authenticated device,please contact the admin or login with the auth device",
+          //       colorText: Colors.white,
+          //       snackPosition: SnackPosition.BOTTOM,
+          //       backgroundColor: warning,
+          //       duration: const Duration(seconds: 10));
+          //   Get.offAll(()=> const LoginView());
+          // }
         }
         update();
       } else {

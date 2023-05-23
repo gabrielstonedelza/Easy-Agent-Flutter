@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:easy_agent/join_screen.dart';
-import 'package:easy_agent/screens/notifications.dart';
 import 'package:easy_agent/screens/paymentandrebalancing.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
 import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';

@@ -114,14 +114,14 @@ class _MyReportsState extends State<MyReports> {
                     )
                   ],
                 ),
-                trailing: IconButton(
-                  icon: Image.asset("assets/images/cancel.png",width: 30,height: 30,),
-                  onPressed: (){
-                    _startPosting();
-                    getAllMyReports(uToken);
-                    deletePayment(allMyReports[index]['id'].toString());
-                  },
-                ),
+                // trailing: IconButton(
+                //   icon: Image.asset("assets/images/cancel.png",width: 30,height: 30,),
+                //   onPressed: (){
+                //     _startPosting();
+                //     getAllMyReports(uToken);
+                //     deletePayment(allMyReports[index]['id'].toString());
+                //   },
+                // ),
               ),
             );
           }),

@@ -5,9 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants.dart';
 import '../screens/authenticatebyphone.dart';
-import '../screens/preregistersuccess.dart';
 
 class LoginController extends GetxController {
   final client = http.Client();
@@ -49,7 +47,7 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> loginUser(String username, String password) async {
+  loginUser(String username, String password) async {
     const loginUrl = "https://fnetagents.xyz/auth/token/login/";
     final myLink = Uri.parse(loginUrl);
     http.Response response = await client.post(myLink,
@@ -63,6 +61,7 @@ class LoginController extends GetxController {
 
       storage.write("token", userToken);
       storage.write("agent_code", username);
+      storage.write("agent_username", username);
       isLoggingIn = false;
       isUser = true;
 

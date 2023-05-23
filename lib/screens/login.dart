@@ -1,9 +1,13 @@
+import 'dart:convert';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_agent/controllers/logincontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 import '../constants.dart';
 import '../controllers/authphonecontroller.dart';
@@ -29,8 +33,103 @@ class _LoginViewState extends State<LoginView> {
   final AuthPhoneController authController = Get.find();
   final storage = GetStorage();
   late String uToken = "";
+  bool isLoading = false;
 
   final Uri _url = Uri.parse('https://fnetagents.xyz/password-reset/');
+  late List authPhoneDetails = [];
+  late List authPhoneDetailsForAgent = [];
+  late String phoneModel = "";
+  late String phoneId = "";
+  late String phoneBrand = "";
+  late String phoneFingerprint = "";
+  bool isDeUser = false;
+  bool canLogin = false;
+
+  Future<void> fetchDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+
+    phoneModel = androidInfo.model;
+    phoneId = androidInfo.id;
+    phoneBrand = androidInfo.brand;
+    phoneFingerprint = androidInfo.fingerprint;
+  }
+
+  Future<void> fetchAuthPhone() async {
+    const postUrl = "https://fnetagents.xyz/get_all_auth_phones/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      authPhoneDetails.assignAll(allPosts);
+
+      setState(() {
+        isLoading = false;
+      });
+      // for(var i in authPhoneDetails){
+      //   if(i['finger_print'] == phoneFingerprint){
+      //     Get.snackbar("Device Auth Success 😀", "Your is already authenticated",
+      //         colorText: Colors.white,
+      //         snackPosition: SnackPosition.BOTTOM,
+      //         backgroundColor: secondaryColor,
+      //         duration: const Duration(seconds: 5));
+      //   }
+      //   else{
+      //     storage.remove("token");
+      //     storage.remove("agent_code");
+      //     storage.remove("phoneAuthenticated");
+      //     Get.snackbar("Device Auth Error", "This is not your authenticated device,please contact the admin or login with the auth device",
+      //         colorText: Colors.white,
+      //         snackPosition: SnackPosition.BOTTOM,
+      //         backgroundColor: warning,
+      //         duration: const Duration(seconds: 10));
+      //     Get.offAll(()=> const LoginView());
+      //   }
+      // }
+    } else {
+      // print(res.body);
+    }
+  }
+  Future<void> fetchAgentAuthPhone() async {
+    final postUrl = "https://fnetagents.xyz/get_all_auth_phone_agent_by_phone_id/$phoneId/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      authPhoneDetailsForAgent.assignAll(allPosts);
+      setState(() {
+        isLoading = false;
+      });
+      for(var i in authPhoneDetailsForAgent){
+        if(authPhoneDetailsForAgent.isNotEmpty && i['get_agent_username'] == usernameController.text.trim() && i['finger_print'] == phoneFingerprint && i['phone_id'] == phoneId){
+          setState(() {
+            canLogin = true;
+          });
+        }
+        if(i['get_agent_username'] != usernameController.text.trim() && i['finger_print'] == phoneFingerprint && i['phone_id'] == phoneId){
+          setState(() {
+            canLogin = false;
+          });
+          Get.snackbar("Device Auth Error 😝😜🤪", "This device is registered to another user,please use another device,thank you.",
+              colorText: Colors.white,
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: warning,
+              duration: const Duration(seconds: 10));
+          Get.offAll(() => const LoginView());
+        }
+      }
+    }
+  }
 
 
   Future<void> _launchInBrowser() async {
@@ -62,7 +161,8 @@ class _LoginViewState extends State<LoginView> {
         uToken = storage.read("token");
       });
     }
-    authController.fetchAuthPhone(uToken);
+    fetchDeviceInfo();
+    fetchAuthPhone();
   }
 
   @override
@@ -87,17 +187,6 @@ class _LoginViewState extends State<LoginView> {
               child: const Text("About",style: TextStyle(color: secondaryColor,fontSize: 18,fontWeight: FontWeight.bold),),
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.only(right:8.0),
-          //   child: TextButton(
-          //       onPressed: () {
-          //         Get.to(() => const AgentPreRegistration());
-          //       },
-          //       child: const Text(
-          //         "Register",
-          //         style: TextStyle(color: secondaryColor,fontSize: 18,fontWeight: FontWeight.bold),
-          //       )),
-          // )
         ],
       ),
       body: ListView(
@@ -135,6 +224,12 @@ class _LoginViewState extends State<LoginView> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
+                      onChanged: (value){
+                        if(value.length > 1){
+                          fetchAgentAuthPhone();
+                        }
+
+                      },
                       controller: _passwordController,
                       focusNode: passwordFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
@@ -189,12 +284,6 @@ class _LoginViewState extends State<LoginView> {
                      } else {
                        controller.loginUser(usernameController.text.trim(),
                          _passwordController.text.trim(),);
-                       // storage.write("phoneAuthenticated", "Authenticated");
-                       // storage.write("phoneId", authController.phoneId);
-                       // storage.write("phoneModel", authController.phoneModel);
-                       // storage.write("phoneBrand", authController.phoneBrand);
-                       // storage.write("phoneFingerprint", authController.phoneFingerprint);
-                       // authController.authenticatePhone(uToken,authController.phoneId,authController.phoneModel,authController.phoneBrand,authController.phoneFingerprint);
                      }
                    },
                    decoration: const NeoPopTiltedButtonDecoration(
