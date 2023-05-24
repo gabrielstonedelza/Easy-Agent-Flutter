@@ -111,6 +111,16 @@ class _MyReportsState extends State<MyReports> {
                     Padding(
                       padding: const EdgeInsets.only(left:8.0,top: 8,bottom: 8),
                       child: Text(items['report'],style: const TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0,top: 8,bottom: 8),
+                      child: Row(
+                        children: [
+                          const Text("Time: ",style: TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
+                          Text(items['time_reported'].toString().split(".").first,style: const TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
+                        ],
+                      ),
                     )
                   ],
                 ),

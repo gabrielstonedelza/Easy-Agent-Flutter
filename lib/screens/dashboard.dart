@@ -245,7 +245,7 @@ class _DashboardState extends State<Dashboard> {
               ),
               Row(
                 mainAxisAlignment:
-                MainAxisAlignment.center,
+                MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -261,7 +261,27 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("MTN",
+                          child: Text("USSD",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      DeviceApps.openApp('com.mtn.agentapp');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/momo.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("MTN App",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -278,7 +298,7 @@ class _DashboardState extends State<Dashboard> {
                 height: 10,
               ),
               const Center(
-                  child: Text("Continue on the web and apps",
+                  child: Text("Continue with apps",
                       style: TextStyle(
                           fontWeight: FontWeight.bold))),
               const SizedBox(
@@ -290,7 +310,7 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   GestureDetector(
                     onTap: () async{
-                      await _launchInExpress();
+                      DeviceApps.openApp('com.ecobank.xpresspoint');
                     },
                     child: Column(
                       children: [
@@ -310,7 +330,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   GestureDetector(
                     onTap: () async{
-                      await _launchFidelityWeb();
+                      DeviceApps.openApp('sg.android.fidelity');
                     },
                     child: Column(
                       children: [
@@ -330,7 +350,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   GestureDetector(
                     onTap: () async{
-                      await _launchCalWeb();
+                      DeviceApps.openApp('calbank.com.ams');
                     },
                     child: Column(
                       children: [
@@ -359,7 +379,7 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   GestureDetector(
                     onTap: () async{
-                      DeviceApps.openApp('com.accessbank.accessbankapp');
+                      DeviceApps.openApp('accessmob.accessbank.com.accessghana');
                     },
                     child: Column(
                       children: [
@@ -391,6 +411,26 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("GT Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async{
+                      DeviceApps.openApp('firstmob.firstbank.com.fbnsubsidiary');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/full-branch.jpg",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("FBN Bank",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )

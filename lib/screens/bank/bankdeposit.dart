@@ -326,7 +326,7 @@ class _BankDepositState extends State<BankDeposit> {
               ),
               Row(
                 mainAxisAlignment:
-                MainAxisAlignment.center,
+                MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -342,7 +342,27 @@ class _BankDepositState extends State<BankDeposit> {
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("MTN",
+                          child: Text("USSD",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      DeviceApps.openApp('com.mtn.agentapp');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/momo.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("MTN App",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -359,7 +379,7 @@ class _BankDepositState extends State<BankDeposit> {
                 height: 10,
               ),
               const Center(
-                  child: Text("Continue with app",
+                  child: Text("Continue with apps",
                       style: TextStyle(
                           fontWeight: FontWeight.bold))),
               const SizedBox(
@@ -371,7 +391,7 @@ class _BankDepositState extends State<BankDeposit> {
                 children: [
                   GestureDetector(
                     onTap: () async{
-                      await _launchInBrowser("https://xpresspoint.ecobank.com/agencybankingWEB/");
+                      DeviceApps.openApp('com.ecobank.xpresspoint');
                     },
                     child: Column(
                       children: [
@@ -391,7 +411,7 @@ class _BankDepositState extends State<BankDeposit> {
                   ),
                   GestureDetector(
                     onTap: () async{
-                     await _launchInBrowser("https://dpfbgl101.myfidelitybank.net:7101/solution.html");
+                      DeviceApps.openApp('sg.android.fidelity');
                     },
                     child: Column(
                       children: [
@@ -411,7 +431,7 @@ class _BankDepositState extends State<BankDeposit> {
                   ),
                   GestureDetector(
                     onTap: () async{
-                      await _launchInBrowser("https://ams.caleservice.net/");
+                      DeviceApps.openApp('calbank.com.ams');
                     },
                     child: Column(
                       children: [
@@ -440,7 +460,7 @@ class _BankDepositState extends State<BankDeposit> {
                 children: [
                   GestureDetector(
                     onTap: () async{
-                      DeviceApps.openApp('com.accessbank.accessbankapp');
+                      DeviceApps.openApp('accessmob.accessbank.com.accessghana');
                     },
                     child: Column(
                       children: [
@@ -472,6 +492,26 @@ class _BankDepositState extends State<BankDeposit> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("GT Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async{
+                      DeviceApps.openApp('firstmob.firstbank.com.fbnsubsidiary');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/full-branch.jpg",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("FBN Bank",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -512,7 +552,7 @@ class _BankDepositState extends State<BankDeposit> {
   }
   Future<void> fetchAllInstalled() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
-        onlyAppsWithLaunchIntent: true, includeSystemApps: false);
+        onlyAppsWithLaunchIntent: true, includeSystemApps: true,includeAppIcons: true);
     if (kDebugMode) {
       print(apps);
     }
@@ -569,6 +609,16 @@ class _BankDepositState extends State<BankDeposit> {
       appBar: AppBar(
         title: const Text("Bank Deposit",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
+        // actions: [
+        //   IconButton(onPressed: (){
+        //
+        //     // DeviceApps.openApp('com.mtngh.mymtn');
+        //     DeviceApps.openApp('com.mtn.agentapp');
+        //   },icon: Icon(Icons.add),),
+        //   IconButton(onPressed: (){
+        //     fetchAllInstalled();
+        //   },icon: Icon(Icons.refresh),),
+        // ],
       ),
       body: isLoading ? const LoadingUi() : ListView(
         children: [
