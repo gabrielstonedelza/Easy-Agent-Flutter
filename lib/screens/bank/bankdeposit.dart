@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:device_apps/device_apps.dart';
 import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,7 @@ class _BankDepositState extends State<BankDeposit> {
       throw 'Could not launch $url';
     }
   }
+
 
 
   final List customerBanks = [
@@ -116,7 +118,7 @@ class _BankDepositState extends State<BankDeposit> {
   double totalNow = 0.0;
   bool amountIsNotEmpty = false;
   late String customerName = "";
-  bool isLoading = false;
+  bool isLoading = true;
   bool accountNumberSelected = false;
 
 
@@ -311,7 +313,7 @@ class _BankDepositState extends State<BankDeposit> {
                 topRight: Radius.circular(10),
                 topLeft: Radius.circular(10))),
         child: SizedBox(
-          height: 400,
+          height: 450,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -357,7 +359,7 @@ class _BankDepositState extends State<BankDeposit> {
                 height: 10,
               ),
               const Center(
-                  child: Text("Continue on the web",
+                  child: Text("Continue with app",
                       style: TextStyle(
                           fontWeight: FontWeight.bold))),
               const SizedBox(
@@ -387,7 +389,6 @@ class _BankDepositState extends State<BankDeposit> {
                       ],
                     ),
                   ),
-
                   GestureDetector(
                     onTap: () async{
                      await _launchInBrowser("https://dpfbgl101.myfidelitybank.net:7101/solution.html");
@@ -430,6 +431,55 @@ class _BankDepositState extends State<BankDeposit> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10,),
+              const Divider(),
+              const SizedBox(height: 10,),
+              Row(
+                mainAxisAlignment:
+                MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () async{
+                      DeviceApps.openApp('com.accessbank.accessbankapp');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/accessbank.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Access Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async{
+                      DeviceApps.openApp('com.m2i.gtexpressbyod');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/gtbank.jpg",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("GT Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -460,6 +510,14 @@ class _BankDepositState extends State<BankDeposit> {
       });
     }
   }
+  Future<void> fetchAllInstalled() async {
+    List<Application> apps = await DeviceApps.getInstalledApplications(
+        onlyAppsWithLaunchIntent: true, includeSystemApps: false);
+    if (kDebugMode) {
+      print(apps);
+    }
+  }
+
 
   @override
   void initState(){
@@ -470,6 +528,7 @@ class _BankDepositState extends State<BankDeposit> {
       });
     }
     fetchOwnersDetails();
+    fetchAllInstalled();
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _depositorNameController = TextEditingController();
@@ -511,7 +570,7 @@ class _BankDepositState extends State<BankDeposit> {
         title: const Text("Bank Deposit",style:TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: secondaryColor,
       ),
-      body: ListView(
+      body: isLoading ? const LoadingUi() : ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(18.0),

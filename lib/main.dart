@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:telephony/telephony.dart';
 import 'package:get/get.dart';
-import 'package:upgrader/upgrader.dart';
 import 'constants.dart';
 import 'controllers/agentcontroller.dart';
 import 'controllers/authphonecontroller.dart';
@@ -130,16 +129,7 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: secondaryColor,
         )
       ),
-      home:hasToken && isAuthDevice ? UpgradeAlert(
-          upgrader: Upgrader(
-          showLater: false,
-          showIgnore: false,
-          canDismissDialog: false,
-          durationUntilAlertAgain: const Duration(days: 3),
-            messages: UpgraderMessages()
-        ),
-          child: const Dashboard(),
-      ) : const LoginView(),
+      home:hasToken && isAuthDevice ? const Dashboard() : const LoginView(),
     );
   }
 }

@@ -95,7 +95,7 @@ class AuthPhoneController extends GetxController {
       Get.snackbar("Hurray 😀", "Your phone was authenticated",
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: secondaryColor,
+          backgroundColor: snackBackground,
           duration: const Duration(seconds: 5));
       update();
     }

@@ -38,6 +38,7 @@ class _LoginViewState extends State<LoginView> {
   final Uri _url = Uri.parse('https://fnetagents.xyz/password-reset/');
   late List authPhoneDetails = [];
   late List authPhoneDetailsForAgent = [];
+  late List authPhoneUsernameDetailsForAgent = [];
   late String phoneModel = "";
   late String phoneId = "";
   late String phoneBrand = "";
@@ -71,26 +72,6 @@ class _LoginViewState extends State<LoginView> {
       setState(() {
         isLoading = false;
       });
-      // for(var i in authPhoneDetails){
-      //   if(i['finger_print'] == phoneFingerprint){
-      //     Get.snackbar("Device Auth Success 😀", "Your is already authenticated",
-      //         colorText: Colors.white,
-      //         snackPosition: SnackPosition.BOTTOM,
-      //         backgroundColor: secondaryColor,
-      //         duration: const Duration(seconds: 5));
-      //   }
-      //   else{
-      //     storage.remove("token");
-      //     storage.remove("agent_code");
-      //     storage.remove("phoneAuthenticated");
-      //     Get.snackbar("Device Auth Error", "This is not your authenticated device,please contact the admin or login with the auth device",
-      //         colorText: Colors.white,
-      //         snackPosition: SnackPosition.BOTTOM,
-      //         backgroundColor: warning,
-      //         duration: const Duration(seconds: 10));
-      //     Get.offAll(()=> const LoginView());
-      //   }
-      // }
     } else {
       // print(res.body);
     }
@@ -127,6 +108,44 @@ class _LoginViewState extends State<LoginView> {
               duration: const Duration(seconds: 10));
           Get.offAll(() => const LoginView());
         }
+      }
+    }
+  }
+  Future<void> fetchAgentAuthPhoneWithUsername() async {
+    final postUrl = "https://fnetagents.xyz/get_auth_phone_by_username/${usernameController.text.trim()}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      authPhoneUsernameDetailsForAgent.assignAll(allPosts);
+      setState(() {
+        isLoading = false;
+      });
+      for(var i in authPhoneUsernameDetailsForAgent){
+        if(authPhoneUsernameDetailsForAgent.isNotEmpty && i['get_agent_username'] == usernameController.text.trim() && i['finger_print'] != phoneFingerprint && i['phone_id'] != phoneId){
+          Get.snackbar("Device Auth Error 😝😜🤪", "This device is not your authenticated device,please login with your authenticated device.",
+              colorText: Colors.white,
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: warning,
+              duration: const Duration(seconds: 10));
+          Get.offAll(() => const LoginView());
+        }
+        // if(i['get_agent_username'] != usernameController.text.trim() && i['finger_print'] == phoneFingerprint && i['phone_id'] == phoneId){
+        //   setState(() {
+        //     canLogin = false;
+        //   });
+        //   Get.snackbar("Device Auth Error 😝😜🤪", "This device is registered to another user,please use another device,thank you.",
+        //       colorText: Colors.white,
+        //       snackPosition: SnackPosition.TOP,
+        //       backgroundColor: warning,
+        //       duration: const Duration(seconds: 10));
+        //   Get.offAll(() => const LoginView());
+        // }
       }
     }
   }
@@ -227,8 +246,8 @@ class _LoginViewState extends State<LoginView> {
                       onChanged: (value){
                         if(value.length > 1){
                           fetchAgentAuthPhone();
+                          fetchAgentAuthPhoneWithUsername();
                         }
-
                       },
                       controller: _passwordController,
                       focusNode: passwordFocusNode,

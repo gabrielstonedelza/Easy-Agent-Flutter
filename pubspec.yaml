@@ -67,7 +67,7 @@ dependencies:
   dio:
   image_picker:
   image_cropper:
-  upgrader: ^7.0.0
+  device_apps: ^2.2.0
 
 dev_dependencies:
   flutter_test:

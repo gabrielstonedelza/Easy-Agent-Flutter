@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:device_apps/device_apps.dart';
 import 'package:easy_agent/screens/paymentandrebalancing.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
 import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';
@@ -8,6 +9,7 @@ import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
 import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/summaries/reportsummary.dart';
 import 'package:easy_agent/screens/summaries/requestsummary.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_agent/constants.dart';
@@ -213,6 +215,13 @@ class _DashboardState extends State<Dashboard> {
     }
     // print(mySmss);
   }
+  Future<void> fetchAllInstalled() async {
+    List<Application> apps = await DeviceApps.getInstalledApplications(
+        onlyAppsWithLaunchIntent: true, includeSystemApps: false);
+    if (kDebugMode) {
+      print(apps);
+    }
+  }
   void showInstalled() {
     showMaterialModalBottomSheet(
       context: context,
@@ -223,7 +232,7 @@ class _DashboardState extends State<Dashboard> {
                 topRight: Radius.circular(10),
                 topLeft: Radius.circular(10))),
         child: SizedBox(
-          height: 400,
+          height: 450,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -269,7 +278,7 @@ class _DashboardState extends State<Dashboard> {
                 height: 10,
               ),
               const Center(
-                  child: Text("Continue on the web",
+                  child: Text("Continue on the web and apps",
                       style: TextStyle(
                           fontWeight: FontWeight.bold))),
               const SizedBox(
@@ -299,7 +308,6 @@ class _DashboardState extends State<Dashboard> {
                       ],
                     ),
                   ),
-
                   GestureDetector(
                     onTap: () async{
                       await _launchFidelityWeb();
@@ -334,6 +342,55 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("Cal Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10,),
+              const Divider(),
+              const SizedBox(height: 10,),
+              Row(
+                mainAxisAlignment:
+                MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () async{
+                      DeviceApps.openApp('com.accessbank.accessbankapp');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/accessbank.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Access Bank",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async{
+                      DeviceApps.openApp('com.m2i.gtexpressbyod');
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/gtbank.jpg",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("GT Bank",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -436,6 +493,7 @@ class _DashboardState extends State<Dashboard> {
     getAllTriggeredNotifications();
     fetchAllRequests();
     fetchAccountBalanceClosed();
+    fetchAllInstalled();
 
     _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
       getAllTriggeredNotifications();
@@ -781,7 +839,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () async{
-                            await _launchInBrowser();
+                            DeviceApps.openApp('com.wMY247KIOSK_15547762');
                           },
                         ),
                       ),

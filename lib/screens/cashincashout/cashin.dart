@@ -265,6 +265,7 @@ class _CashInState extends State<CashIn> {
 
       Get.offAll(() => const Dashboard());
     } else {
+      print(res.body);
       Get.snackbar("Deposit Error", "something went wrong please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
