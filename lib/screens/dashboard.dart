@@ -218,9 +218,9 @@ class _DashboardState extends State<Dashboard> {
   Future<void> fetchAllInstalled() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
         onlyAppsWithLaunchIntent: true, includeSystemApps: false);
-    if (kDebugMode) {
-      print(apps);
-    }
+    // if (kDebugMode) {
+    //   print(apps);
+    // }
   }
   void showInstalled() {
     showMaterialModalBottomSheet(

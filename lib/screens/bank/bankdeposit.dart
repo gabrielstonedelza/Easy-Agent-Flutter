@@ -553,9 +553,9 @@ class _BankDepositState extends State<BankDeposit> {
   Future<void> fetchAllInstalled() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
         onlyAppsWithLaunchIntent: true, includeSystemApps: true,includeAppIcons: true);
-    if (kDebugMode) {
-      print(apps);
-    }
+    // if (kDebugMode) {
+    //   print(apps);
+    // }
   }
 
 
