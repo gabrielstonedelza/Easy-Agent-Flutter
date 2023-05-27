@@ -228,6 +228,7 @@ class _ReBalancingState extends State<ReBalancing> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),

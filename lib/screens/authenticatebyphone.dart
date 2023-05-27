@@ -194,6 +194,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                         backgroundColor: warning,
                         duration: const Duration(seconds: 5));
                   }
+                  return null;
                 },
               ),
             ),

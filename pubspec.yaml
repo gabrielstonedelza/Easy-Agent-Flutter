@@ -41,7 +41,7 @@ dependencies:
   sim_data_plus: ^0.1.4
   ussd_service:
   get:
-  splash_screen_view:
+
   modal_bottom_sheet:
     git:
       url: https://github.com/CoolDude53/modal_bottom_sheet.git
@@ -56,7 +56,6 @@ dependencies:
   url_launcher: ^6.1.7
   rxdart:
   pinput:
-  sms_autofill: ^2.3.0
   neopop: ^1.0.2
   flutter_advanced_drawer: ^1.3.4
   grouped_list:

@@ -118,6 +118,7 @@ class _AddFloatState extends State<AddFloat> {
                         if (value!.isEmpty) {
                           return "Please enter reason";
                         }
+                        return null;
                       },
                     ),
                   ),

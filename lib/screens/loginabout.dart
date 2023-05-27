@@ -71,13 +71,13 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
               height: 50,
             ),
           ),
-          DefaultTextStyle(
-            style: const TextStyle(
+          const DefaultTextStyle(
+            style: TextStyle(
               fontSize: 12,
               color: Colors.white54,
             ),
             child: Column(
-              children: const [
+              children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(

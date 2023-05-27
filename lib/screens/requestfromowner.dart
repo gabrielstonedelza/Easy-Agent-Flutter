@@ -422,6 +422,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),

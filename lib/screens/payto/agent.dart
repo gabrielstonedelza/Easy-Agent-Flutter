@@ -292,6 +292,7 @@ class _PayToAgentState extends State<PayToAgent> {
                         if (value!.isEmpty) {
                           return "Please enter Agent's Phone Number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -309,6 +310,7 @@ class _PayToAgentState extends State<PayToAgent> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -326,6 +328,7 @@ class _PayToAgentState extends State<PayToAgent> {
                         if (value!.isEmpty) {
                           return "Please enter reference";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -343,6 +346,7 @@ class _PayToAgentState extends State<PayToAgent> {
                         if (value!.isEmpty) {
                           return "Please enter phone";
                         }
+                        return null;
                       },
                     ),
                   ),

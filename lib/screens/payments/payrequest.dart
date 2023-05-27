@@ -1,4 +1,5 @@
 import 'package:easy_agent/constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -23,7 +24,7 @@ class PayRequest extends StatefulWidget {
 
   @override
   State<PayRequest> createState() => _PayRequestState(
-      id: this.id, amount: this.amount, agent: this.agent, owner: this.owner);
+      id: id, amount: this.amount, agent: this.agent, owner: this.owner);
 }
 
 class _PayRequestState extends State<PayRequest> {
@@ -81,7 +82,9 @@ class _PayRequestState extends State<PayRequest> {
 
       Get.offAll(() => const Dashboard());
     } else {
-      print(response.body);
+      if (kDebugMode) {
+        print(response.body);
+      }
       Get.snackbar("Approve Error", "something happened. Please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -174,6 +177,7 @@ class _PayRequestState extends State<PayRequest> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -191,6 +195,7 @@ class _PayRequestState extends State<PayRequest> {
                         if (value!.isEmpty) {
                           return "Please enter reference";
                         }
+                        return null;
                       },
                     ),
                   ),

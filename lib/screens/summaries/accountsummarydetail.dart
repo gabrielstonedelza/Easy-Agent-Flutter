@@ -133,7 +133,7 @@ class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetai
                       ),
                     ),
                   ],
-                );;
+                );
               })),
       floatingActionButton: !isLoading
           ? FloatingActionButton(

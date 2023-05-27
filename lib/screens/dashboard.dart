@@ -9,7 +9,6 @@ import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
 import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/summaries/reportsummary.dart';
 import 'package:easy_agent/screens/summaries/requestsummary.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_agent/constants.dart';
@@ -19,7 +18,6 @@ import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import '../about.dart';
 import '../controllers/authphonecontroller.dart';
@@ -31,7 +29,7 @@ import '../widgets/loadingui.dart';
 import 'accounts/myaccounts.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
-import 'chats/agentsGroupchat.dart';
+import 'chats/agents_group_chat.dart';
 import 'chats/privatechat.dart';
 import 'commissions.dart';
 import 'customers/customeraccounts.dart';
@@ -60,31 +58,7 @@ class _DashboardState extends State<Dashboard> {
     await UssdAdvanced.multisessionUssd(code: "*171*6*1*1#", subscriptionId: 1);
   }
 
-  final Uri _url = Uri.parse('https://my247kiosk.com/');
-  final Uri _expressUrl = Uri.parse('https://xpresspoint.ecobank.com/agencybankingWEB/');
-  final Uri _fidelityWeb = Uri.parse('https://dpfbgl101.myfidelitybank.net:7101/solution.html');
-  final Uri _calBankWeb = Uri.parse('https://ams.caleservice.net/');
 
-  Future<void> _launchInBrowser() async {
-    if (!await launchUrl(_url)) {
-      throw 'Could not launch $_url';
-    }
-  }
-  Future<void> _launchInExpress() async {
-    if (!await launchUrl(_expressUrl)) {
-      throw 'Could not launch $_expressUrl';
-    }
-  }
-  Future<void> _launchFidelityWeb() async {
-    if (!await launchUrl(_fidelityWeb)) {
-      throw 'Could not launch $_fidelityWeb';
-    }
-  }
-  Future<void> _launchCalWeb() async {
-    if (!await launchUrl(_calBankWeb)) {
-      throw 'Could not launch $_calBankWeb';
-    }
-  }
   final _advancedDrawerController = AdvancedDrawerController();
   SmsQuery query = SmsQuery();
   late List mySmss = [];

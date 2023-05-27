@@ -146,6 +146,7 @@ class _AddFraudsterState extends State<AddFraudster> {
                         if (value!.isEmpty) {
                           return "Please enter customer's number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -163,6 +164,7 @@ class _AddFraudsterState extends State<AddFraudster> {
                         if (value!.isEmpty) {
                           return "Please enter reason";
                         }
+                        return null;
                       },
                     ),
                   ),

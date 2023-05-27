@@ -1,7 +1,6 @@
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,7 +23,7 @@ class _AboutPageState extends State<AboutPage> {
 
   _callNumber() async{
     const number = '0550222888'; //set the number here
-    bool? res = await FlutterPhoneDirectCaller.callNumber(number);
+
   }
 
   @override
@@ -70,13 +69,13 @@ class _AboutPageState extends State<AboutPage> {
               height: 50,
             ),
           ),
-          DefaultTextStyle(
-            style: const TextStyle(
+          const DefaultTextStyle(
+            style: TextStyle(
               fontSize: 12,
               color: Colors.white54,
             ),
             child: Column(
-              children: const [
+              children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(

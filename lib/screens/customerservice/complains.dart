@@ -115,6 +115,7 @@ class _MakeComplainsState extends State<MakeComplains> {
                         if (value!.isEmpty) {
                           return "Please enter title";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -133,6 +134,7 @@ class _MakeComplainsState extends State<MakeComplains> {
                         if (value!.isEmpty) {
                           return "Please enter complain";
                         }
+                        return null;
                       },
                     ),
                   ),

@@ -150,7 +150,6 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
     _vodafoneEcashController.dispose();
   }
 
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

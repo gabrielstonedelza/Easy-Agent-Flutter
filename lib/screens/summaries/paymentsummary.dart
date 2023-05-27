@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:easy_agent/constants.dart';
-import 'package:easy_agent/screens/bank/bankdeposit.dart';
 import 'package:easy_agent/screens/payments/payments.dart';
 import 'package:easy_agent/screens/summaries/paymentsummarydetail.dart';
 import 'package:get/get.dart';

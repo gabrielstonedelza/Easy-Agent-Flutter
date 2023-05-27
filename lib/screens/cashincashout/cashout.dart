@@ -533,6 +533,7 @@ class _CashOutState extends State<CashOut> {
                               if (value!.isEmpty) {
                                 return "Please enter customer's number";
                               }
+                              return null;
                             },
                           ),
                         ),
@@ -628,6 +629,7 @@ class _CashOutState extends State<CashOut> {
                                         backgroundColor: warning,
                                         duration: const Duration(seconds: 5));
                                   }
+                                  return null;
                                 },
                               )
                             : Container(),
@@ -697,6 +699,7 @@ class _CashOutState extends State<CashOut> {
                                         if (value!.isEmpty) {
                                           return "Please enter amount received";
                                         }
+                                        return null;
                                       },
                                     ),
                                   ),
@@ -729,6 +732,7 @@ class _CashOutState extends State<CashOut> {
                                         if (value!.isEmpty) {
                                           return "Please enter amount";
                                         }
+                                        return null;
                                       },
                                     ),
                                   ),

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:easy_agent/screens/login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -70,7 +69,6 @@ class AuthPhoneController extends GetxController {
       } else {
         // print(res.body);
       }
-    } catch (e) {
     } finally {
       isLoading = false;
       update();

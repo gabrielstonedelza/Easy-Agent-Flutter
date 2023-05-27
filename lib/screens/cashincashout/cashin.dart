@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:easy_agent/controllers/customerscontroller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
@@ -265,7 +266,9 @@ class _CashInState extends State<CashIn> {
 
       Get.offAll(() => const Dashboard());
     } else {
-      print(res.body);
+      if (kDebugMode) {
+        print(res.body);
+      }
       Get.snackbar("Deposit Error", "something went wrong please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -469,6 +472,7 @@ class _CashInState extends State<CashIn> {
                                 if (value!.isEmpty) {
                                   return "Please enter customer's number";
                                 }
+                                return null;
                               },
                             ),
                           ),
@@ -596,6 +600,7 @@ class _CashInState extends State<CashIn> {
                                           backgroundColor: warning,
                                           duration: const Duration(seconds: 5));
                                     }
+                                    return null;
                                   },
                                 )
                               : Container(),
@@ -622,6 +627,7 @@ class _CashInState extends State<CashIn> {
                                           if (value!.isEmpty) {
                                             return "Please enter depositors name";
                                           }
+                                          return null;
                                         },
                                       ),
                                     ),
@@ -642,6 +648,7 @@ class _CashInState extends State<CashIn> {
                                           if (value!.isEmpty) {
                                             return "Please enter depositors number";
                                           }
+                                          return null;
                                         },
                                       ),
                                     ),
@@ -676,6 +683,7 @@ class _CashInState extends State<CashIn> {
                                 if (value!.isEmpty) {
                                   return "Please enter amount";
                                 }
+                                return null;
                               },
                             ),
                           ),
@@ -708,6 +716,7 @@ class _CashInState extends State<CashIn> {
                                       if (value!.isEmpty && isMtnLoading) {
                                         return "Please enter cash received";
                                       }
+                                      return null;
                                     },
                                   ),
                                 )

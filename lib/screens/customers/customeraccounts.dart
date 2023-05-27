@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/customers/registercustomer.dart';
 import 'package:easy_agent/screens/dashboard.dart';
@@ -217,6 +216,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                         if (value!.isEmpty) {
                           return "Please enter customer phone number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -234,6 +234,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                         if (value!.isEmpty) {
                           return "Please enter account number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -251,6 +252,7 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
                         if (value!.isEmpty) {
                           return "Please enter account name";
                         }
+                        return null;
                       },
                     ),
                   ),

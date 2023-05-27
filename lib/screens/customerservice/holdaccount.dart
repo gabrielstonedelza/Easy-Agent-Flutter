@@ -130,6 +130,7 @@ class _HoldAccountState extends State<HoldAccount> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -148,6 +149,7 @@ class _HoldAccountState extends State<HoldAccount> {
                         if (value!.isEmpty) {
                           return "Please enter number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -184,6 +186,7 @@ class _HoldAccountState extends State<HoldAccount> {
                         if (value!.isEmpty) {
                           return "Please enter transaction id";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -202,6 +205,7 @@ class _HoldAccountState extends State<HoldAccount> {
                         if (value!.isEmpty) {
                           return "Please enter reason";
                         }
+                        return null;
                       },
                     ),
                   ),

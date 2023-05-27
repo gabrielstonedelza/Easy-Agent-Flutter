@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
-import 'package:easy_agent/screens/customers/searchcustomers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';

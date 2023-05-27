@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import '../constants.dart';
 
 class LoadingUi extends StatelessWidget {
   const LoadingUi({Key? key}) : super(key: key);

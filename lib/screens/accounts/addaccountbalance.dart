@@ -124,6 +124,7 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
                         if(value!.isEmpty){
                           return "Please enter your physical cash";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -140,6 +141,7 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
                         if(value!.isEmpty){
                           return "Please enter your mtn ecash";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -161,6 +163,7 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
                               if(value!.isEmpty){
                                 return "Please enter your tigoairtel ecash";
                               }
+                              return null;
                             },
                           ),
                         ),
@@ -185,6 +188,7 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
                               if(value!.isEmpty){
                                 return "Please enter your voda ecash";
                               }
+                              return null;
                             },
                           ),
                         ),

@@ -112,7 +112,7 @@ class _AllUsersState extends State<AllUsers> {
                           padding: const EdgeInsets.only(bottom: 1),
                           child: ListTile(
                             onTap: (){
-                              Get.to(()=> PrivateChat());
+                              Get.to(()=> const PrivateChat());
                             },
                             leading: const CircleAvatar(
                                 backgroundColor: primaryColor,

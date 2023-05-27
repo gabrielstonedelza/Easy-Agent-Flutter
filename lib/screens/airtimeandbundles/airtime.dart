@@ -66,6 +66,7 @@ class _AirtimeState extends State<Airtime> {
                         if (value!.isEmpty) {
                           return "Please enter customer's number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -86,6 +87,7 @@ class _AirtimeState extends State<Airtime> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),

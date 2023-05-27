@@ -30,7 +30,6 @@ class _PrivateChatState extends State<PrivateChat> {
   late String uToken = "";
   List groupMessages = [];
   bool isLoading = true;
-  late Timer _timer;
   late final TextEditingController messageController = TextEditingController();
   final FocusNode messageFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
@@ -117,9 +116,6 @@ class _PrivateChatState extends State<PrivateChat> {
 
     fetchSuperVisorsDetails();
     fetchAllPrivateMessages();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      fetchAllPrivateMessages();
-    });
   }
 
   @override

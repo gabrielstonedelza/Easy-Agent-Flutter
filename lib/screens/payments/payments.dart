@@ -11,7 +11,6 @@ import '../../../constants.dart';
 import '../../../widgets/loadingui.dart';
 import '../../controllers/profilecontroller.dart';
 import '../balancing.dart';
-import '../dashboard.dart';
 
 
 class Payments extends StatefulWidget {
@@ -161,6 +160,7 @@ class _PaymentsState extends State<Payments> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -179,6 +179,7 @@ class _PaymentsState extends State<Payments> {
                         if (value!.isEmpty) {
                           return "Please enter customer's number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -197,6 +198,7 @@ class _PaymentsState extends State<Payments> {
                         if (value!.isEmpty) {
                           return "Please enter customer's number";
                         }
+                        return null;
                       },
                     ),
                   ),

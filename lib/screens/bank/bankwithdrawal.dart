@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -231,7 +232,9 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
 
       Get.offAll(() => const Dashboard());
     } else {
-      print(res.body);
+      if (kDebugMode) {
+        print(res.body);
+      }
       Get.snackbar("Withdraw Error", "Something happened,try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -347,6 +350,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                         if (value!.isEmpty) {
                           return "Please enter customer's number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -496,6 +500,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
                         if (value!.isEmpty) {
                           return "Please enter a amount";
                         }
+                        return null;
                       },
                     ),
                   ),

@@ -77,6 +77,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         if (value!.isEmpty) {
                           return "Please enter code";
                         }
+                        return null;
                       },
                     ),
                   ),

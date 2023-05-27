@@ -687,6 +687,7 @@ class _BankDepositState extends State<BankDeposit> {
                         if (value!.isEmpty) {
                           return "Please enter customer's number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -794,6 +795,7 @@ class _BankDepositState extends State<BankDeposit> {
                             if (value!.isEmpty) {
                               return "Please enter a name";
                             }
+                            return null;
                           },
                         ),
                       ),
@@ -811,6 +813,7 @@ class _BankDepositState extends State<BankDeposit> {
                             if (value!.isEmpty) {
                               return "Please enter depositor";
                             }
+                            return null;
                           },
                         ),
                       ),
@@ -845,6 +848,7 @@ class _BankDepositState extends State<BankDeposit> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ) : Container(),

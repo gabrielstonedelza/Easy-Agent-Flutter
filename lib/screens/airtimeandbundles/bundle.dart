@@ -220,6 +220,7 @@ class _MtnBundleState extends State<MtnBundle> {
                         if (value!.isEmpty) {
                           return "Please enter customer's number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -240,6 +241,7 @@ class _MtnBundleState extends State<MtnBundle> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),

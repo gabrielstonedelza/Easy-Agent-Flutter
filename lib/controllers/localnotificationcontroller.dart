@@ -1,7 +1,5 @@
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'dart:io' show Platform;
-import 'package:rxdart/rxdart.dart';
 
 class NotificationService{
   final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -10,7 +8,7 @@ class NotificationService{
     // notificationsPlugin.resolvePlatformSpecificImplementation<
     //     AndroidFlutterLocalNotificationsPlugin>()?.requestPermission();
     AndroidInitializationSettings initializationSettingsAndroid = const AndroidInitializationSettings("ic_launcher");
-    var initializationSettingsIOS = DarwinInitializationSettings();
+    var initializationSettingsIOS = const DarwinInitializationSettings();
 
     var initializationSettings = InitializationSettings(android: initializationSettingsAndroid,iOS: initializationSettingsIOS);
     await notificationsPlugin.initialize(initializationSettings,onDidReceiveNotificationResponse: (NotificationResponse notificationResponse)async{

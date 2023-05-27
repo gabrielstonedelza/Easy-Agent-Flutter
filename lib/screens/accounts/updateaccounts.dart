@@ -160,7 +160,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                     padding: const EdgeInsets.only(bottom: 10.0,left: 10),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value!.isNotEmpty){
+                        if(value.isNotEmpty){
                           setState(() {
                             physicalSet = true;
                             physical = physicalNow + double.parse(value);
@@ -183,6 +183,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                         if(value!.isEmpty){
                           return "Please enter your physical cash";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -201,7 +202,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                     padding: const EdgeInsets.only(left: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value!.isNotEmpty){
+                        if(value.isNotEmpty){
                           setState(() {
                             mtnSet = true;
                             mtn = mtnNow + double.parse(value);
@@ -224,6 +225,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                         if(value!.isEmpty){
                           return "Please enter your mtn ecash";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -243,7 +245,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                     padding: const EdgeInsets.only(left: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value!.isNotEmpty){
+                        if(value.isNotEmpty){
                           setState(() {
                             airtelTigoSet = true;
                             airteltigo = airtelTigoNow + double.parse(value);
@@ -266,6 +268,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                         if(value!.isEmpty){
                           return "Please enter your tigoairtel ecash";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -285,7 +288,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                     padding: const EdgeInsets.only(left: 10.0),
                     child: TextFormField(
                       onChanged: (value){
-                        if(value!.isNotEmpty){
+                        if(value.isNotEmpty){
                           setState(() {
                             vodafoneSet = true;
                             vodafone = vodafoneNow + double.parse(value);
@@ -308,6 +311,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                         if(value!.isEmpty){
                           return "Please enter your voda ecash";
                         }
+                        return null;
                       },
                     ),
                   ),

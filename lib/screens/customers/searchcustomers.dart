@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:easy_agent/constants.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -97,6 +96,7 @@ class _SearchCustomersState extends State<SearchCustomers> {
                             if (value!.isEmpty) {
                               return "Please field cannot be empty";
                             }
+                            return null;
                           },
                         ),
                         const SizedBox(height: 20,),

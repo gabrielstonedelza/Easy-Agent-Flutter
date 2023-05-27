@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:easy_agent/constants.dart';
-import 'package:easy_agent/screens/customers/registercustomer.dart';
 import 'package:easy_agent/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 
@@ -292,6 +291,7 @@ class _UserRegistration extends State<AddAgentAccounts> {
                         if (value!.isEmpty) {
                           return "Please enter account number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -309,6 +309,7 @@ class _UserRegistration extends State<AddAgentAccounts> {
                         if (value!.isEmpty) {
                           return "Please enter account name";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -326,6 +327,7 @@ class _UserRegistration extends State<AddAgentAccounts> {
                         if (value!.isEmpty) {
                           return "Please enter branch";
                         }
+                        return null;
                       },
                     ),
                   ),

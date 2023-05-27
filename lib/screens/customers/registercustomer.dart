@@ -6,7 +6,6 @@ import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -51,7 +50,6 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
   late String uToken = "";
   final storage = GetStorage();
   late String username = "";
-  late DateTime _dateTime;
 
 
   late final TextEditingController name;
@@ -141,8 +139,8 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
   bool hasImageData = false;
 
   Future _getFromGallery()async{
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
         source: ImageSource.gallery,
         maxHeight: 1080,
         maxWidth: 1080
@@ -156,8 +154,8 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
   }
 
   Future _getFromCamera()async{
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
         source: ImageSource.camera,
         maxHeight: 1080,
         maxWidth: 1080
@@ -245,7 +243,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red);
       }
-    } on DioError catch (e) {
+    } on DioError {
       Get.snackbar("Sorry", "something happened",
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
@@ -304,6 +302,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                         if (value!.isEmpty) {
                           return "Please enter customer phone number";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -320,6 +319,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                         if (value!.isEmpty) {
                           return "Please enter customer's name";
                         }
+                        return null;
                       },
                     ),
                   ),

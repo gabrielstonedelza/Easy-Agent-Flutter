@@ -225,6 +225,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
                         if (value!.isEmpty) {
                           return "Please enter merchant id";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -242,6 +243,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
                         if (value!.isEmpty) {
                           return "Please enter amount";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -259,6 +261,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
                         if (value!.isEmpty) {
                           return "Please enter reference";
                         }
+                        return null;
                       },
                     ),
                   ),
@@ -276,6 +279,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
                         if (value!.isEmpty) {
                           return "Please enter phone";
                         }
+                        return null;
                       },
                     ),
                   ),
