@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:get/get.dart';
@@ -1355,63 +1355,53 @@ class _BankDepositState extends State<BankDeposit> {
                       : Container(),
                   const SizedBox(height: 30,),
                   isPosting  ? const LoadingUi() :
-                  isCustomer && !isFraudster ? NeoPopTiltedButton(
-                    isFloating: true,
-                    onTapUp: () {
-
-                      _startPosting();
-                      FocusScopeNode currentFocus = FocusScope.of(context);
-
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      if (!_formKey.currentState!.validate()) {
-                        return;
-                      } else {
-                        var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                        if(int.parse(_amountController.text) != mainTotal){
-                          Get.snackbar("Total Error", "Your total should be equal to the amount",
-                              colorText: defaultWhite,
-                              backgroundColor: warning,
-                              snackPosition: SnackPosition.BOTTOM,
-                              duration: const Duration(seconds: 5)
-                          );
-                          setState(() {
-                            total = mainTotal;
-                            amountNotEqualTotal = true;
-                          });
-                          return;
-                        }
-                        else if(_currentSelectedBank == "Select Bank"){
-                          Get.snackbar("Bank Error", "please select bank",
-                              colorText: defaultWhite,
-                              backgroundColor: warning,
-                              snackPosition: SnackPosition.BOTTOM,
-                              duration: const Duration(seconds: 5));
-                          return;
-                        }
-                        else{
-                          processBankDeposit();
-                        }
-                      }
-                    },
-                    decoration: const NeoPopTiltedButtonDecoration(
-                      color: secondaryColor,
-                      plunkColor: Color.fromRGBO(255, 235, 52, 1),
-                      shadowColor: Color.fromRGBO(36, 36, 36, 1),
-                      showShimmer: true,
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 70.0,
-                        vertical: 15,
+                  isCustomer && !isFraudster ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RawMaterialButton(
+                      fillColor: secondaryColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)
                       ),
-                      child: Text('Send',style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white)),
+                      onPressed: (){
+                        _startPosting();
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        } else {
+                          var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
+                          if(int.parse(_amountController.text) != mainTotal){
+                            Get.snackbar("Total Error", "Your total should be equal to the amount",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5)
+                            );
+                            setState(() {
+                              total = mainTotal;
+                              amountNotEqualTotal = true;
+                            });
+                            return;
+                          }
+                          else if(_currentSelectedBank == "Select Bank"){
+                            Get.snackbar("Bank Error", "please select bank",
+                                colorText: defaultWhite,
+                                backgroundColor: warning,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5));
+                            return;
+                          }
+                          else{
+                            processBankDeposit();
+                          }
+                        }
+                      },child: const Text("Save",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
                     ),
                   ) : Container(),
+
                 ],
               ),
             ),

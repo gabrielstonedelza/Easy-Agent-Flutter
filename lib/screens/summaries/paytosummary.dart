@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../../widgets/getonlineimage.dart';
 import '../../widgets/loadingui.dart';
 import '../payto/agent.dart';
 import '../payto/merchant.dart';
@@ -220,11 +221,7 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  Image.asset(
-                                    "assets/images/boy.png",
-                                    width: 50,
-                                    height: 50,
-                                  ),
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
                                   const Padding(
                                     padding: EdgeInsets.only(
                                         top: 10.0),
@@ -243,11 +240,7 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  Image.asset(
-                                    "assets/images/cashier.png",
-                                    width: 50,
-                                    height: 50,
-                                  ),
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/10701/10701763.png",70,70),
                                   const Padding(
                                     padding: EdgeInsets.only(
                                         top: 10.0),

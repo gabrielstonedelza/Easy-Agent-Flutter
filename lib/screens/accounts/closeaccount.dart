@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 
+
+import '../../widgets/getonlineimage.dart';
 import '../../widgets/loadingui.dart';
 
 class CloseAccountBalance extends StatefulWidget {
@@ -177,7 +178,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(top:8.0,bottom: 10),
                       child: Row(
                         children: [
-                          const Text("Physical : "),
+                          myOnlineImage("https://cdn-icons-png.flaticon.com/128/4801/4801291.png",30,30),
+                          const Text(" = "),
                           Text(physicalStarted.toString()),
                         ],
                       ),
@@ -186,7 +188,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(top:8.0,bottom: 10),
                       child: Row(
                         children: [
-                          const Text("MTN : "),
+                          myOnlineImage("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.aJ6slg41R5qdjTfGWyn1ewHaHa%26pid%3DApi&f=1&ipt=c6dbde85bcb73e57af0a6bb1e63b4356cce9290bb3449c310464aab04cc0c1b3&ipo=images",30,30),
+                          const Text(" = "),
                           Text(mtnStarted.toString()),
                         ],
                       ),
@@ -195,7 +198,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: Row(
                         children: [
-                          const Text("AirtelTigo : "),
+                          myOnlineImage("https://www.airteltigo.com.gh/assets/img/logo.png",30,30),
+                          const Text(" = "),
                           Text(airtelTigoStarted.toString()),
                         ],
                       ),
@@ -204,7 +208,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: Row(
                         children: [
-                          const Text("Vodafone : "),
+                          myOnlineImage("https://1000logos.net/wp-content/uploads/2017/06/Vodafone_Logo-1024x640.png",30,30),
+                          const Text(" = "),
                           Text(vodafoneStarted.toString()),
                         ],
                       ),
@@ -241,7 +246,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(top:8.0,bottom: 10),
                       child: Row(
                         children: [
-                          const Text("Physical : "),
+                          myOnlineImage("https://cdn-icons-png.flaticon.com/128/4801/4801291.png",30,30),
+                          const Text(" = "),
                           Text(physicalNow.toString()),
                         ],
                       ),
@@ -250,7 +256,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(top:8.0,bottom: 10),
                       child: Row(
                         children: [
-                          const Text("MTN : "),
+                          myOnlineImage("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.aJ6slg41R5qdjTfGWyn1ewHaHa%26pid%3DApi&f=1&ipt=c6dbde85bcb73e57af0a6bb1e63b4356cce9290bb3449c310464aab04cc0c1b3&ipo=images",30,30),
+                          const Text(" = "),
                           Text(mtnNow.toString()),
                         ],
                       ),
@@ -259,7 +266,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: Row(
                         children: [
-                          const Text("AirtelTigo : "),
+                          myOnlineImage("https://www.airteltigo.com.gh/assets/img/logo.png",30,30),
+                          const Text(" = "),
                           Text(airtelTigoNow.toString()),
                         ],
                       ),
@@ -268,7 +276,8 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: Row(
                         children: [
-                          const Text("Vodafone : "),
+                          myOnlineImage("https://1000logos.net/wp-content/uploads/2017/06/Vodafone_Logo-1024x640.png",30,30),
+                          const Text(" = "),
                           Text(vodafoneNow.toString()),
                         ],
                       ),
@@ -289,241 +298,19 @@ class _CloseAccountBalanceState extends State<CloseAccountBalance> {
           ),
           const SizedBox(height: 20,),
           isPosting  ? const LoadingUi() :
-          NeoPopTiltedButton(
-            isFloating: true,
-            onTapUp: () {
-              _startPosting();
-              closeAccountsToday();
-            },
-            decoration: const NeoPopTiltedButtonDecoration(
-              color: secondaryColor,
-              plunkColor: Color.fromRGBO(255, 235, 52, 1),
-              shadowColor: Color.fromRGBO(36, 36, 36, 1),
-              showShimmer: true,
-            ),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 70.0,
-                vertical: 15,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: RawMaterialButton(
+              fillColor: secondaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)
               ),
-              child: Text('Close Account',style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.white)),
+              onPressed: (){
+                _startPosting();
+                closeAccountsToday();
+            },child: const Text("Close Account",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
             ),
           )
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: Form(
-          //     key: _formKey,
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.stretch,
-          //       children: [
-          //         Padding(
-          //           padding: const EdgeInsets.only(bottom: 10.0,left: 10),
-          //           child: TextFormField(
-          //             onChanged: (value){
-          //               if(value!.isNotEmpty){
-          //                 setState(() {
-          //                   physicalSet = true;
-          //                   physical = physicalNow + double.parse(value);
-          //                 });
-          //
-          //               }
-          //               else{
-          //                 setState(() {
-          //                   physicalSet = false;
-          //                 });
-          //               }
-          //             },
-          //             controller: physicalController,
-          //             cursorColor: secondaryColor,
-          //             cursorRadius: const Radius.elliptical(10, 10),
-          //             cursorWidth: 10,
-          //             decoration: buildInputDecoration("Physical Cash = ${physicalNow.toString()}"),
-          //             keyboardType: TextInputType.number,
-          //             validator: (value) {
-          //               if(value!.isEmpty){
-          //                 return "Please enter your physical cash";
-          //               }
-          //             },
-          //           ),
-          //         ),
-          //         physicalSet ? Padding(
-          //           padding: const EdgeInsets.only(top:8.0,bottom: 8),
-          //           child: Row(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             children: [
-          //               const Text("Physical now is =>"),
-          //               const SizedBox(width: 10,),
-          //               Text(physical.toString(),style: const TextStyle(color: warning,fontWeight: FontWeight.bold),),
-          //             ],
-          //           ),
-          //         ): Container(),
-          //         Padding(
-          //           padding: const EdgeInsets.only(left: 10.0),
-          //           child: TextFormField(
-          //             onChanged: (value){
-          //               if(value!.isNotEmpty){
-          //                 setState(() {
-          //                   mtnSet = true;
-          //                   mtn = mtnNow + double.parse(value);
-          //                 });
-          //
-          //               }
-          //               else{
-          //                 setState(() {
-          //                   mtnSet = false;
-          //                 });
-          //               }
-          //             },
-          //             controller: _mtnEcashController,
-          //             cursorColor: secondaryColor,
-          //             cursorRadius: const Radius.elliptical(10, 10),
-          //             cursorWidth: 10,
-          //             decoration: buildInputDecoration("Mtn Ecash = ${mtnNow.toString()}"),
-          //             keyboardType: TextInputType.number,
-          //             validator: (value) {
-          //               if(value!.isEmpty){
-          //                 return "Please enter your mtn ecash";
-          //               }
-          //             },
-          //           ),
-          //         ),
-          //         mtnSet ? Padding(
-          //           padding: const EdgeInsets.only(top:8.0,bottom: 8),
-          //           child: Row(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             children: [
-          //               const Text("Mtn now is =>"),
-          //               const SizedBox(width: 10,),
-          //               Text(mtn.toString(),style: const TextStyle(color: warning,fontWeight: FontWeight.bold),),
-          //             ],
-          //           ),
-          //         ): Container(),
-          //         const SizedBox(height: 10,),
-          //         Padding(
-          //           padding: const EdgeInsets.only(left: 10.0),
-          //           child: TextFormField(
-          //             onChanged: (value){
-          //               if(value!.isNotEmpty){
-          //                 setState(() {
-          //                   airtelTigoSet = true;
-          //                   airteltigo = airtelTigoNow + double.parse(value);
-          //                 });
-          //
-          //               }
-          //               else{
-          //                 setState(() {
-          //                   airtelTigoSet = false;
-          //                 });
-          //               }
-          //             },
-          //             controller: _tigoAirtelEcashController,
-          //             cursorColor: secondaryColor,
-          //             cursorRadius: const Radius.elliptical(10, 10),
-          //             cursorWidth: 10,
-          //             decoration: buildInputDecoration("Tigo Airtel Ecash = ${airtelTigoNow.toString()}"),
-          //             keyboardType: TextInputType.number,
-          //             validator: (value) {
-          //               if(value!.isEmpty){
-          //                 return "Please enter your tigoairtel ecash";
-          //               }
-          //             },
-          //           ),
-          //         ),
-          //         airtelTigoSet ? Padding(
-          //           padding: const EdgeInsets.only(top:8.0,bottom: 8),
-          //           child: Row(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             children: [
-          //               const Text("AirtelTigo now is =>"),
-          //               const SizedBox(width: 10,),
-          //               Text(airteltigo.toString(),style: const TextStyle(color: warning,fontWeight: FontWeight.bold),),
-          //             ],
-          //           ),
-          //         ): Container(),
-          //         const SizedBox(height: 10,),
-          //         Padding(
-          //           padding: const EdgeInsets.only(left: 10.0),
-          //           child: TextFormField(
-          //             onChanged: (value){
-          //               if(value!.isNotEmpty){
-          //                 setState(() {
-          //                   vodafoneSet = true;
-          //                   vodafone = vodafoneNow + double.parse(value);
-          //                 });
-          //
-          //               }
-          //               else{
-          //                 setState(() {
-          //                   vodafoneSet = false;
-          //                 });
-          //               }
-          //             },
-          //             controller: _vodafoneEcashController,
-          //             cursorColor: secondaryColor,
-          //             cursorRadius: const Radius.elliptical(10, 10),
-          //             cursorWidth: 10,
-          //             decoration: buildInputDecoration("Voda Ecash  = ${vodafoneNow.toString()}"),
-          //             keyboardType: TextInputType.number,
-          //             validator: (value) {
-          //               if(value!.isEmpty){
-          //                 return "Please enter your voda ecash";
-          //               }
-          //             },
-          //           ),
-          //         ),
-          //         vodafoneSet ? Padding(
-          //           padding: const EdgeInsets.only(top:8.0,bottom: 8),
-          //           child: Row(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             children: [
-          //               const Text("Vodafone now is =>"),
-          //               const SizedBox(width: 10,),
-          //               Text(vodafone.toString(),style: const TextStyle(color: warning,fontWeight: FontWeight.bold),),
-          //             ],
-          //           ),
-          //         ): Container(),
-          //
-          //         const SizedBox(height: 30,),
-          //         isPosting  ? const LoadingUi() :
-          //         NeoPopTiltedButton(
-          //           isFloating: true,
-          //           onTapUp: () {
-          //             _startPosting();
-          //             FocusScopeNode currentFocus = FocusScope.of(context);
-          //
-          //             if (!currentFocus.hasPrimaryFocus) {
-          //               currentFocus.unfocus();
-          //             }
-          //             if (!_formKey.currentState!.validate()) {
-          //               return;
-          //             } else {
-          //               closeAccountsToday();
-          //             }
-          //           },
-          //           decoration: const NeoPopTiltedButtonDecoration(
-          //             color: secondaryColor,
-          //             plunkColor: Color.fromRGBO(255, 235, 52, 1),
-          //             shadowColor: Color.fromRGBO(36, 36, 36, 1),
-          //             showShimmer: true,
-          //           ),
-          //           child: const Padding(
-          //             padding: EdgeInsets.symmetric(
-          //               horizontal: 70.0,
-          //               vertical: 15,
-          //             ),
-          //             child: Text('Close Account',style: TextStyle(
-          //                 fontWeight: FontWeight.bold,
-          //                 fontSize: 20,
-          //                 color: Colors.white)),
-          //           ),
-          //         )
-          //       ],
-          //     ),
-          //   ),
-          // )
         ],
       ),
     );

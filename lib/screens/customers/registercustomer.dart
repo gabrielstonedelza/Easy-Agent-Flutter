@@ -13,7 +13,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'dart:io';
 import '../../controllers/customerscontroller.dart';
 import '../../widgets/loadingui.dart';
@@ -437,53 +436,44 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       const SizedBox(height: 30),
                     ],
                   ) : Container(),
-                  !isInSystem ? isPosting  ? const LoadingUi() : NeoPopTiltedButton(
-                    isFloating: true,
-                    onTapUp: () {
-                      _startPosting();
-                      FocusScopeNode currentFocus = FocusScope.of(context);
-
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      if (!_formKey.currentState!.validate()) {
-                        return;
-                      } else {
-                        if(image == null && _currentSelectedPictureOption == "Yes"){
-                          Get.snackbar("Customer picture Error", "please upload customers picture",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: Colors.red);
-                          return;
-                        }
-                        if(_currentSelectedPictureOption == "Please select Yes Or No for picture"){
-                          Get.snackbar("Customer picture Error", "please upload yes or no",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: Colors.red);
-                          return;
-                        }
-                        canTakeCustomersPicture ?
-                        _registerCustomerWithPicture(image!) : registerCustomer();
-                      }
-                    },
-                    decoration: const NeoPopTiltedButtonDecoration(
-                      color: secondaryColor,
-                      plunkColor: Color.fromRGBO(255, 235, 52, 1),
-                      shadowColor: Color.fromRGBO(36, 36, 36, 1),
-                      showShimmer: true,
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 70.0,
-                        vertical: 15,
+                  !isInSystem ? isPosting  ? const LoadingUi() : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RawMaterialButton(
+                      fillColor: secondaryColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)
                       ),
-                      child: Text('Save',style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white)),
+                      onPressed: (){
+                        _startPosting();
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        } else {
+                          if(image == null && _currentSelectedPictureOption == "Yes"){
+                            Get.snackbar("Customer picture Error", "please upload customers picture",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.TOP,
+                                backgroundColor: Colors.red);
+                            return;
+                          }
+                          if(_currentSelectedPictureOption == "Please select Yes Or No for picture"){
+                            Get.snackbar("Customer picture Error", "please upload yes or no",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.TOP,
+                                backgroundColor: Colors.red);
+                            return;
+                          }
+                          canTakeCustomersPicture ?
+                          _registerCustomerWithPicture(image!) : registerCustomer();
+                        }
+                      },child: const Text("Save",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
                     ),
                   ) :Container(),
+
                 ],
               ),
             ),

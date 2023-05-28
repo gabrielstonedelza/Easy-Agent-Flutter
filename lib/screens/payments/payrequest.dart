@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
@@ -204,48 +203,38 @@ class _PayRequestState extends State<PayRequest> {
                   ),
                   isPosting
                       ? const LoadingUi()
-                      : NeoPopTiltedButton(
-                          isFloating: true,
-                          onTapUp: () {
-                            _startPosting();
-                            FocusScopeNode currentFocus = FocusScope.of(context);
+                      :
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RawMaterialButton(
+                      fillColor: secondaryColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)
+                      ),
+                      onPressed: (){
+                        _startPosting();
+                        FocusScopeNode currentFocus = FocusScope.of(context);
 
-                            if (!currentFocus.hasPrimaryFocus) {
-                              currentFocus.unfocus();
-                            }
-                            if (!_formKey.currentState!.validate()) {
-                              return;
-                            } else {
-                              if (int.parse(amountController.text) != int.parse(amount.toString().split(".").first)) {
-                                Get.snackbar("Amount Error", "Your amount doesn't match your request amount,go back and check",
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        } else {
+                          if (int.parse(amountController.text) != int.parse(amount.toString().split(".").first)) {
+                            Get.snackbar("Amount Error", "Your amount doesn't match your request amount,go back and check",
                                 colorText: defaultWhite,
                                 backgroundColor: warning,
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5));
-                                return;
-                              } else {
-                                makePayment();
-                              }
-                            }
-                          },
-                          decoration: const NeoPopTiltedButtonDecoration(
-                            color: secondaryColor,
-                            plunkColor: Color.fromRGBO(255, 235, 52, 1),
-                            shadowColor: Color.fromRGBO(36, 36, 36, 1),
-                            showShimmer: true,
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 70.0,
-                              vertical: 15,
-                            ),
-                            child: Text('Save',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: Colors.white)),
-                          ),
-                        )
+                            return;
+                          } else {
+                            makePayment();
+                          }
+                        }
+                      },child: const Text("Save",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
+                    ),
+                  )
                 ],
               ),
             ),

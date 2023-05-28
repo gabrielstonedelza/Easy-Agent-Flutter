@@ -1,6 +1,8 @@
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
+import 'package:easy_agent/widgets/getonlineimage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -23,7 +25,7 @@ class _AboutPageState extends State<AboutPage> {
 
   _callNumber() async{
     const number = '0550222888'; //set the number here
-
+    bool? res = await FlutterPhoneDirectCaller.callNumber(number);
   }
 
   @override
@@ -103,21 +105,21 @@ class _AboutPageState extends State<AboutPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Click to call"),
+                    const Text("Click to "),
                     IconButton(
                       onPressed: (){
                         _callNumber();
                       },
                       icon: Image.asset("assets/images/telephone-call.png",width: 40,height: 40,),
                     ),
+                    IconButton(
+                      onPressed: () async{
+                        launchWhatsapp(number: "+233550222888", message: "Hello 😀");
+                      },
+                      icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/3992/3992601.png",40,40),
+                    ),
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top:18.0),
-                  child: Center(
-                    child: Text("Reach us on Whatsapp 0550222888"),
-                  ),
-                )
               ],
             )
           );

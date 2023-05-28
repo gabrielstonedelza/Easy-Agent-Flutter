@@ -2,6 +2,7 @@ import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/customerservice/fraud.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../widgets/getonlineimage.dart';
 import 'mycomplains.dart';
 import 'myholdaccountsrequests.dart';
 
@@ -25,11 +26,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/images/sad.png",
-                        width: 70,
-                        height: 70,
-                      ),
+                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/10252/10252300.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -45,11 +42,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/images/restricted.png",
-                        width: 70,
-                        height: 70,
-                      ),
+                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/10309/10309007.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -65,11 +58,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/images/fraud-alert.png",
-                        width: 70,
-                        height: 70,
-                      ),
+                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/2867/2867725.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),

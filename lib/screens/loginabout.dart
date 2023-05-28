@@ -1,10 +1,10 @@
 import 'package:easy_agent/constants.dart';
+import 'package:easy_agent/screens/dashboard.dart';
+import 'package:easy_agent/widgets/getonlineimage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'login.dart';
 
 class LoginAboutPage extends StatefulWidget {
   const LoginAboutPage({Key? key}) : super(key: key);
@@ -34,14 +34,14 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: (){
-            Get.offAll(() => const LoginView());
+            Get.offAll(() => const Dashboard());
           },
           icon: const Icon(Icons.arrow_back),
         ),
         title: const Text("About Easy Agent"),
         backgroundColor: secondaryColor,
       ),
-      body:  Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -105,21 +105,21 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Click to call"),
+                      const Text("Click to "),
                       IconButton(
                         onPressed: (){
                           _callNumber();
                         },
                         icon: Image.asset("assets/images/telephone-call.png",width: 40,height: 40,),
                       ),
+                      IconButton(
+                        onPressed: () async{
+                          launchWhatsapp(number: "+233550222888", message: "Hello 😀");
+                        },
+                        icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/3992/3992601.png",40,40),
+                      ),
                     ],
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top:18.0),
-                    child: Center(
-                      child: Text("Reach us on Whatsapp 0550222888"),
-                    ),
-                  )
                 ],
               )
           );

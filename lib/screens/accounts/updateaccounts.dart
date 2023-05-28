@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 
 import '../../widgets/loadingui.dart';
 
@@ -62,21 +61,21 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
-      "physical": physical.toString(),
-      "mtn_e_cash": mtn.toString(),
-      "tigo_airtel_e_cash": airteltigo.toString(),
-      "vodafone_e_cash": vodafone.toString(),
+      "physical": physicalSet ? physical.toString() : physicalNow.toString(),
+      "mtn_e_cash": mtnSet ? mtn.toString() : mtnNow.toString(),
+      "tigo_airtel_e_cash": airtelTigoSet ? airteltigo.toString() : airtelTigoNow.toString(),
+      "vodafone_e_cash": vodafoneSet ? vodafone.toString() : vodafoneNow.toString(),
       "isStarted": "True",
     });
     if (response.statusCode == 201) {
-      Get.snackbar("Success", "You have added accounts for today",
+      Get.snackbar("Success", "Your accounts was updated",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
 
       Get.offAll(() => const Dashboard());
     } else {
-
+      print(response.body);
       Get.snackbar("Account", "something happened",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -126,7 +125,6 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
     _tigoAirtelEcashController = TextEditingController();
     _vodafoneEcashController = TextEditingController();
     fetchAccountBalance();
-
   }
 
   @override
@@ -165,7 +163,6 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                             physicalSet = true;
                             physical = physicalNow + double.parse(value);
                           });
-
                         }
                         else{
                           setState(() {
@@ -179,12 +176,12 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                       cursorWidth: 10,
                       decoration: buildInputDecoration("Physical Cash = ${physicalNow.toString()}"),
                       keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if(value!.isEmpty){
-                          return "Please enter your physical cash";
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if(value!.isEmpty){
+                      //     return "Please enter your physical cash";
+                      //   }
+                      //   return null;
+                      // },
                     ),
                   ),
                   physicalSet ? Padding(
@@ -221,12 +218,12 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                       cursorWidth: 10,
                       decoration: buildInputDecoration("Mtn Ecash = ${mtnNow.toString()}"),
                       keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if(value!.isEmpty){
-                          return "Please enter your mtn ecash";
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if(value!.isEmpty){
+                      //     return "Please enter your mtn ecash";
+                      //   }
+                      //   return null;
+                      // },
                     ),
                   ),
                   mtnSet ? Padding(
@@ -264,12 +261,12 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                       cursorWidth: 10,
                       decoration: buildInputDecoration("Tigo Airtel Ecash = ${airtelTigoNow.toString()}"),
                       keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if(value!.isEmpty){
-                          return "Please enter your tigoairtel ecash";
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if(value!.isEmpty){
+                      //     return "Please enter your tigoairtel ecash";
+                      //   }
+                      //   return null;
+                      // },
                     ),
                   ),
                   airtelTigoSet ? Padding(
@@ -293,7 +290,6 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                             vodafoneSet = true;
                             vodafone = vodafoneNow + double.parse(value);
                           });
-
                         }
                         else{
                           setState(() {
@@ -307,12 +303,12 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                       cursorWidth: 10,
                       decoration: buildInputDecoration("Voda Ecash  = ${vodafoneNow.toString()}"),
                       keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if(value!.isEmpty){
-                          return "Please enter your voda ecash";
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if(value!.isEmpty){
+                      //     return "Please enter your voda ecash";
+                      //   }
+                      //   return null;
+                      // },
                     ),
                   ),
                   vodafoneSet ? Padding(
@@ -329,36 +325,23 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
 
                   const SizedBox(height: 30,),
                   isPosting  ? const LoadingUi() :
-                  NeoPopTiltedButton(
-                    isFloating: true,
-                    onTapUp: () {
-                      _startPosting();
-                      FocusScopeNode currentFocus = FocusScope.of(context);
 
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      if (!_formKey.currentState!.validate()) {
-                        return;
-                      } else {
-                        updateAccountsToday();
-                      }
-                    },
-                    decoration: const NeoPopTiltedButtonDecoration(
-                      color: secondaryColor,
-                      plunkColor: Color.fromRGBO(255, 235, 52, 1),
-                      shadowColor: Color.fromRGBO(36, 36, 36, 1),
-                      showShimmer: true,
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 70.0,
-                        vertical: 15,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RawMaterialButton(
+                      fillColor: secondaryColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)
                       ),
-                      child: Text('Update',style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white)),
+                      onPressed: (){
+                        _startPosting();
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
+                        updateAccountsToday();
+                      },child: const Text("Update Account",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
                     ),
                   )
                 ],

@@ -5,6 +5,8 @@ import 'package:easy_agent/screens/summaries/paymentsummary.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../widgets/getonlineimage.dart';
+
 class PaymentAndReBalancing extends StatefulWidget {
   const PaymentAndReBalancing({Key? key}) : super(key: key);
 
@@ -29,11 +31,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/images/cash-payment.png",
-                        width: 70,
-                        height: 70,
-                      ),
+                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/2331/2331941.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -49,11 +47,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/images/cash-payment.png",
-                        width: 70,
-                        height: 70,
-                      ),
+                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/2331/2331941.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -69,11 +63,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/images/law.png",
-                        width: 70,
-                        height: 70,
-                      ),
+                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/994/994377.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),

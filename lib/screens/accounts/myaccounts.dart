@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../../widgets/getonlineimage.dart';
 import '../../widgets/loadingui.dart';
 import '../summaries/accountsummary.dart';
 import 'addaccountbalance.dart';
@@ -109,7 +110,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                   backgroundColor: warning) :
               Get.to(()=> const CloseAccountBalance());
             },
-            icon: Image.asset("assets/images/closewallet.png"),
+            icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/10149/10149458.png",70,70),
           ) : Container(),
           accountBalanceDetailsToday.isNotEmpty ? IconButton(
             onPressed: (){
@@ -120,7 +121,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                   backgroundColor: warning) :
               Get.to(()=> const UpdateAccountBalance());
             },
-            icon: Image.asset("assets/images/pencil.png"),
+            icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/10542/10542531.png",70,70),
           ) : Container()
         ],
       ),
@@ -141,7 +142,8 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                   child: ListTile(
                     title: Row(
                       children: [
-                        const Text("Physical : "),
+                        myOnlineImage("https://cdn-icons-png.flaticon.com/128/4801/4801291.png",30,30),
+                        const Text(" = "),
                         Text(items['physical']),
                       ],
                     ),
@@ -151,7 +153,8 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(top:8.0,bottom: 10),
                           child: Row(
                             children: [
-                              const Text("MTN : "),
+                              myOnlineImage("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.aJ6slg41R5qdjTfGWyn1ewHaHa%26pid%3DApi&f=1&ipt=c6dbde85bcb73e57af0a6bb1e63b4356cce9290bb3449c310464aab04cc0c1b3&ipo=images",30,30),
+                              const Text(" = "),
                               Text(items['mtn_e_cash']),
                             ],
                           ),
@@ -160,7 +163,8 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Row(
                             children: [
-                              const Text("AirtelTigo : "),
+                              myOnlineImage("https://www.airteltigo.com.gh/assets/img/logo.png",30,30),
+                              const Text(" = "),
                               Text(items['tigo_airtel_e_cash']),
                             ],
                           ),
@@ -169,7 +173,8 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Row(
                             children: [
-                              const Text("Vodafone : "),
+                              myOnlineImage("https://1000logos.net/wp-content/uploads/2017/06/Vodafone_Logo-1024x640.png",30,30),
+                              const Text(" = "),
                               Text(items['vodafone_e_cash']),
                             ],
                           ),
@@ -179,6 +184,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           child: Row(
                             children: [
                               const Text("Working Capital : "),
+                              const Text(" = "),
                               Text(items['e_cash_total'],style:const TextStyle(fontWeight: FontWeight.bold,color: warning)),
                             ],
                           ),

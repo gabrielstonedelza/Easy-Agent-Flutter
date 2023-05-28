@@ -6,7 +6,6 @@ import 'package:easy_agent/controllers/customerscontroller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
 import 'package:pinput/pinput.dart';
 import 'package:telephony/telephony.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
@@ -1246,144 +1245,131 @@ class _CashInState extends State<CashIn> {
                           isPosting
                               ? const LoadingUi()
                               : amountIsNotEmpty && !isFraudster
-                                  ? NeoPopTiltedButton(
-                                      isFloating: true,
-                                      onTapUp: () {
-                                        _startPosting();
-                                        FocusScopeNode currentFocus =
-                                            FocusScope.of(context);
-                                        if (_currentSelectedDepositType ==
-                                            "Loading") {
-                                          _cashReceivedController.text =
-                                              _amountController.text;
-                                        }
+                                  ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: RawMaterialButton(
+                              fillColor: secondaryColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)
+                              ),
+                              onPressed: (){
+                                _startPosting();
+                                FocusScopeNode currentFocus =
+                                FocusScope.of(context);
+                                if (_currentSelectedDepositType ==
+                                    "Loading") {
+                                  _cashReceivedController.text =
+                                      _amountController.text;
+                                }
 
-                                        if (!currentFocus.hasPrimaryFocus) {
-                                          currentFocus.unfocus();
-                                        }
-                                        if (!_formKey.currentState!
-                                            .validate()) {
-                                          return;
-                                        } else {
-                                          var mainTotal = d200 +
-                                              d100 +
-                                              d50 +
-                                              d20 +
-                                              d10 +
-                                              d5 +
-                                              d2 +
-                                              d1;
-                                          if (double.parse(
-                                                  _cashReceivedController
-                                                      .text) !=
-                                              mainTotal) {
-                                            Get.snackbar("Total Error",
-                                                "Your total should be equal to the amount",
-                                                colorText: defaultWhite,
-                                                backgroundColor: warning,
-                                                snackPosition:
-                                                    SnackPosition.BOTTOM,
-                                                duration:
-                                                    const Duration(seconds: 5));
-                                            setState(() {
-                                              total = mainTotal;
-                                              amountNotEqualTotal = true;
-                                            });
-                                            return;
-                                          } else if (_currentSelectedDepositType ==
-                                                  "Select deposit type" &&
-                                              _currentSelectedNetwork ==
-                                                  "Mtn") {
-                                            Get.snackbar(
-                                                "Network or Type Error",
-                                                "please select network and type",
-                                                colorText: defaultWhite,
-                                                backgroundColor: warning,
-                                                snackPosition:
-                                                    SnackPosition.BOTTOM,
-                                                duration:
-                                                    const Duration(seconds: 5));
-                                            return;
-                                          } else if (_currentSelectedNetwork ==
-                                              "Select Network") {
-                                            Get.snackbar("Network Error",
-                                                "please select network",
-                                                colorText: defaultWhite,
-                                                backgroundColor: warning,
-                                                snackPosition:
-                                                    SnackPosition.BOTTOM,
-                                                duration:
-                                                    const Duration(seconds: 5));
-                                            return;
-                                          } else if (_currentSelectedNetwork ==
-                                                  "Mtn" &&
-                                              int.parse(
-                                                      _amountController.text) >
-                                                  mtnNow) {
-                                            Get.snackbar("Amount Error",
-                                                "Amount is greater than your Mtn Ecash,please check",
-                                                colorText: defaultWhite,
-                                                backgroundColor: warning,
-                                                snackPosition:
-                                                    SnackPosition.BOTTOM,
-                                                duration:
-                                                    const Duration(seconds: 5));
-                                            return;
-                                          } else if (_currentSelectedNetwork ==
-                                                  "AirtelTigo" &&
-                                              int.parse(
-                                                      _amountController.text) >
-                                                  airtelTigoNow) {
-                                            Get.snackbar("Amount Error",
-                                                "Amount is greater than your AirtelTigo Ecash,please check",
-                                                colorText: defaultWhite,
-                                                backgroundColor: warning,
-                                                snackPosition:
-                                                    SnackPosition.BOTTOM,
-                                                duration:
-                                                    const Duration(seconds: 5));
-                                            return;
-                                          } else if (_currentSelectedNetwork ==
-                                                  "Vodafone" &&
-                                              int.parse(
-                                                      _amountController.text) >
-                                                  vodafoneNow) {
-                                            Get.snackbar("Amount Error",
-                                                "Amount is greater than your Vodafone Ecash,please check",
-                                                colorText: defaultWhite,
-                                                backgroundColor: warning,
-                                                snackPosition:
-                                                    SnackPosition.BOTTOM,
-                                                duration:
-                                                    const Duration(seconds: 5));
-                                            return;
-                                          } else {
-                                            processMomoDeposit();
-                                          }
-                                        }
-                                      },
-                                      decoration:
-                                          const NeoPopTiltedButtonDecoration(
-                                        color: secondaryColor,
-                                        plunkColor:
-                                            Color.fromRGBO(255, 235, 52, 1),
-                                        shadowColor:
-                                            Color.fromRGBO(36, 36, 36, 1),
-                                        showShimmer: true,
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 70.0,
-                                          vertical: 15,
-                                        ),
-                                        child: Text('Send',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                                color: Colors.white)),
-                                      ),
-                                    )
+                                if (!currentFocus.hasPrimaryFocus) {
+                                  currentFocus.unfocus();
+                                }
+                                if (!_formKey.currentState!
+                                    .validate()) {
+                                  return;
+                                } else {
+                                  var mainTotal = d200 +
+                                      d100 +
+                                      d50 +
+                                      d20 +
+                                      d10 +
+                                      d5 +
+                                      d2 +
+                                      d1;
+                                  if (double.parse(
+                                      _cashReceivedController
+                                          .text) !=
+                                      mainTotal) {
+                                    Get.snackbar("Total Error",
+                                        "Your total should be equal to the amount",
+                                        colorText: defaultWhite,
+                                        backgroundColor: warning,
+                                        snackPosition:
+                                        SnackPosition.BOTTOM,
+                                        duration:
+                                        const Duration(seconds: 5));
+                                    setState(() {
+                                      total = mainTotal;
+                                      amountNotEqualTotal = true;
+                                    });
+                                    return;
+                                  } else if (_currentSelectedDepositType ==
+                                      "Select deposit type" &&
+                                      _currentSelectedNetwork ==
+                                          "Mtn") {
+                                    Get.snackbar(
+                                        "Network or Type Error",
+                                        "please select network and type",
+                                        colorText: defaultWhite,
+                                        backgroundColor: warning,
+                                        snackPosition:
+                                        SnackPosition.BOTTOM,
+                                        duration:
+                                        const Duration(seconds: 5));
+                                    return;
+                                  } else if (_currentSelectedNetwork ==
+                                      "Select Network") {
+                                    Get.snackbar("Network Error",
+                                        "please select network",
+                                        colorText: defaultWhite,
+                                        backgroundColor: warning,
+                                        snackPosition:
+                                        SnackPosition.BOTTOM,
+                                        duration:
+                                        const Duration(seconds: 5));
+                                    return;
+                                  } else if (_currentSelectedNetwork ==
+                                      "Mtn" &&
+                                      int.parse(
+                                          _amountController.text) >
+                                          mtnNow) {
+                                    Get.snackbar("Amount Error",
+                                        "Amount is greater than your Mtn Ecash,please check",
+                                        colorText: defaultWhite,
+                                        backgroundColor: warning,
+                                        snackPosition:
+                                        SnackPosition.BOTTOM,
+                                        duration:
+                                        const Duration(seconds: 5));
+                                    return;
+                                  } else if (_currentSelectedNetwork ==
+                                      "AirtelTigo" &&
+                                      int.parse(
+                                          _amountController.text) >
+                                          airtelTigoNow) {
+                                    Get.snackbar("Amount Error",
+                                        "Amount is greater than your AirtelTigo Ecash,please check",
+                                        colorText: defaultWhite,
+                                        backgroundColor: warning,
+                                        snackPosition:
+                                        SnackPosition.BOTTOM,
+                                        duration:
+                                        const Duration(seconds: 5));
+                                    return;
+                                  } else if (_currentSelectedNetwork ==
+                                      "Vodafone" &&
+                                      int.parse(
+                                          _amountController.text) >
+                                          vodafoneNow) {
+                                    Get.snackbar("Amount Error",
+                                        "Amount is greater than your Vodafone Ecash,please check",
+                                        colorText: defaultWhite,
+                                        backgroundColor: warning,
+                                        snackPosition:
+                                        SnackPosition.BOTTOM,
+                                        duration:
+                                        const Duration(seconds: 5));
+                                    return;
+                                  } else {
+                                    processMomoDeposit();
+                                  }
+                                }
+                              },child: const Text("Send",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
+                            ),
+                          )
                                   : Container(),
+
                         ],
                       ),
                     ),

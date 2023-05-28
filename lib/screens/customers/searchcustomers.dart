@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:neopop/widgets/buttons/neopop_tilted_button/neopop_tilted_button.dart';
+
 
 import '../../widgets/loadingui.dart';
 
@@ -102,38 +102,28 @@ class _SearchCustomersState extends State<SearchCustomers> {
                         const SizedBox(height: 20,),
 
                         isSearching  ? const LoadingUi() :
-                        NeoPopTiltedButton(
-                          isFloating: true,
-                          onTapUp: () {
-                            setState(() {
-                              isSearching = true;
-                            });
-                            FocusScopeNode currentFocus = FocusScope.of(context);
-
-                            if (!currentFocus.hasPrimaryFocus) {
-                              currentFocus.unfocus();
-                            }
-                            if (!_formKey.currentState!.validate()) {
-                              return;
-                            } else {
-                              fetchCustomer(_searchFilter.text);
-                            }
-                          },
-                          decoration: const NeoPopTiltedButtonDecoration(
-                            color: secondaryColor,
-                            plunkColor: Color.fromRGBO(255, 235, 52, 1),
-                            shadowColor: Color.fromRGBO(36, 36, 36, 1),
-                            showShimmer: true,
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 70.0,
-                              vertical: 15,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RawMaterialButton(
+                            fillColor: secondaryColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)
                             ),
-                            child: Text('Search',style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white)),
+                            onPressed: (){
+                              setState(() {
+                                isSearching = true;
+                              });
+                              FocusScopeNode currentFocus = FocusScope.of(context);
+
+                              if (!currentFocus.hasPrimaryFocus) {
+                                currentFocus.unfocus();
+                              }
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              } else {
+                                fetchCustomer(_searchFilter.text);
+                              }
+                            },child: const Text("Search",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
                           ),
                         )
                       ],
