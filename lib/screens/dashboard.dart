@@ -264,6 +264,27 @@ class _DashboardState extends State<Dashboard> {
                       ],
                     ),
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      openFinancialServices();
+                      // Get.back();
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/momo.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Pull USSD",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(
@@ -667,13 +688,13 @@ class _DashboardState extends State<Dashboard> {
                         height: 50,
                       ),
                     ),
-                    DefaultTextStyle(
-                      style: const TextStyle(
+                    const DefaultTextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: Colors.white54,
                       ),
                       child: Column(
-                        children: const [
+                        children: [
                           Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(

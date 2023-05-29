@@ -1,5 +1,6 @@
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
+import 'package:easy_agent/screens/login.dart';
 import 'package:easy_agent/widgets/getonlineimage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -34,7 +35,7 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: (){
-            Get.offAll(() => const Dashboard());
+            Get.offAll(() => const LoginView());
           },
           icon: const Icon(Icons.arrow_back),
         ),

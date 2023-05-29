@@ -292,7 +292,6 @@ class _BankDepositState extends State<BankDeposit> {
           duration: const Duration(seconds: 5));
       Get.offAll(()=> const Dashboard());
       showInstalled();
-
     }
     else {
       Get.snackbar("Deposit Error", "something went wrong please try again",
@@ -342,7 +341,7 @@ class _BankDepositState extends State<BankDeposit> {
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("USSD",
+                          child: Text("Push USSD",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -363,6 +362,27 @@ class _BankDepositState extends State<BankDeposit> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("MTN App",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      openFinancialServices();
+                      // Get.back();
+                    },
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/momo.png",
+                          width: 50,
+                          height: 50,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text("Pull USSD",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
