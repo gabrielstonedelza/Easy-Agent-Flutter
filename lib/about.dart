@@ -124,7 +124,7 @@ class _AboutPageState extends State<AboutPage> {
             )
           );
         },
-        child: Image.asset("assets/images/customer-care.png"),
+        child: myOnlineImage("https://cdn-icons-png.flaticon.com/128/2995/2995946.png",70,70),
       ),
     );
   }

@@ -225,9 +225,9 @@ class _CashInState extends State<CashIn> {
 
     if (res.statusCode == 201) {
       if (_currentSelectedDepositType == "Direct") {
-        String num = _customerPhoneController.text.replaceFirst("0", '+233');
+        String num = _depositorNumberController.text.replaceFirst("0", '+233');
         sendSms.sendMySms(num, "EasyAgent",
-            "Your deposit of ${_amountController.text.trim()} was successful.Thank you for working with Easy Agent.");
+            "Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
       }
       if (_currentSelectedNetwork == "Mtn") {
         mtn = mtnNow - double.parse(_amountController.text);

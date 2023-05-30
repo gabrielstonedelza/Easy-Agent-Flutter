@@ -255,6 +255,9 @@ class _BankDepositState extends State<BankDeposit> {
       // print(res.body);
     }
   }
+  Future<void> openFinancialServicesPullFromBank() async {
+    await UssdAdvanced.multisessionUssd(code: "*171*6*1*2#", subscriptionId: 1);
+  }
 
   processBankDeposit() async {
     const registerUrl = "https://fnetagents.xyz/post_bank_deposit/";
@@ -284,7 +287,7 @@ class _BankDepositState extends State<BankDeposit> {
 
     if (res.statusCode == 201) {
       String num = _customerPhoneController.text.replaceFirst("0", '+233');
-      sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} into your $_currentSelectedBank was successful.Thank you for working with Easy Agent.");
+      sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} into your $_currentSelectedBank by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}. Thank you for working with Easy Agent.");
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -370,7 +373,7 @@ class _BankDepositState extends State<BankDeposit> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      openFinancialServices();
+                      openFinancialServicesPullFromBank();
                       // Get.back();
                     },
                     child: Column(

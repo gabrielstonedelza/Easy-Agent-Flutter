@@ -60,6 +60,10 @@ class _DashboardState extends State<Dashboard> {
     await UssdAdvanced.multisessionUssd(code: "*171*6*1*1#", subscriptionId: 1);
   }
 
+  Future<void> openFinancialServicesPullFromBank() async {
+    await UssdAdvanced.multisessionUssd(code: "*171*6*1*2#", subscriptionId: 1);
+  }
+
 
   final _advancedDrawerController = AdvancedDrawerController();
   SmsQuery query = SmsQuery();
@@ -237,7 +241,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
-                          child: Text("USSD",
+                          child: Text("Push USSD",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold)),
                         )
@@ -266,8 +270,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      openFinancialServices();
-                      // Get.back();
+                      openFinancialServicesPullFromBank();
                     },
                     child: Column(
                       children: [
