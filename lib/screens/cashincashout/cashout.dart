@@ -226,7 +226,7 @@ class _CashOutState extends State<CashOut> {
           duration: const Duration(seconds: 5));
       if (_currentSelectedNetwork == "Mtn") {
         dialCashOutMtn(_customerPhoneController.text.trim(),
-            _cashPaidController.text.trim());
+            _amountReceivedController.text.trim());
       }
 
       Get.offAll(() => const Dashboard());
