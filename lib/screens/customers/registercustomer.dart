@@ -13,6 +13,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pinput/pinput.dart';
 import 'dart:io';
 import '../../controllers/customerscontroller.dart';
 import '../../widgets/loadingui.dart';
@@ -57,6 +59,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
   late TextEditingController dob = TextEditingController();
   final SendSmsController sendSms = SendSmsController();
   FocusNode nameFocusNode = FocusNode();
+  bool hasVerified = false;
 
   FocusNode phoneControllerFocusNode = FocusNode();
   String getRandom(int length){
@@ -74,6 +77,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
     "No"
   ];
   var _currentSelectedPictureOption = "Please select Yes Or No for picture";
+  late int oTP = 0;
 
   @override
   void initState(){
@@ -83,6 +87,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
         uToken = storage.read("token");
       });
     }
+    generate5digit();
     name = TextEditingController();
 
     phoneController = TextEditingController();
@@ -98,6 +103,13 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
     super.dispose();
     name.dispose();
     phoneController.dispose();
+  }
+  bool hasOTP = false;
+  bool sentOTP = false;
+  generate5digit() {
+    var rng = Random();
+    var rand = rng.nextInt(9000) + 1000;
+    oTP = rand.toInt();
   }
 
 
@@ -346,11 +358,18 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                             if(newValueSelected == "Yes"){
                               setState(() {
                                 canTakeCustomersPicture = true;
+                                hasVerified = true;
+                                sentOTP = true;
+                                String num = phoneController.text
+                                    .replaceFirst("0", '+233');
+                                sendSms.sendMySms(
+                                    num, "EasyAgent", "Your code $oTP");
                               });
                             }
                             else{
                               setState(() {
                                 canTakeCustomersPicture = false;
+                                hasVerified = false;
                               });
                             }
                             _onDropDownItemSelectedPictureOption(newValueSelected);
@@ -360,8 +379,46 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  canTakeCustomersPicture ? Column(
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  sentOTP && !hasOTP
+                      ? const Text(
+                    "An OTP was sent to the customers phone,enter it here",
+                    style: TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w600),
+                  )
+                      : Container(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  sentOTP && !hasOTP
+                      ? Pinput(
+                    // defaultPinTheme: defaultPinTheme,
+                    androidSmsAutofillMethod:
+                    AndroidSmsAutofillMethod.smsRetrieverApi,
+                    validator: (pin) {
+                      if (pin?.length == 4 &&
+                          pin == oTP.toString()) {
+                        setState(() {
+                          hasOTP = true;
+                        });
+                      } else {
+                        setState(() {
+                          hasOTP = false;
+                        });
+                        Get.snackbar("Code Error",
+                            "you entered an invalid code",
+                            colorText: defaultWhite,
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: warning,
+                            duration: const Duration(seconds: 5));
+                      }
+                      return null;
+                    },
+                  )
+                      : Container(),
+                  hasOTP && canTakeCustomersPicture ? Column(
                     children: [
                       !hasImageData  ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -436,7 +493,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       const SizedBox(height: 30),
                     ],
                   ) : Container(),
-                  !isInSystem ? isPosting  ? const LoadingUi() : Padding(
+                  hasOTP &&    !isInSystem ? isPosting  ? const LoadingUi() : Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: RawMaterialButton(
                       fillColor: secondaryColor,
@@ -473,7 +530,6 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       },child: const Text("Save",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
                     ),
                   ) :Container(),
-
                 ],
               ),
             ),
@@ -499,4 +555,15 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
           borderRadius: BorderRadius.circular(12)),
     );
   }
+
+  final defaultPinTheme = PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: const TextStyle(
+        fontSize: 20, color: Colors.black, fontWeight: FontWeight.w600),
+    decoration: BoxDecoration(
+      border: Border.all(color: secondaryColor),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  );
 }
