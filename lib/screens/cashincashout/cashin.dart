@@ -1321,7 +1321,7 @@ class _CashInState extends State<CashIn> {
                                     return;
                                   } else if (_currentSelectedNetwork ==
                                       "Mtn" &&
-                                      int.parse(
+                                      double.parse(
                                           _amountController.text) >
                                           mtnNow) {
                                     Get.snackbar("Amount Error",
@@ -1335,7 +1335,7 @@ class _CashInState extends State<CashIn> {
                                     return;
                                   } else if (_currentSelectedNetwork ==
                                       "AirtelTigo" &&
-                                      int.parse(
+                                      double.parse(
                                           _amountController.text) >
                                           airtelTigoNow) {
                                     Get.snackbar("Amount Error",
@@ -1349,7 +1349,7 @@ class _CashInState extends State<CashIn> {
                                     return;
                                   } else if (_currentSelectedNetwork ==
                                       "Vodafone" &&
-                                      int.parse(
+                                      double.parse(
                                           _amountController.text) >
                                           vodafoneNow) {
                                     Get.snackbar("Amount Error",
@@ -1369,7 +1369,6 @@ class _CashInState extends State<CashIn> {
                             ),
                           )
                                   : Container(),
-
                         ],
                       ),
                     ),

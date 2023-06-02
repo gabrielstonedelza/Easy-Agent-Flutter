@@ -1304,11 +1304,6 @@ class _BankDepositState extends State<BankDeposit> {
                                 children: [
                                   TextFormField(
                                     onChanged: (value) {
-                                      // var dt =
-                                      //     int.parse(value) * 1;
-                                      // setState(() {
-                                      //   d1 = dt;
-                                      // });
                                       var dt = 0;
                                       if(value.isEmpty){
                                         setState(() {

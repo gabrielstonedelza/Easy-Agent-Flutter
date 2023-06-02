@@ -163,11 +163,9 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     authController.fetchAuthPhone();
 
     Timer(const Duration(seconds: 10), () {
-      if(authController.isAuthDevice){
-        String num = agentPhone.replaceFirst("0", '+233');
-        sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
-        sendOtp();
-      }
+      String num = agentPhone.replaceFirst("0", '+233');
+      sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
+      sendOtp();
     }
     );
   }
@@ -185,8 +183,11 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
               child: Lottie.asset("assets/images/74569-two-factor-authentication.json",width: 300,height: 300)),
           
           const Expanded(
-            child: Center(
-              child:Text("A code was sent to your phone and your email,please enter the code here.",style:TextStyle(color:defaultWhite))
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(
+                child:Text("A code was sent to your phone and your email,please enter the code here.",style:TextStyle(color:defaultWhite))
+              ),
             ),
           ),
           
