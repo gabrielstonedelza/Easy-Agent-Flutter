@@ -190,7 +190,7 @@ class _PayToSummaryState extends State<PayToSummary> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: snackBackground,
+            backgroundColor: secondaryColor,
             onPressed: (){
               showMaterialModalBottomSheet(
                 context: context,
@@ -221,7 +221,7 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
+                                  myOnlineImage("assets/images/employee.png",70,70),
                                   const Padding(
                                     padding: EdgeInsets.only(
                                         top: 10.0),
@@ -240,7 +240,7 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/10701/10701763.png",70,70),
+                                  myOnlineImage("assets/images/cashier.png",70,70),
                                   const Padding(
                                     padding: EdgeInsets.only(
                                         top: 10.0),

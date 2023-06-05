@@ -753,7 +753,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/6828/6828649.png",70,70),
+                      myOnlineImage("assets/images/cash-on-delivery.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -783,7 +783,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                            myOnlineImage("https://cdn-icons-png.flaticon.com/128/2769/2769253.png",70,70),
+                            myOnlineImage("assets/images/money-withdrawal.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -813,7 +813,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/4531/4531766.png",70,70),
+                              myOnlineImage("assets/images/commissions.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -853,7 +853,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3059/3059590.png",70,70),
+                              myOnlineImage("assets/images/phone-call.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -871,7 +871,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/9218/9218714.png",70,70),
+                              myOnlineImage("assets/images/wallet.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -887,7 +887,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
+                              myOnlineImage("assets/images/employee.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -915,7 +915,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
+                              myOnlineImage("assets/images/bank.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -932,7 +932,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
+                              myOnlineImage("assets/images/bank.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -949,7 +949,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
+                              myOnlineImage("assets/images/bank.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -977,7 +977,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
+                              myOnlineImage("assets/images/group.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -994,7 +994,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
+                              myOnlineImage("assets/images/group.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1011,7 +1011,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
+                              myOnlineImage("assets/images/group.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1039,7 +1039,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2331/2331941.png",70,70),
+                              myOnlineImage("assets/images/payment-method.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1056,7 +1056,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/10318/10318009.png",70,70),
+                              myOnlineImage("assets/images/wallet.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1072,7 +1072,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/9532/9532823.png",70,70),
+                              myOnlineImage("assets/images/ewallet.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1100,7 +1100,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/9482/9482902.png",70,70),
+                              myOnlineImage("assets/images/conversation.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1120,11 +1120,7 @@ class _DashboardState extends State<Dashboard> {
                                         child: GestureDetector(
                                           child: Column(
                                             children: [
-                                              Image.asset(
-                                                "assets/images/cashier.png",
-                                                width: 70,
-                                                height: 70,
-                                              ),
+                                              myOnlineImage("assets/images/cashier.png",70,70),
                                               const SizedBox(
                                                 height: 10,
                                               ),
@@ -1132,7 +1128,7 @@ class _DashboardState extends State<Dashboard> {
                                             ],
                                           ),
                                           onTap: () {
-                                            Get.to(()=> PrivateChat());
+                                            Get.to(()=> const PrivateChat());
                                           },
                                         ),
                                       ),
@@ -1140,11 +1136,7 @@ class _DashboardState extends State<Dashboard> {
                                         child: GestureDetector(
                                           child: Column(
                                             children: [
-                                              Image.asset(
-                                                "assets/images/team1.png",
-                                                width: 70,
-                                                height: 70,
-                                              ),
+                                              myOnlineImage("assets/images/employee.png",70,70),
                                               const SizedBox(
                                                 height: 10,
                                               ),
@@ -1169,7 +1161,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2995/2995946.png",70,70),
+                              myOnlineImage("assets/images/customer-cares.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1186,7 +1178,7 @@ class _DashboardState extends State<Dashboard> {
                         child: GestureDetector(
                           child: Column(
                             children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/10344/10344057.png",70,70),
+                              myOnlineImage("assets/images/commissions.png",70,70),
                               const SizedBox(
                                 height: 10,
                               ),

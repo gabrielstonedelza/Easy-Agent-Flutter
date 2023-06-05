@@ -26,7 +26,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/10252/10252300.png",70,70),
+                  myOnlineImage("assets/images/sad.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -42,7 +42,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/10309/10309007.png",70,70),
+                      myOnlineImage("assets/images/hold.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -58,7 +58,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/2867/2867725.png",70,70),
+                      myOnlineImage("assets/images/fraud-alert.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),

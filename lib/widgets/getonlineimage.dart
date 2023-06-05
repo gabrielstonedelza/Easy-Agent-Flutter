@@ -6,7 +6,7 @@ Widget myOnlineImage(String imageLink,double h,double w){
     width: w,
     decoration: BoxDecoration(
         image: DecorationImage(
-            image: NetworkImage(imageLink)
+            image: AssetImage(imageLink)
         )
     ),
   );
