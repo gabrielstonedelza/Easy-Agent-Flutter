@@ -125,7 +125,7 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
               )
           );
         },
-        child: Image.asset("assets/images/customer-care.png"),
+        child: Image.asset("assets/images/customer-cares.png"),
       ),
     );
   }
