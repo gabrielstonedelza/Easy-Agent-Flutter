@@ -31,6 +31,7 @@ import '../widgets/loadingui.dart';
 import 'accounts/myaccounts.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
+import 'calculatecurrency.dart';
 import 'chats/agents_group_chat.dart';
 import 'chats/privatechat.dart';
 import 'commissions.dart';
@@ -551,8 +552,6 @@ class _DashboardState extends State<Dashboard> {
       }
     });
   }
-
-
   logoutUser() async {
     storage.remove("token");
     storage.remove("agent_code");
@@ -575,7 +574,6 @@ class _DashboardState extends State<Dashboard> {
       Get.offAll(() => const LoginView());
     }
   }
-
 
   @override
   void dispose(){
@@ -736,9 +734,15 @@ class _DashboardState extends State<Dashboard> {
                 actions: [
                   IconButton(
                     onPressed: (){
+                      Get.to(() => const CalculateCurrencies());
+                    },
+                    icon: myOnlineImage("assets/images/accounting.png",30,30),
+                  ),
+                  IconButton(
+                    onPressed: (){
                       Get.to(() => const MyReports());
                     },
-                    icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/10815/10815184.png",30,30),
+                    icon: myOnlineImage("assets/images/market-analysis.png",30,30),
                   )
                 ],
               ),

@@ -31,7 +31,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/2331/2331941.png",70,70),
+                      myOnlineImage("assets/images/cash-payment.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -47,7 +47,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/2331/2331941.png",70,70),
+                      myOnlineImage("assets/images/cash-payment.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),
@@ -63,7 +63,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/994/994377.png",70,70),
+                      myOnlineImage("assets/images/balance.png",70,70),
                       const SizedBox(
                         height: 10,
                       ),

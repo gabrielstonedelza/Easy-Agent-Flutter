@@ -77,7 +77,7 @@ class _RequestsSummaryDetailState extends State<RequestsSummaryDetail> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: secondaryColor,
-        title: Text("Request summary for $date_requested"),
+        title: Text("Summary for $date_requested"),
       ),
       body: SafeArea(
           child: isLoading

@@ -117,7 +117,7 @@ class _LoginAboutPageState extends State<LoginAboutPage> {
                         onPressed: () async{
                           launchWhatsapp(number: "+233550222888", message: "Hello 😀");
                         },
-                        icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/3992/3992601.png",40,40),
+                        icon: myOnlineImage("assets/images/whatsapp.png",40,40),
                       ),
                     ],
                   ),

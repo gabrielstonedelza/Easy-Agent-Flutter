@@ -45,7 +45,8 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
   final List requestType = [
     "Select request type",
     "Network",
-    "Bank"
+    "Bank",
+    "Cash"
   ];
 
   var _currentSelectedRequestType = "Select request type";
@@ -196,6 +197,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
           "network": _currentSelectedNetwork,
           "bank": _currentSelectedBank,
           "amount": _amountController.text.trim(),
+          "cash": _currentSelectedRequestType == "Cash" ? _amountController.text.trim() : "0.0",
         });
 
     if (res.statusCode == 201) {
@@ -239,12 +241,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
       ),
       body:isLoading ? const LoadingUi() :  ListView(
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: Center(
-          //     child: requestLimit > allRequests.length ?Text("You have a request limit of $requestLimit",style: const TextStyle(fontWeight: FontWeight.bold),) : const Text("You have used all your request for today or it's not set by your owner.",style: TextStyle(fontWeight: FontWeight.bold),),
-          //   ),
-          // ),
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Form(
