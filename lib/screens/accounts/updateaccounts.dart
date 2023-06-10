@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 
 class UpdateAccountBalance extends StatefulWidget {
@@ -17,6 +18,7 @@ class UpdateAccountBalance extends StatefulWidget {
 }
 
 class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
+  final ProfileController controller = Get.find();
   bool isPosting = false;
   void _startPosting()async{
     setState(() {
@@ -66,6 +68,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
       "tigo_airtel_e_cash": airtelTigoSet ? airteltigo.toString() : airtelTigoNow.toString(),
       "vodafone_e_cash": vodafoneSet ? vodafone.toString() : vodafoneNow.toString(),
       "isStarted": "True",
+      "agent":controller.userId
     });
     if (response.statusCode == 201) {
       Get.snackbar("Success", "Your accounts was updated",
@@ -75,7 +78,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
 
       Get.offAll(() => const Dashboard());
     } else {
-      print(response.body);
+      // print(response.body);
       Get.snackbar("Account", "something happened",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
