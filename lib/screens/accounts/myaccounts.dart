@@ -142,7 +142,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                   child: ListTile(
                     title: Row(
                       children: [
-                        myOnlineImage("https://cdn-icons-png.flaticon.com/128/4801/4801291.png",30,30),
+                        myOnlineImage("assets/images/cash.png",30,30),
                         const Text(" = "),
                         Text(items['physical']),
                       ],
@@ -153,7 +153,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(top:8.0,bottom: 10),
                           child: Row(
                             children: [
-                              myOnlineImage("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.aJ6slg41R5qdjTfGWyn1ewHaHa%26pid%3DApi&f=1&ipt=c6dbde85bcb73e57af0a6bb1e63b4356cce9290bb3449c310464aab04cc0c1b3&ipo=images",30,30),
+                              myOnlineImage("assets/images/momo.png",30,30),
                               const Text(" = "),
                               Text(items['mtn_e_cash']),
                             ],
@@ -163,7 +163,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Row(
                             children: [
-                              myOnlineImage("https://www.airteltigo.com.gh/assets/img/logo.png",30,30),
+                              myOnlineImage("assets/images/AIrtelTigo-Logo.png",30,30),
                               const Text(" = "),
                               Text(items['tigo_airtel_e_cash']),
                             ],
@@ -173,7 +173,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Row(
                             children: [
-                              myOnlineImage("https://1000logos.net/wp-content/uploads/2017/06/Vodafone_Logo-1024x640.png",30,30),
+                              myOnlineImage("assets/images/Vodafone-logo.png",30,30),
                               const Text(" = "),
                               Text(items['vodafone_e_cash']),
                             ],

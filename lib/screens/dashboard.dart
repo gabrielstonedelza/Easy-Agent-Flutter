@@ -10,7 +10,6 @@ import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/summaries/reportsummary.dart';
 import 'package:easy_agent/screens/summaries/requestsummary.dart';
 import 'package:easy_agent/widgets/getonlineimage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_agent/constants.dart';
@@ -198,7 +197,7 @@ class _DashboardState extends State<Dashboard> {
   }
   Future<void> fetchAllInstalled() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
-        onlyAppsWithLaunchIntent: true, includeSystemApps: true,includeAppIcons: true);
+        onlyAppsWithLaunchIntent: true, includeSystemApps: true,includeAppIcons: false);
     // if (kDebugMode) {
     //   print(apps);
     // }
@@ -766,12 +765,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           onTap: () {
                             tpController.accountBalanceDetailsToday.isNotEmpty ?
-                            hasSomePendings ? Get.snackbar("Request Error", "You have a request that is not paid or approved.",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: warning,
-                              duration: const Duration(seconds: 5)
-                            ): hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
+                             hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
                                 colorText: defaultWhite,
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5),
@@ -796,12 +790,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           onTap: () {
                             tpController.accountBalanceDetailsToday.isNotEmpty ?
-                            hasSomePendings ? Get.snackbar("Request Error", "You have a request that is not paid or approved.",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: warning,
-                                duration: const Duration(seconds: 5)
-                            ):   hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
+                               hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
                                 colorText: defaultWhite,
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5),
@@ -825,12 +814,7 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           onTap: () {
-                            tpController.accountBalanceDetailsToday.isNotEmpty ? hasSomePendings ? Get.snackbar("Request Error", "You have a request that is not paid or approved.",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: warning,
-                                duration: const Duration(seconds: 5)
-                            ):hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
+                            tpController.accountBalanceDetailsToday.isNotEmpty ? hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
                                 colorText: defaultWhite,
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5),

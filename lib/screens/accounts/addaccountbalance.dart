@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 
 class AddAccountBalance extends StatefulWidget {
@@ -15,6 +16,7 @@ class AddAccountBalance extends StatefulWidget {
 }
 
 class _AddAccountBalanceState extends State<AddAccountBalance> {
+  final ProfileController controller = Get.find();
   bool isPosting = false;
   void _startPosting()async{
     setState(() {
@@ -47,6 +49,7 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
       "tigo_airtel_e_cash": _tigoAirtelEcashController.text,
       "vodafone_e_cash": _vodafoneEcashController.text,
       "isStarted": "True",
+      "agent" : controller.userId
     });
     if (response.statusCode == 201) {
       Get.snackbar("Success", "You have added accounts for today",
@@ -56,7 +59,7 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
 
       Get.offAll(() => const Dashboard());
     } else {
-
+        print(response.body);
       Get.snackbar("Account", "something happened",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,

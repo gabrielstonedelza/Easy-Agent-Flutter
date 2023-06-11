@@ -148,7 +148,7 @@ class _RequestsSummaryDetailState extends State<RequestsSummaryDetail> {
               })),
       floatingActionButton: !isLoading
           ? FloatingActionButton(
-        backgroundColor: snackBackground,
+        backgroundColor: secondaryColor,
         child: const Text("Total"),
         onPressed: () {
           Get.defaultDialog(
