@@ -317,6 +317,7 @@ class _CashInState extends State<CashIn> {
       "tigo_airtel_e_cash": airteltigo.toString(),
       "vodafone_e_cash": vodafone.toString(),
       "isStarted": "True",
+      "agent": profileController.userId,
     });
     if (response.statusCode == 201) {
       Get.snackbar("Success", "You accounts is updated",

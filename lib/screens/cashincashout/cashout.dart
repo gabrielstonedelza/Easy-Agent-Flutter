@@ -218,6 +218,7 @@ class _CashOutState extends State<CashOut> {
       "tigo_airtel_e_cash": airteltigo.toString(),
       "vodafone_e_cash": vodafone.toString(),
       "isStarted": "True",
+      "agent": profileController.userId,
     });
     if (response.statusCode == 201) {
       Get.snackbar("Success", "Your accounts was updated",
@@ -643,7 +644,7 @@ class _CashOutState extends State<CashOut> {
                                       cursorWidth: 10,
                                       cursorColor: secondaryColor,
                                       decoration: buildInputDecoration(
-                                          "Amount Received GHC"),
+                                          "Cash Out GHC"),
                                       keyboardType: TextInputType.number,
                                       validator: (value) {
                                         if (value!.isEmpty) {
