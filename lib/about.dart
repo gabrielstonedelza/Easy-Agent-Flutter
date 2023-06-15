@@ -110,13 +110,13 @@ class _AboutPageState extends State<AboutPage> {
                       onPressed: (){
                         _callNumber();
                       },
-                      icon: myOnlineImage("assets/images/phone-call.png",40,40),
+                      icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/3059/3059590.png",40,40),
                     ),
                     IconButton(
                       onPressed: () async{
                         launchWhatsapp(number: "+233550222888", message: "Hello 😀");
                       },
-                      icon: myOnlineImage("assets/images/whatsapp.png",40,40),
+                      icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/733/733585.png",40,40),
                     ),
                   ],
                 ),
@@ -124,7 +124,7 @@ class _AboutPageState extends State<AboutPage> {
             )
           );
         },
-        child: myOnlineImage("assets/images/customer-cares.png",70,70),
+        child: myOnlineImage("https://cdn-icons-png.flaticon.com/128/2995/2995946.png",70,70),
       ),
     );
   }

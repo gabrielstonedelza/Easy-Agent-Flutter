@@ -37,7 +37,7 @@ class _CommissionsState extends State<Commissions> {
 
 
 
-  fetchUserMtnDeposits() async {
+  Future<void>fetchUserMtnDeposits() async {
     const url = "https://fnetagents.xyz/get_my_momo_deposits";
     var myLink = Uri.parse(url);
     final response =
@@ -61,7 +61,7 @@ class _CommissionsState extends State<Commissions> {
 
   }
 
-  fetchUserMtnWithdrawals()async{
+  Future<void>fetchUserMtnWithdrawals()async{
     const url = "https://fnetagents.xyz/get_my_momo_withdraws";
     var myLink = Uri.parse(url);
     final response = await http.get(myLink, headers: {
@@ -96,7 +96,6 @@ class _CommissionsState extends State<Commissions> {
 
     fetchUserMtnDeposits();
     fetchUserMtnWithdrawals();
-
   }
 
   @override

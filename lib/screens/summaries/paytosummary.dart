@@ -221,7 +221,7 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  myOnlineImage("assets/images/employee.png",70,70),
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
                                   const Padding(
                                     padding: EdgeInsets.only(
                                         top: 10.0),
@@ -240,7 +240,7 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  myOnlineImage("assets/images/cashier.png",70,70),
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/3361/3361190.png",70,70),
                                   const Padding(
                                     padding: EdgeInsets.only(
                                         top: 10.0),

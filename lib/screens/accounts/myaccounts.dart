@@ -142,7 +142,7 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                   child: ListTile(
                     title: Row(
                       children: [
-                        myOnlineImage("assets/images/cash.png",30,30),
+                        myOnlineImage("https://cdn-icons-png.flaticon.com/128/2704/2704312.png",30,30),
                         const Text(" = "),
                         Text(items['physical']),
                       ],
@@ -153,7 +153,8 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(top:8.0,bottom: 10),
                           child: Row(
                             children: [
-                              myOnlineImage("assets/images/momo.png",30,30),
+                              // myOnlineImage("assets/images/momo.png",30,30),
+                              Image.asset("assets/images/momo.png",width: 30,height: 30,),
                               const Text(" = "),
                               Text(items['mtn_e_cash']),
                             ],
@@ -163,7 +164,8 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Row(
                             children: [
-                              myOnlineImage("assets/images/AIrtelTigo-Logo.png",30,30),
+                              // myOnlineImage("assets/images/AIrtelTigo-Logo.png",30,30),
+                              Image.asset("assets/images/AIrtelTigo-Logo.png",width: 30,height: 30,),
                               const Text(" = "),
                               Text(items['tigo_airtel_e_cash']),
                             ],
@@ -173,7 +175,8 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Row(
                             children: [
-                              myOnlineImage("assets/images/Vodafone-logo.png",30,30),
+                              // myOnlineImage("assets/images/Vodafone-logo.png",30,30),
+                              Image.asset("assets/images/Vodafone-logo.png",width: 30,height: 30,),
                               const Text(" = "),
                               Text(items['vodafone_e_cash']),
                             ],
