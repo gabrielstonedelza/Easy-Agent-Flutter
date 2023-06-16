@@ -1309,7 +1309,20 @@ class _CashOutState extends State<CashOut> {
                                                 const Duration(
                                                     seconds: 5));
                                             return;
-                                          } else {
+                                          }
+                                           else if (double.parse(_cashPaidController.text) > double.parse(_amountReceivedController.text)) {
+                                             Get.snackbar("Amount Error",
+                                                 "Cash paid cannot be greater than amount received",
+                                                 colorText: defaultWhite,
+                                                 backgroundColor: warning,
+                                                 snackPosition:
+                                                 SnackPosition.BOTTOM,
+                                                 duration:
+                                                 const Duration(seconds: 5));
+                                             return;
+                                           }
+
+                                           else {
                                             processMomoWithdrawal();
                                           }
                                         }

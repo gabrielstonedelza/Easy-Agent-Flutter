@@ -1345,7 +1345,20 @@ class _CashInState extends State<CashIn> {
                                         duration:
                                         const Duration(seconds: 5));
                                     return;
-                                  } else {
+                                  }
+                                  else if (double.parse(_cashReceivedController.text) < double.parse(_amountController.text)) {
+                                    Get.snackbar("Amount Error",
+                                        "Cash received cannot be less than amount",
+                                        colorText: defaultWhite,
+                                        backgroundColor: warning,
+                                        snackPosition:
+                                        SnackPosition.BOTTOM,
+                                        duration:
+                                        const Duration(seconds: 5));
+                                    return;
+                                  }
+
+                                  else {
                                     processMomoDeposit();
                                   }
                                 }
