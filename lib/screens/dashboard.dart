@@ -495,10 +495,39 @@ class _DashboardState extends State<Dashboard> {
         hasSomePendings = false;
       });
     }
-
-
   }
 
+  bool isLatestAppVersion = false;
+  late int appVersion = 0;
+  late int latestAppVersion = 0;
+  late List appVersions = [];
+  Future<void> getLatestAppVersion() async {
+    const url = "https://fnetagents.xyz/check_app_version/";
+    var link = Uri.parse(url);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      appVersions.assignAll(jsonData);
+      for(var i in appVersions){
+        appVersion = i['app_version'];
+        if(latestAppVersion == appVersion){
+          setState(() {
+            isLatestAppVersion = true;
+          });
+        }
+        else{
+          setState(() {
+            isLatestAppVersion = false;
+          });
+        }
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -521,6 +550,12 @@ class _DashboardState extends State<Dashboard> {
         agentCode = storage.read("agent_code");
       });
     }
+    if (storage.read("AppVersion") != null) {
+      setState(() {
+        latestAppVersion = int.parse(storage.read("AppVersion"));
+      });
+    }
+    getLatestAppVersion();
 
     tpController.fetchFreeTrial(uToken);
     tpController.fetchAccountBalance(uToken);
@@ -541,11 +576,13 @@ class _DashboardState extends State<Dashboard> {
       tpController.fetchFreeTrial(uToken);
       tpController.fetchAccountBalance(uToken);
       tpController.fetchMonthlyPayment(uToken);
+
       for (var i in triggered) {
         NotificationService().showNotifications(title:i['notification_title'], body:i['notification_message']);
       }
     });
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+      getLatestAppVersion();
       for (var e in triggered) {
         unTriggerNotifications(e["id"]);
       }
@@ -750,438 +787,456 @@ class _DashboardState extends State<Dashboard> {
                   const SizedBox(
                     height: 30,
                   ),
-                  Row(
+                  isLatestAppVersion ?  Column(
                     children: [
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                      myOnlineImage("https://cdn-icons-png.flaticon.com/128/6828/6828649.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Pay To"),
-                            ],
-                          ),
-                          onTap: () {
-                            tpController.accountBalanceDetailsToday.isNotEmpty ?
-                             hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5),
-                                backgroundColor: warning) : Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5));
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                            myOnlineImage("https://cdn-icons-png.flaticon.com/128/2769/2769253.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Cash In"),
-                            ],
-                          ),
-                          onTap: () {
-                            tpController.accountBalanceDetailsToday.isNotEmpty ?
-                               hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5),
-                                backgroundColor: warning) :   Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5));
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/4531/4531766.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Cash Out"),
-                            ],
-                          ),
-                          onTap: () {
-                            tpController.accountBalanceDetailsToday.isNotEmpty ? hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
-                                colorText: defaultWhite,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5),
-                                backgroundColor: warning) : Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5));
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3059/3059590.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Airtime"),
-                              const Text("&"),
-                              const Text("Bundles"),
-                            ],
-                          ),
-                          onTap: () async{
-                            DeviceApps.openApp('com.wMY247KIOSK_15547762');
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/6387/6387705.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Wallet"),
-                            ],
-                          ),
-                          onTap: () {
-                            checkMtnBalance();
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Agent"),
-                              const Text("Accounts"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const AgentAccounts());
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Bank"),
-                              const Text("Deposit"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const BankDepositSummary());
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Bank"),
-                              const Text("Withdrawal"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const BankWithdrawalSummary());
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Financial"),
-                              const Text("Services"),
-                            ],
-                          ),
-                          onTap: () {
-                            showInstalled();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Customer"),
-                              const Text("Registration"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const CustomerRegistration());
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Customer"),
-                              const Text("Accounts"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const CustomerAccountRegistration());
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("My"),
-                              const Text("Customers"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const MyCustomers());
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2331/2331941.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Payment &"),
-                              const Text("Rebalancing"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const PaymentAndReBalancing());
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/9311/9311821.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Accounts"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const MyAccountDashboard());
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/9532/9532823.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Request"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const RequestSummary());
-                          },
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/10117/10117298.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Chat"),
-                            ],
-                          ),
-                          onTap: () {
-                            showMaterialModalBottomSheet(
-                              context: context,
-                              builder: (context) => SizedBox(
-                                height: 200,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top:25.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          child: Column(
-                                            children: [
-                                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/3361/3361190.png",70,70),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              const Text("Owner"),
-                                            ],
-                                          ),
-                                          onTap: () {
-                                            Get.to(()=> const PrivateChat());
-                                          },
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: GestureDetector(
-                                          child: Column(
-                                            children: [
-                                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              const Text("Agent Chat"),
-                                            ],
-                                          ),
-                                          onTap: () {
-                                            Get.to(() => const AgentsGroupChat());
-                                          },
-                                        ),
-                                      ),
-                                    ],
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                          myOnlineImage("https://cdn-icons-png.flaticon.com/128/6828/6828649.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
                                   ),
-                                ),
+                                  const Text("Pay To"),
+                                ],
                               ),
-                            );
+                              onTap: () {
+                                tpController.accountBalanceDetailsToday.isNotEmpty ?
+                                 hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: warning) : Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                                    colorText: defaultWhite,
+                                    backgroundColor: warning,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5));
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                myOnlineImage("https://cdn-icons-png.flaticon.com/128/2769/2769253.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Cash In"),
+                                ],
+                              ),
+                              onTap: () {
+                                tpController.accountBalanceDetailsToday.isNotEmpty ?
+                                   hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: warning) :   Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
+                                    colorText: defaultWhite,
+                                    backgroundColor: warning,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5));
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/4531/4531766.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Cash Out"),
+                                ],
+                              ),
+                              onTap: () {
+                                tpController.accountBalanceDetailsToday.isNotEmpty ? hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: warning) : Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
+                                    colorText: defaultWhite,
+                                    backgroundColor: warning,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5));
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/3059/3059590.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Airtime"),
+                                  const Text("&"),
+                                  const Text("Bundles"),
+                                ],
+                              ),
+                              onTap: () async{
+                                DeviceApps.openApp('com.wMY247KIOSK_15547762');
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/6387/6387705.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Wallet"),
+                                ],
+                              ),
+                              onTap: () {
+                                checkMtnBalance();
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Agent"),
+                                  const Text("Accounts"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const AgentAccounts());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Bank"),
+                                  const Text("Deposit"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const BankDepositSummary());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Bank"),
+                                  const Text("Withdrawal"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const BankWithdrawalSummary());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2830/2830289.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Financial"),
+                                  const Text("Services"),
+                                ],
+                              ),
+                              onTap: () {
+                                showInstalled();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Customer"),
+                                  const Text("Registration"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const CustomerRegistration());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Customer"),
+                                  const Text("Accounts"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const CustomerAccountRegistration());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/3201/3201521.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("My"),
+                                  const Text("Customers"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const MyCustomers());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2331/2331941.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Payment &"),
+                                  const Text("Rebalancing"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const PaymentAndReBalancing());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/9311/9311821.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Accounts"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const MyAccountDashboard());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/9532/9532823.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Request"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const RequestSummary());
+                              },
+                            ),
+                          ),
 
-                          },
-                        ),
+                        ],
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/2995/2995946.png",70,70),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text("Customer"),
-                              const Text("Service"),
-                            ],
-                          ),
-                          onTap: () {
-                            Get.to(() => const CustomerService());
-                          },
-                        ),
+                      const SizedBox(
+                        height: 10,
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          child: Column(
-                            children: [
-                              myOnlineImage("https://cdn-icons-png.flaticon.com/128/8507/8507140.png",70,70),
-                              const SizedBox(
-                                height: 10,
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/10117/10117298.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Chat"),
+                                ],
                               ),
-                              const Text("Commissions"),
-                            ],
+                              onTap: () {
+                                showMaterialModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => SizedBox(
+                                    height: 200,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top:25.0),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: GestureDetector(
+                                              child: Column(
+                                                children: [
+                                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/3361/3361190.png",70,70),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  const Text("Owner"),
+                                                ],
+                                              ),
+                                              onTap: () {
+                                                Get.to(()=> const PrivateChat());
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: GestureDetector(
+                                              child: Column(
+                                                children: [
+                                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2534/2534183.png",70,70),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  const Text("Agent Chat"),
+                                                ],
+                                              ),
+                                              onTap: () {
+                                                Get.to(() => const AgentsGroupChat());
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+
+                              },
+                            ),
                           ),
-                          onTap: () {
-                            Get.to(() => const Commissions());
-                          },
-                        ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/2995/2995946.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Customer"),
+                                  const Text("Service"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const CustomerService());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Column(
+                                children: [
+                                  myOnlineImage("https://cdn-icons-png.flaticon.com/128/8507/8507140.png",70,70),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text("Commissions"),
+                                ],
+                              ),
+                              onTap: () {
+                                Get.to(() => const Commissions());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
                       ),
                     ],
-                  ),
-                  const SizedBox(
-                    height: 20,
+                  ) : const Padding(
+                    padding: EdgeInsets.only(top:18.0,left: 18),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(child: Text("Please update",style: TextStyle(fontWeight: FontWeight.bold),)),
+                        Padding(
+                          padding: EdgeInsets.only(top:8.0,bottom:8),
+                          child: Center(child: Text("Contact the admin for the latest app update",style: TextStyle(fontWeight: FontWeight.bold),)),
+                        ),
+                        SizedBox(height: 10,),
+                        Center(child: Text("Make sure to logout before installing the latest one",style: TextStyle(fontWeight: FontWeight.bold),)),
+                      ],
+                    ),
                   ),
                 ],
               ),
