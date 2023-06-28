@@ -50,7 +50,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("fraud.png",70,70),
+                      
                       myBasicWidget("fraud.png","Fraud",""),
                     ],
                   ),
