@@ -137,6 +137,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
       Get.offAll(()=>const Dashboard());
     }
     else{
+      print(res.body);
       Get.snackbar("Error", "Something went wrong",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -418,7 +419,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                     },
                   )
                       : Container(),
-                  hasOTP && canTakeCustomersPicture ? Column(
+                  canTakeCustomersPicture ? Column(
                     children: [
                       !hasImageData  ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -493,7 +494,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                       const SizedBox(height: 30),
                     ],
                   ) : Container(),
-                  hasOTP &&    !isInSystem ? isPosting  ? const LoadingUi() : Padding(
+                  !isInSystem ? isPosting  ? const LoadingUi() : Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: RawMaterialButton(
                       fillColor: secondaryColor,
