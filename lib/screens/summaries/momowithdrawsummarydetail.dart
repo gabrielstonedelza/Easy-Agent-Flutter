@@ -13,7 +13,7 @@ class MtnWithdrawalSummaryDetail extends StatefulWidget {
   const MtnWithdrawalSummaryDetail({Key? key,this.date_of_withdrawal}) : super(key: key);
 
   @override
-  _MtnWithdrawalSummaryDetailState createState() => _MtnWithdrawalSummaryDetailState(date_of_withdrawal: this.date_of_withdrawal);
+  _MtnWithdrawalSummaryDetailState createState() => _MtnWithdrawalSummaryDetailState(date_of_withdrawal: date_of_withdrawal);
 }
 
 class _MtnWithdrawalSummaryDetailState extends State<MtnWithdrawalSummaryDetail> {

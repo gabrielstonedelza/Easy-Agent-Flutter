@@ -15,7 +15,7 @@ class RequestsSummaryDetail extends StatefulWidget {
 
   @override
   _RequestsSummaryDetailState createState() =>
-      _RequestsSummaryDetailState(date_requested: this.date_requested);
+      _RequestsSummaryDetailState(date_requested: date_requested);
 }
 
 class _RequestsSummaryDetailState extends State<RequestsSummaryDetail> {

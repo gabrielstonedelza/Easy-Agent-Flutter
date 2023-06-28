@@ -15,7 +15,7 @@ class BalancingSummaryDetail extends StatefulWidget {
 
   @override
   _BalancingSummaryDetailState createState() =>
-      _BalancingSummaryDetailState(date_requested: this.date_requested);
+      _BalancingSummaryDetailState(date_requested: date_requested);
 }
 
 class _BalancingSummaryDetailState extends State<BalancingSummaryDetail> {

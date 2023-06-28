@@ -15,7 +15,7 @@ class BankDepositSummaryDetail extends StatefulWidget {
 
   @override
   _BankDepositSummaryDetailState createState() =>
-      _BankDepositSummaryDetailState(date_added: this.date_added);
+      _BankDepositSummaryDetailState(date_added: date_added);
 }
 
 class _BankDepositSummaryDetailState extends State<BankDepositSummaryDetail> {

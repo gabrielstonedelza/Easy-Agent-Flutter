@@ -15,7 +15,7 @@ class BankWithdrawalSummaryDetail extends StatefulWidget {
 
   @override
   _BankWithdrawalSummaryDetailState createState() =>
-      _BankWithdrawalSummaryDetailState(date_of_withdrawal: this.date_of_withdrawal);
+      _BankWithdrawalSummaryDetailState(date_of_withdrawal: date_of_withdrawal);
 }
 
 class _BankWithdrawalSummaryDetailState extends State<BankWithdrawalSummaryDetail> {

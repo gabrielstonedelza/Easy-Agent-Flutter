@@ -23,7 +23,7 @@ class PayRequest extends StatefulWidget {
 
   @override
   State<PayRequest> createState() => _PayRequestState(
-      id: id, amount: this.amount, agent: this.agent, owner: this.owner);
+      id: id, amount: amount, agent: agent, owner: owner);
 }
 
 class _PayRequestState extends State<PayRequest> {

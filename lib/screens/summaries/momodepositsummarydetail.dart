@@ -15,7 +15,7 @@ class MtnDepositSummaryDetail extends StatefulWidget {
 
   @override
   _MtnDepositSummaryDetailState createState() =>
-      _MtnDepositSummaryDetailState(deposit_date: this.deposit_date);
+      _MtnDepositSummaryDetailState(deposit_date: deposit_date);
 }
 
 class _MtnDepositSummaryDetailState extends State<MtnDepositSummaryDetail> {

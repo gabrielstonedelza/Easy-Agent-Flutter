@@ -13,7 +13,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pinput/pinput.dart';
 import 'dart:io';
 import '../../controllers/customerscontroller.dart';

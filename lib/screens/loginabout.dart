@@ -1,5 +1,4 @@
 import 'package:easy_agent/constants.dart';
-import 'package:easy_agent/screens/dashboard.dart';
 import 'package:easy_agent/screens/login.dart';
 import 'package:easy_agent/widgets/getonlineimage.dart';
 import 'package:flutter/material.dart';

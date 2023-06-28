@@ -15,7 +15,7 @@ class PayToAgentSummaryDetail extends StatefulWidget {
 
   @override
   _PayToAgentSummaryDetailState createState() =>
-      _PayToAgentSummaryDetailState(date_added: this.date_added);
+      _PayToAgentSummaryDetailState(date_added: date_added);
 }
 
 class _PayToAgentSummaryDetailState extends State<PayToAgentSummaryDetail> {

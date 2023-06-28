@@ -134,8 +134,8 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
   late String agentUsername = "";
 
   Future<void> sendOtp() async {
-    final de_url = "https://fnetagents.xyz/send_otp/$oTP/$userEmail/$agentUsername/";
-    var link = Uri.parse(de_url);
+    final deUrl = "https://fnetagents.xyz/send_otp/$oTP/$userEmail/$agentUsername/";
+    var link = Uri.parse(deUrl);
     http.Response response = await http.get(link, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     });

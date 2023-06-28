@@ -15,7 +15,7 @@ class AccountBalanceSummaryDetail extends StatefulWidget {
 
   @override
   _AccountBalanceSummaryDetailState createState() =>
-      _AccountBalanceSummaryDetailState(date_posted: this.date_posted);
+      _AccountBalanceSummaryDetailState(date_posted: date_posted);
 }
 
 class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetail> {

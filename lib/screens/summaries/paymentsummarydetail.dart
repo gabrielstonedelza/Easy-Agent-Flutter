@@ -15,7 +15,7 @@ class PaymentSummaryDetail extends StatefulWidget {
 
   @override
   _PaymentSummaryDetailState createState() =>
-      _PaymentSummaryDetailState(date_created: this.date_created);
+      _PaymentSummaryDetailState(date_created: date_created);
 }
 
 class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
