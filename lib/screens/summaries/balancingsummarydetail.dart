@@ -76,7 +76,6 @@ class _BalancingSummaryDetailState extends State<BalancingSummaryDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: Text("Rebalancing for $date_requested"),
       ),
       body: SafeArea(

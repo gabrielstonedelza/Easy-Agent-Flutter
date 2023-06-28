@@ -75,7 +75,6 @@ class _PayToAgentSummaryDetailState extends State<PayToAgentSummaryDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: Text("Details for $date_added"),
       ),
       body: SafeArea(

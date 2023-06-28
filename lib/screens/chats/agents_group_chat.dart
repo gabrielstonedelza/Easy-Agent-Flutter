@@ -117,8 +117,6 @@ class _AgentsGroupChatState extends State<AgentsGroupChat> {
             backgroundColor: Colors.grey,
             appBar: AppBar(
               title: const Text("Agents Group Chats"),
-              backgroundColor: secondaryColor,
-
             ),
             body: Column(
               children: [

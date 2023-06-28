@@ -72,7 +72,6 @@ class _CalculateCurrenciesState extends State<CalculateCurrencies> {
     return SafeArea(child: Scaffold(
       appBar: AppBar(
         title: const Text("Calculate Notes"),
-        backgroundColor: secondaryColor,
         actions: [
           IconButton(
             onPressed: (){

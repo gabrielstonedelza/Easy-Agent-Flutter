@@ -59,7 +59,7 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
 
       Get.offAll(() => const Dashboard());
     } else {
-        print(response.body);
+
       Get.snackbar("Account", "something happened",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -100,7 +100,6 @@ class _AddAccountBalanceState extends State<AddAccountBalance> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         title: const Text("Add accounts today"),
       ),
       body: ListView(

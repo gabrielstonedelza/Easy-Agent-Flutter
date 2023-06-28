@@ -74,7 +74,6 @@ class _MtnWithdrawalSummaryDetailState extends State<MtnWithdrawalSummaryDetail>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: const Text("Mtn Withdrawals"),
       ),
       body: SafeArea(

@@ -76,7 +76,6 @@ class _BankWithdrawalSummaryDetailState extends State<BankWithdrawalSummaryDetai
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: Text("Bank withdrawal for $date_of_withdrawal"),
       ),
       body: SafeArea(

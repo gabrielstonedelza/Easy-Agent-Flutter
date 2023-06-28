@@ -70,7 +70,6 @@ class _MomoCashOutSummaryState extends State<MomoCashOutSummary> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Mtn Withdrawal Summary"),
-          backgroundColor: secondaryColor,
         ),
         body: isLoading ? const LoadingUi() :
         ListView.builder(
@@ -117,7 +116,7 @@ class _MomoCashOutSummaryState extends State<MomoCashOutSummary> {
             }
         ),
         floatingActionButton:FloatingActionButton(
-          backgroundColor: secondaryColor,
+          backgroundColor: snackBackground,
           child: const Icon(Icons.add,size: 30,),
           onPressed: (){
             Get.to(() => const CashOut());

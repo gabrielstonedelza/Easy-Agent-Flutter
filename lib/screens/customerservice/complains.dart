@@ -88,7 +88,6 @@ class _MakeComplainsState extends State<MakeComplains> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Complain to the admin"),
-        backgroundColor: secondaryColor,
       ),
       body: ListView(
         children: [

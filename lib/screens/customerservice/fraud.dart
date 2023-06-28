@@ -61,7 +61,6 @@ class _FraudState extends State<Fraud> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Fraudsters"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading
           ? const LoadingUi()

@@ -76,7 +76,6 @@ class _PaymentSummaryDetailState extends State<PaymentSummaryDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: Text("Payments for $date_created"),
       ),
       body: SafeArea(

@@ -76,7 +76,6 @@ class _BankDepositSummaryDetailState extends State<BankDepositSummaryDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: Text("Bank deposits for $date_added"),
       ),
       body: SafeArea(

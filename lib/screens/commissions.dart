@@ -103,7 +103,6 @@ class _CommissionsState extends State<Commissions> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Commission"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading ? const LoadingUi() : Column(
         mainAxisAlignment: MainAxisAlignment.center,

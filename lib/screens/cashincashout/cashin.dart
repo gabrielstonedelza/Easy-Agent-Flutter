@@ -387,7 +387,6 @@ class _CashInState extends State<CashIn> {
         appBar: AppBar(
           title: const Text("Cash In",
               style: TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: secondaryColor,
           // actions: [
           //   TextButton(onPressed: () { sendSMS(); },child: Text("Hello"),)
           // ],

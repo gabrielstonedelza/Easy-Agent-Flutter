@@ -126,7 +126,7 @@ class _MyAppState extends State<MyApp> {
         primaryColor: secondaryColor,
         appBarTheme: const AppBarTheme(
             elevation: 0,
-            backgroundColor: secondaryColor,
+            backgroundColor: snackBackground,
         )
       ),
       home:hasToken && isAuthDevice ? const Dashboard() : const LoginView(),

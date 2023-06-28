@@ -103,7 +103,6 @@ class _HoldAccountState extends State<HoldAccount> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Request to hold accounts"),
-        backgroundColor: secondaryColor,
       ),
       body: ListView(
         children: [

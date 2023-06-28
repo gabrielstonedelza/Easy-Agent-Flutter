@@ -221,7 +221,7 @@ class _PayToAgentState extends State<PayToAgent> {
       appBar: AppBar(
         title: const Text("Pay to agent",
             style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: secondaryColor,
+        backgroundColor: snackBackground,
       ),
       body: ListView(
         children: [

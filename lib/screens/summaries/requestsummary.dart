@@ -71,7 +71,6 @@ class _RequestSummaryState extends State<RequestSummary> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Requests Summary"),
-          backgroundColor: secondaryColor,
         ),
         body: isLoading ? const LoadingUi() :
         ListView.builder(
@@ -119,7 +118,7 @@ class _RequestSummaryState extends State<RequestSummary> {
             }
         ),
         floatingActionButton:FloatingActionButton(
-          backgroundColor: secondaryColor,
+          backgroundColor: snackBackground,
           child: const Icon(Icons.add,size: 30,),
           onPressed: (){
             Get.to(() => const RequestFromOwner());

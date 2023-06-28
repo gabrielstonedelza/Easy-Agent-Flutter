@@ -64,7 +64,6 @@ class _UnPaidRequestsState extends State<UnPaidRequests> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Unpaid Requests"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading  ? const LoadingUi() : ListView.builder(
         itemCount: allUnpaidRequests != null ? allUnpaidRequests.length:0,

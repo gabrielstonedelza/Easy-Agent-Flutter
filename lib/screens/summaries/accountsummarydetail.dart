@@ -79,7 +79,7 @@ class _AccountBalanceSummaryDetailState extends State<AccountBalanceSummaryDetai
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
+
         title: Text("Account for $date_posted"),
       ),
       body: SafeArea(

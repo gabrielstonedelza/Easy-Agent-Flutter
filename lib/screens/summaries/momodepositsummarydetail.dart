@@ -76,7 +76,6 @@ class _MtnDepositSummaryDetailState extends State<MtnDepositSummaryDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: const Text("Mtn deposits"),
       ),
       body: SafeArea(

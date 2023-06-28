@@ -1,4 +1,3 @@
-import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/payments/unpaidrequests.dart';
 import 'package:easy_agent/screens/summaries/balancingsummary.dart';
 import 'package:easy_agent/screens/summaries/paymentsummary.dart';
@@ -20,7 +19,6 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Payment & ReBalancing"),
-        backgroundColor: secondaryColor,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -158,7 +158,6 @@ class _FloatsState extends State<Floats> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Floats"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading ? const LoadingUi() : isRegisteredForFloat ? ListView.builder(
           itemCount: allMyFloats != null ? allMyFloats.length : 0,

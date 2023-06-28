@@ -68,7 +68,6 @@ class _AccountBalanceSummaryState extends State<AccountBalanceSummary> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Account Balance Summary"),
-          backgroundColor: secondaryColor,
         ),
         body: isLoading ? const LoadingUi() :
         ListView.builder(

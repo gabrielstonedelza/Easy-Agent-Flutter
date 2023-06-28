@@ -56,7 +56,7 @@ class _MyRequestToHoldAccountsState extends State<MyRequestToHoldAccounts> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Requests to hold accounts"),
-        backgroundColor: secondaryColor,
+
       ),
       body: isLoading
           ? const LoadingUi()

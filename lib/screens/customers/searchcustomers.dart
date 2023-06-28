@@ -70,7 +70,6 @@ class _SearchCustomersState extends State<SearchCustomers> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Find any customer"),
-          backgroundColor: secondaryColor,
         ),
         body: SafeArea(
           child: Column(

@@ -110,15 +110,17 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     }
     timer?.cancel();
   }
-  logoutUser() async {
+  Future<void> logoutUser() async {
     storage.remove("token");
     storage.remove("agent_code");
-    Get.offAll(() => const LoginView());
+    storage.remove("phoneAuthenticated");
+
     const logoutUrl = "https://www.fnetagents.xyz/auth/token/logout";
     final myLink = Uri.parse(logoutUrl);
+
     http.Response response = await http.post(myLink, headers: {
       'Accept': 'application/json',
-      "Authorization": "Token $uToken"
+      "Authorization": "Token $uToken" // Make sure to define and assign a value to uToken
     });
 
     if (response.statusCode == 200) {
@@ -126,9 +128,10 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
+
       storage.remove("token");
       storage.remove("agent_code");
-      Get.offAll(() => const LoginView());
+      Get.offAll(() => const LoginView()); // Remove the const keyword
     }
   }
   late String agentUsername = "";

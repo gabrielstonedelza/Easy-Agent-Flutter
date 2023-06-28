@@ -77,7 +77,7 @@ class _PayToMerchantSummaryDetailState extends State<PayToMerchantSummaryDetail>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
+
         title: Text("Details for $date_added"),
       ),
       body: SafeArea(

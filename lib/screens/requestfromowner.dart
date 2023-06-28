@@ -237,7 +237,6 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Request"),
-        backgroundColor: secondaryColor,
       ),
       body:isLoading ? const LoadingUi() :  ListView(
         children: [

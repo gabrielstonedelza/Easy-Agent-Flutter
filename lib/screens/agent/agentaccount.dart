@@ -61,7 +61,6 @@ class _AgentAccountsState extends State<AgentAccounts> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Accounts"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading
           ? const LoadingUi()

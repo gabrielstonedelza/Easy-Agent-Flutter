@@ -62,7 +62,6 @@ class _MyCustomersState extends State<MyCustomers> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Customers"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading
           ? const LoadingUi()

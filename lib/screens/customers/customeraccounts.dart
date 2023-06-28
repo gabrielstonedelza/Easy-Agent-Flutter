@@ -167,7 +167,6 @@ class _UserRegistration extends State<CustomerAccountRegistration> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: const Text("Add customer accounts"),
       ),
       body: ListView(

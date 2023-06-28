@@ -194,7 +194,6 @@ class _ReBalancingState extends State<ReBalancing> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Request ReBalancing",style:TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: secondaryColor,
         actions: [
           IconButton(
             onPressed: (){

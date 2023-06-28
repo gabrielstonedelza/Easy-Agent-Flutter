@@ -71,7 +71,6 @@ class _BankDepositSummaryState extends State<BankDepositSummary> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Bank Deposit Summary"),
-          backgroundColor: secondaryColor,
         ),
         body: isLoading ? const LoadingUi() :
         ListView.builder(
@@ -119,7 +118,7 @@ class _BankDepositSummaryState extends State<BankDepositSummary> {
             }
         ),
         floatingActionButton:FloatingActionButton(
-          backgroundColor: secondaryColor,
+          backgroundColor: snackBackground,
           child: const Icon(Icons.add,size: 30,),
           onPressed: (){
             Get.to(() => const BankDeposit());

@@ -62,7 +62,6 @@ class _MyComplainsState extends State<MyComplains> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Complains"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading
           ? const LoadingUi()

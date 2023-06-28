@@ -145,7 +145,6 @@ class _PayRequestState extends State<PayRequest> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pay your request"),
-        backgroundColor: secondaryColor,
       ),
       body: ListView(
         children: [

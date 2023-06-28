@@ -284,7 +284,6 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: const Text("Bank Withdrawal"),
       ),
       body:isLoading ? const LoadingUi() : ListView(

@@ -170,7 +170,6 @@ class _UserRegistration extends State<AddAgentAccounts> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: const Text("Add your accounts"),
       ),
       body: ListView(

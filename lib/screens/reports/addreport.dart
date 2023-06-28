@@ -142,7 +142,6 @@ class _AddNewReportState extends State<AddNewReport> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add New Report"),
-        backgroundColor: secondaryColor,
       ),
       body:isLoading
           ? const LoadingUi()

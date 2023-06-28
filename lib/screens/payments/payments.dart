@@ -135,7 +135,6 @@ class _PaymentsState extends State<Payments> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Make Payment",style:TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: secondaryColor,
       ),
       body:isLoading ? const LoadingUi() : ListView(
         children: [

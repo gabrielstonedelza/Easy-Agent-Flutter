@@ -71,7 +71,6 @@ class _BankWithdrawalSummaryState extends State<BankWithdrawalSummary> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Bank Withdrawal Summary"),
-          backgroundColor: secondaryColor,
         ),
         body: isLoading ? const LoadingUi() :
         ListView.builder(
@@ -119,7 +118,7 @@ class _BankWithdrawalSummaryState extends State<BankWithdrawalSummary> {
             }
         ),
         floatingActionButton:FloatingActionButton(
-          backgroundColor: secondaryColor,
+          backgroundColor: snackBackground,
           child: const Icon(Icons.add,size: 30,),
           onPressed: (){
             Get.to(() => const BankWithdrawal());

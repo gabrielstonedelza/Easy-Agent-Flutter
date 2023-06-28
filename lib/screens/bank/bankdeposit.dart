@@ -631,7 +631,6 @@ class _BankDepositState extends State<BankDeposit> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Bank Deposit",style:TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: secondaryColor,
         // actions: [
         //   IconButton(onPressed: (){
         //

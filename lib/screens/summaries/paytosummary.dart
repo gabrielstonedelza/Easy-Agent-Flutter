@@ -8,7 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-import '../../widgets/getonlineimage.dart';
+import '../../widgets/basicui.dart';
 import '../../widgets/loadingui.dart';
 import '../payto/agent.dart';
 import '../payto/merchant.dart';
@@ -86,7 +86,7 @@ class _PayToSummaryState extends State<PayToSummary> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: secondaryColor,
+            backgroundColor: snackBackground,
             bottom: TabBar(
               indicatorColor: snackBackground,
               tabs: [
@@ -190,7 +190,7 @@ class _PayToSummaryState extends State<PayToSummary> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: secondaryColor,
+            backgroundColor: snackBackground,
             onPressed: (){
               showMaterialModalBottomSheet(
                 context: context,
@@ -221,15 +221,7 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  myOnlineImage("manager.png",70,70),
-                                  const Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 10.0),
-                                    child: Text("Agent",
-                                        style: TextStyle(
-                                            fontWeight:
-                                            FontWeight.bold)),
-                                  )
+                                  myBasicWidget("manager.png","Agent",""),
                                 ],
                               ),
                             ),
@@ -240,15 +232,8 @@ class _PayToSummaryState extends State<PayToSummary> {
                               },
                               child: Column(
                                 children: [
-                                  myOnlineImage("clerk.png",70,70),
-                                  const Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 10.0),
-                                    child: Text("Merchant",
-                                        style: TextStyle(
-                                            fontWeight:
-                                            FontWeight.bold)),
-                                  )
+                                  myBasicWidget("clerk.png","Merchant",""),
+
                                 ],
                               ),
                             ),

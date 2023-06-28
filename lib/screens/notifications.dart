@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/chats/agents_group_chat.dart';
 import 'package:easy_agent/screens/customerservice/fraud.dart';
 import 'package:flutter/foundation.dart';
@@ -85,7 +84,7 @@ class _NotificationsState extends State<Notifications> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Notifications"),
-        backgroundColor: secondaryColor,
+
       ),
       body: isLoading ? const LoadingUi() : ListView.builder(
         itemCount: notifications != null ? notifications.length :0,

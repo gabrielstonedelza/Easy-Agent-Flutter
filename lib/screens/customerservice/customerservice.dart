@@ -1,4 +1,3 @@
-import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/customerservice/fraud.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,7 +14,7 @@ class CustomerService extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Customer Service"),
-        backgroundColor: secondaryColor,
+
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

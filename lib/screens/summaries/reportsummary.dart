@@ -85,7 +85,7 @@ class _MyReportsState extends State<MyReports> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Reports"),
-        backgroundColor: secondaryColor,
+
       ),
       body: isLoading
           ? const LoadingUi()

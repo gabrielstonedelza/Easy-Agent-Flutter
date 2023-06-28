@@ -76,7 +76,6 @@ class _RequestsSummaryDetailState extends State<RequestsSummaryDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: secondaryColor,
         title: Text("Summary for $date_requested"),
       ),
       body: SafeArea(

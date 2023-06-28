@@ -70,7 +70,6 @@ class _MomoCashInSummaryState extends State<MomoCashInSummary> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mtn Deposit Summary"),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading ? const LoadingUi() :
       ListView.builder(
@@ -118,7 +117,7 @@ class _MomoCashInSummaryState extends State<MomoCashInSummary> {
           }
       ),
       floatingActionButton:FloatingActionButton(
-        backgroundColor: secondaryColor,
+        backgroundColor: snackBackground,
         child: const Icon(Icons.add,size: 30,),
         onPressed: (){
           Get.to(() => const CashIn());

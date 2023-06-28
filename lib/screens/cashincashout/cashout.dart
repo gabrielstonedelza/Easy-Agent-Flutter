@@ -342,7 +342,6 @@ class _CashOutState extends State<CashOut> {
       appBar: AppBar(
         title: const Text("Cash Out",
             style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: secondaryColor,
       ),
       body: isLoading
           ? const LoadingUi()

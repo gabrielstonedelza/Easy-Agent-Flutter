@@ -70,7 +70,6 @@ class _PaymentSummaryState extends State<PaymentSummary> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Payment Summary"),
-          backgroundColor: secondaryColor,
         ),
         body: isLoading ? const LoadingUi() :
         ListView.builder(
@@ -118,7 +117,7 @@ class _PaymentSummaryState extends State<PaymentSummary> {
             }
         ),
         floatingActionButton:FloatingActionButton(
-          backgroundColor: secondaryColor,
+          backgroundColor: snackBackground,
           child: const Icon(Icons.add,size: 30,),
           onPressed: (){
             Get.to(() => const Payments());

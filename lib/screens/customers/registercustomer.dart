@@ -136,7 +136,6 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
       Get.offAll(()=>const Dashboard());
     }
     else{
-      print(res.body);
       Get.snackbar("Error", "Something went wrong",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,

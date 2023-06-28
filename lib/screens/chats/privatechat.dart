@@ -102,6 +102,7 @@ class _PrivateChatState extends State<PrivateChat> {
       }
     }
   }
+  late Timer _timer;
 
   @override
   void initState(){
@@ -116,6 +117,14 @@ class _PrivateChatState extends State<PrivateChat> {
 
     fetchSuperVisorsDetails();
     fetchAllPrivateMessages();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      fetchAllPrivateMessages();
+    });
+  }
+   @override
+  void dispose(){
+    super.dispose();
+    _timer.cancel();
   }
 
   @override
@@ -125,7 +134,6 @@ class _PrivateChatState extends State<PrivateChat> {
             backgroundColor:Colors.grey,
             appBar: AppBar(
               title: Text(supervisorUsername),
-              backgroundColor: secondaryColor,
             ),
             body: isLoading ? const LoadingUi() : Column(
               children: [
