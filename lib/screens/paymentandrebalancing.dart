@@ -4,6 +4,7 @@ import 'package:easy_agent/screens/summaries/paymentsummary.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../widgets/basicui.dart';
 import '../widgets/getonlineimage.dart';
 
 class PaymentAndReBalancing extends StatefulWidget {
@@ -29,11 +30,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("cash-payment.png",70,70),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text("Payment"),
+                      myBasicWidget("cash-payment.png","Payment",""),
                     ],
                   ),
                   onTap: () {
@@ -45,11 +42,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("digital-wallet.png",70,70),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text("Unpaid Request"),
+                      myBasicWidget("digital-wallet.png","Unpaid","Requests"),
                     ],
                   ),
                   onTap: () {
@@ -61,11 +54,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("balance.png",70,70),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text("ReBalancing"),
+                      myBasicWidget("balance.png","Rebalancing",""),
                     ],
                   ),
                   onTap: () {

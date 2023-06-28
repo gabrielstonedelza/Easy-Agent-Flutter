@@ -1,6 +1,7 @@
 import 'package:easy_agent/screens/customerservice/fraud.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../widgets/basicui.dart';
 import '../../widgets/getonlineimage.dart';
 import 'mycomplains.dart';
 import 'myholdaccountsrequests.dart';
@@ -25,11 +26,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                  myOnlineImage("sad.png",70,70),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text("Complains"),
+                      myBasicWidget("sad.png","Complains",""),
                     ],
                   ),
                   onTap: () {
@@ -41,11 +38,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myOnlineImage("hold.png",70,70),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text("Hold Account"),
+                      myBasicWidget("hold.png","Hold","Account"),
                     ],
                   ),
                   onTap: () {
@@ -58,10 +51,7 @@ class CustomerService extends StatelessWidget {
                   child: Column(
                     children: [
                       myOnlineImage("fraud.png",70,70),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text("Fraud"),
+                      myBasicWidget("fraud.png","Fraud",""),
                     ],
                   ),
                   onTap: () {
