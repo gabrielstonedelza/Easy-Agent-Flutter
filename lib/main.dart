@@ -127,6 +127,7 @@ class _MyAppState extends State<MyApp> {
         appBarTheme: const AppBarTheme(
             elevation: 0,
             backgroundColor: snackBackground,
+          titleTextStyle: TextStyle(color: secondaryColor,fontWeight: FontWeight.bold,fontSize: 18)
         )
       ),
       home:hasToken && isAuthDevice ? const Dashboard() : const LoginView(),
