@@ -20,8 +20,8 @@ Widget myBasicWidget(String imageName,String title,String title2){
             const SizedBox(
               height: 10,
             ),
-            Text(title,style: const TextStyle(color:secondaryColor),),
-            Text(title2,style: const TextStyle(color:secondaryColor),),
+            Text(title,style: const TextStyle(color:defaultWhite),),
+            Text(title2,style: const TextStyle(color:defaultWhite),),
           ],
         ),
       ),
