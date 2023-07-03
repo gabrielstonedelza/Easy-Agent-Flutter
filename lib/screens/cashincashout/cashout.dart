@@ -643,7 +643,7 @@ class _CashOutState extends State<CashOut> {
                                       cursorWidth: 10,
                                       cursorColor: secondaryColor,
                                       decoration: buildInputDecoration(
-                                          "Cash Out GHC"),
+                                          "Amount Withdrawal GHC"),
                                       keyboardType: TextInputType.number,
                                       validator: (value) {
                                         if (value!.isEmpty) {

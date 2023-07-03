@@ -44,28 +44,6 @@ class _LoginViewState extends State<LoginView> {
   late String phoneFingerprint = "";
   bool isDeUser = false;
   bool canLogin = false;
-  late List appVersions = [];
-  late int appVersion = 0;
-  late int latestAppVersion = 0;
-  Future<void> getLatestAppVersion() async {
-    const url = "https://fnetagents.xyz/check_app_version/";
-    var link = Uri.parse(url);
-    http.Response response = await http.get(link, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    });
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      appVersions.assignAll(jsonData);
-      for(var i in appVersions){
-        appVersion = i['app_version'];
-        storage.write("AppVersion",appVersion.toString());
-      }
-      setState(() {
-        isLoading = false;
-      });
-
-    }
-  }
 
   Future<void> fetchDeviceInfo() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -203,7 +181,6 @@ class _LoginViewState extends State<LoginView> {
     }
     fetchDeviceInfo();
     fetchAuthPhone();
-    getLatestAppVersion();
   }
 
   @override

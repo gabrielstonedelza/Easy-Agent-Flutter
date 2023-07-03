@@ -10,6 +10,7 @@ import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/summaries/reportsummary.dart';
 import 'package:easy_agent/screens/summaries/requestsummary.dart';
 import 'package:easy_agent/widgets/getonlineimage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_agent/constants.dart';
@@ -499,8 +500,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   bool isLatestAppVersion = false;
+  int appVersionNow = 5;
   late int appVersion = 0;
-  late int latestAppVersion = 0;
+  late int appVersionFromServer = 0;
   late List appVersions = [];
   Future<void> getLatestAppVersion() async {
     const url = "https://fnetagents.xyz/check_app_version/";
@@ -513,7 +515,7 @@ class _DashboardState extends State<Dashboard> {
       appVersions.assignAll(jsonData);
       for(var i in appVersions){
         appVersion = i['app_version'];
-        if(latestAppVersion == appVersion){
+        if(appVersionNow == appVersion){
           setState(() {
             isLatestAppVersion = true;
           });
@@ -527,6 +529,40 @@ class _DashboardState extends State<Dashboard> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  bool isClosingTimeNow = false;
+
+  void checkTheTime(){
+    var hour = DateTime.now().hour;
+    switch (hour) {
+      case 00:
+        setState(() {
+          isClosingTimeNow = true;
+        });
+        logoutUser();
+        break;
+    // case 01:
+    //   setState(() {
+    //     isMidNight = true;
+    //   });
+    //   break;
+    // case 02:
+    //   setState(() {
+    //     isMidNight = true;
+    //   });
+    //   break;
+    // case 03:
+    //   setState(() {
+    //     isMidNight = true;
+    //   });
+    //   break;
+    // case 04:
+    //   setState(() {
+    //     isMidNight = false;
+    //   });
+    //   break;
     }
   }
   @override
@@ -557,10 +593,10 @@ class _DashboardState extends State<Dashboard> {
 
     if (storage.read("AppVersion") != null) {
       setState(() {
-        latestAppVersion = int.parse(storage.read("AppVersion"));
+        appVersionFromServer = int.parse(storage.read("AppVersion"));
       });
     }
-
+    checkTheTime();
     getLatestAppVersion();
     tpController.fetchFreeTrial(uToken);
     tpController.fetchAccountBalance(uToken);
@@ -594,34 +630,36 @@ class _DashboardState extends State<Dashboard> {
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       getLatestAppVersion();
+      checkTheTime();
 
       for (var e in triggered) {
         unTriggerNotifications(e["id"]);
       }
     });
   }
-  Future<void> logoutUser() async {
+  logoutUser() async {
     storage.remove("token");
     storage.remove("agent_code");
     storage.remove("phoneAuthenticated");
-  
+    storage.remove("IsAuthDevice");
+    storage.remove("AppVersion");
+    Get.offAll(() => const LoginView());
     const logoutUrl = "https://www.fnetagents.xyz/auth/token/logout";
     final myLink = Uri.parse(logoutUrl);
-  
     http.Response response = await http.post(myLink, headers: {
       'Accept': 'application/json',
-      "Authorization": "Token $uToken" // Make sure to define and assign a value to uToken
+      "Authorization": "Token $uToken"
     });
-  
+
     if (response.statusCode == 200) {
       Get.snackbar("Success", "You were logged out",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
-  
       storage.remove("token");
       storage.remove("agent_code");
-      Get.offAll(() => const LoginView()); // Remove the const keyword
+      storage.remove("AppVersion");
+      Get.offAll(() => const LoginView());
     }
   }
 

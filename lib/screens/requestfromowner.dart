@@ -101,9 +101,6 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
     "Cal Bank",
     "Fidelity Bank",
     "Ecobank",
-    "Mtn",
-    "AirtelTigo",
-    "Vodafone"
   ];
   var _currentSelectedBank = "Select bank";
   late String uToken = "";

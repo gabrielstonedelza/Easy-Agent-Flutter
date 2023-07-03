@@ -29,7 +29,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myBasicWidget("cash-payment.png","Payment",""),
+                      myBasicWidget("cash-payment.png","Payment","/ Re-Balancing"),
                     ],
                   ),
                   onTap: () {
@@ -53,7 +53,7 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myBasicWidget("balance.png","Rebalancing",""),
+                      myBasicWidget("balance.png","Re-Balancing","Summary"),
                     ],
                   ),
                   onTap: () {
