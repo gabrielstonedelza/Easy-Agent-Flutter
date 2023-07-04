@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-import '../../widgets/basicui.dart';
 import '../../widgets/getonlineimage.dart';
 import '../../widgets/loadingui.dart';
 import '../summaries/accountsummary.dart';
@@ -102,28 +101,28 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
       appBar: AppBar(
         title: const Text("Account Today"),
         actions: [
-          accountBalanceDetailsToday.isNotEmpty ? IconButton(
-            onPressed: (){
-              hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
-                  colorText: defaultWhite,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 5),
-                  backgroundColor: warning) :
-              Get.to(()=> const CloseAccountBalance());
-            },
-            icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/10149/10149458.png",70,70),
-          ) : Container(),
-          accountBalanceDetailsToday.isNotEmpty ? IconButton(
-            onPressed: (){
-              hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today therefore you can't edit.",
-                  colorText: defaultWhite,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 5),
-                  backgroundColor: warning) :
-              Get.to(()=> const UpdateAccountBalance());
-            },
-            icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/10542/10542531.png",70,70),
-          ) : Container()
+          // accountBalanceDetailsToday.isNotEmpty ? IconButton(
+          //   onPressed: (){
+          //     hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
+          //         colorText: defaultWhite,
+          //         snackPosition: SnackPosition.BOTTOM,
+          //         duration: const Duration(seconds: 5),
+          //         backgroundColor: warning) :
+          //     Get.to(()=> const CloseAccountBalance());
+          //   },
+          //   icon: myOnlineImage("wallet.png",70,70),
+          // ) : Container(),
+          // accountBalanceDetailsToday.isNotEmpty ? IconButton(
+          //   onPressed: (){
+          //     hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today therefore you can't edit.",
+          //         colorText: defaultWhite,
+          //         snackPosition: SnackPosition.BOTTOM,
+          //         duration: const Duration(seconds: 5),
+          //         backgroundColor: warning) :
+          //     Get.to(()=> const UpdateAccountBalance());
+          //   },
+          //   icon: myOnlineImage("pencil.png",70,70),
+          // ) : Container()
         ],
       ),
       body: isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView.builder(

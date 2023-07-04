@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_agent/controllers/profilecontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -94,6 +95,7 @@ class _PayToAgentState extends State<PayToAgent> {
       "customer": _agentPhoneController.text.trim(),
       "depositor_number": _depositorPhoneController.text.trim(),
       "pay_to_type": "Agent",
+      "reference": _referenceController.text.trim(),
     });
 
     if (res.statusCode == 201) {
@@ -131,6 +133,7 @@ class _PayToAgentState extends State<PayToAgent> {
         subscriptionId: 1);
   }
   final CustomersController controller = Get.find();
+
   Future<void> fetchAccountBalance() async {
     const postUrl =
         "https://fnetagents.xyz/get_my_account_balance_started_today/";
@@ -147,19 +150,20 @@ class _PayToAgentState extends State<PayToAgent> {
       accountBalanceDetailsToday.assignAll(allPosts);
       setState(() {
         isLoading = false;
-        lastItem.assign(accountBalanceDetailsToday.last);
-        physicalNow = double.parse(lastItem[0]['physical']);
-        mtnNow = double.parse(lastItem[0]['mtn_e_cash']);
-        airtelTigoNow = double.parse(lastItem[0]['tigo_airtel_e_cash']);
-        vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
-        eCashNow = double.parse(lastItem[0]['mtn_e_cash']) +
-            double.parse(lastItem[0]['tigo_airtel_e_cash']) +
-            double.parse(lastItem[0]['vodafone_e_cash']);
+        // lastItem.assign(accountBalanceDetailsToday.last);
+        physicalNow = double.parse(accountBalanceDetailsToday[0]['physical']);
+        mtnNow = double.parse(accountBalanceDetailsToday[0]['mtn_e_cash']);
+        airtelTigoNow = double.parse(accountBalanceDetailsToday[0]['tigo_airtel_e_cash']);
+        vodafoneNow = double.parse(accountBalanceDetailsToday[0]['vodafone_e_cash']);
+        eCashNow = double.parse(accountBalanceDetailsToday[0]['mtn_e_cash']) +
+            double.parse(accountBalanceDetailsToday[0]['tigo_airtel_e_cash']) +
+            double.parse(accountBalanceDetailsToday[0]['vodafone_e_cash']);
       });
     } else {
       // print(res.body);
     }
   }
+  final ProfileController profileController = Get.find();
 
   addAccountsToday() async {
     const accountUrl = "https://fnetagents.xyz/add_balance_to_start/";
@@ -173,6 +177,7 @@ class _PayToAgentState extends State<PayToAgent> {
       "tigo_airtel_e_cash": airteltigo.toString(),
       "vodafone_e_cash": vodafone.toString(),
       "isStarted": "True",
+      "agent": profileController.userId
     });
     if (response.statusCode == 201) {
       Get.snackbar("Success", "You accounts is updated",
@@ -180,7 +185,6 @@ class _PayToAgentState extends State<PayToAgent> {
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
 
-      // Get.offAll(() => const Dashboard());
     } else {
       Get.snackbar("Account", "something happened",
           colorText: defaultWhite,

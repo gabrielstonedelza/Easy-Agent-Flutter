@@ -23,45 +23,48 @@ class _PaymentAndReBalancingState extends State<PaymentAndReBalancing> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  child: Column(
-                    children: [
-                      myBasicWidget("cash-payment.png","Payment","/ Re-Balancing"),
-                    ],
+          Padding(
+            padding: const EdgeInsets.only(left: 5.0,right: 5),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    child: Column(
+                      children: [
+                        myBasicWidget("cash-payment.png","Payment","/ Re-Balancing"),
+                      ],
+                    ),
+                    onTap: () {
+                      Get.to(() => const PaymentSummary());
+                    },
                   ),
-                  onTap: () {
-                    Get.to(() => const PaymentSummary());
-                  },
                 ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  child: Column(
-                    children: [
-                      myBasicWidget("digital-wallet.png","Unpaid","Requests"),
-                    ],
+                Expanded(
+                  child: GestureDetector(
+                    child: Column(
+                      children: [
+                        myBasicWidget("digital-wallet.png","Unpaid","Requests"),
+                      ],
+                    ),
+                    onTap: () {
+                      Get.to(() => const UnPaidRequests());
+                    },
                   ),
-                  onTap: () {
-                    Get.to(() => const UnPaidRequests());
-                  },
                 ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  child: Column(
-                    children: [
-                      myBasicWidget("balance.png","Re-Balancing","Summary"),
-                    ],
+                Expanded(
+                  child: GestureDetector(
+                    child: Column(
+                      children: [
+                        myBasicWidget("balance.png","Re-Balancing","Summary"),
+                      ],
+                    ),
+                    onTap: () {
+                      Get.to(() => const BalancingSummary());
+                    },
                   ),
-                  onTap: () {
-                    Get.to(() => const BalancingSummary());
-                  },
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

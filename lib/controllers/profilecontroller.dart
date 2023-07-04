@@ -12,6 +12,7 @@ class ProfileController extends GetxController{
   late String agentPhone = "";
   late String ownerCode = "";
   late String agentUniqueCode = "";
+  late String agentUsername = "";
   late String companyName = "";
   late String companyNumber = "";
 
@@ -65,6 +66,7 @@ class ProfileController extends GetxController{
           agentUniqueCode = i['agent_unique_code'];
           companyName = i['company_name'];
           companyNumber = i['company_number'];
+          agentUsername = i['username'];
         }
         update();
       }

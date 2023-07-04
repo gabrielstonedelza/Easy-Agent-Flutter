@@ -5,8 +5,8 @@ import 'getonlineimage.dart';
 
 Widget myBasicWidget(String imageName,String title,String title2){
   return SizedBox(
-    width: 120,
-    height: 120,
+    width: 130,
+    height: 130,
     child: Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12)

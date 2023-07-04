@@ -7,6 +7,7 @@ import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../controllers/customerscontroller.dart';
+import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
 import '../sendsms.dart';
@@ -78,6 +79,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
       "customer": _merchantIdController.text.trim(),
       "depositor_number": _depositorPhoneController.text.trim(),
       "pay_to_type": "Merchant",
+      "reference": _referenceController.text.trim(),
     });
 
     if (res.statusCode == 201) {
@@ -123,20 +125,21 @@ class _PayToMerchantState extends State<PayToMerchant> {
       accountBalanceDetailsToday.assignAll(allPosts);
       setState(() {
         isLoading = false;
-        lastItem.assign(accountBalanceDetailsToday.last);
-        physicalNow = double.parse(lastItem[0]['physical']);
-        mtnNow = double.parse(lastItem[0]['mtn_e_cash']);
-        airtelTigoNow = double.parse(lastItem[0]['tigo_airtel_e_cash']);
-        vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
-        eCashNow = double.parse(lastItem[0]['mtn_e_cash']) +
-            double.parse(lastItem[0]['tigo_airtel_e_cash']) +
-            double.parse(lastItem[0]['vodafone_e_cash']);
+        // lastItem.assign(accountBalanceDetailsToday.last);
+        physicalNow = double.parse(accountBalanceDetailsToday[0]['physical']);
+        mtnNow = double.parse(accountBalanceDetailsToday[0]['mtn_e_cash']);
+        airtelTigoNow = double.parse(accountBalanceDetailsToday[0]['tigo_airtel_e_cash']);
+        vodafoneNow = double.parse(accountBalanceDetailsToday[0]['vodafone_e_cash']);
+        eCashNow = double.parse(accountBalanceDetailsToday[0]['mtn_e_cash']) +
+            double.parse(accountBalanceDetailsToday[0]['tigo_airtel_e_cash']) +
+            double.parse(accountBalanceDetailsToday[0]['vodafone_e_cash']);
       });
     } else {
       // print(res.body);
     }
   }
 
+  final ProfileController profileController = Get.find();
   addAccountsToday() async {
     const accountUrl = "https://fnetagents.xyz/add_balance_to_start/";
     final myLink = Uri.parse(accountUrl);
@@ -149,6 +152,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
       "tigo_airtel_e_cash": airteltigo.toString(),
       "vodafone_e_cash": vodafone.toString(),
       "isStarted": "True",
+      "agent": profileController.userId
     });
     if (response.statusCode == 201) {
       Get.snackbar("Success", "You accounts is updated",

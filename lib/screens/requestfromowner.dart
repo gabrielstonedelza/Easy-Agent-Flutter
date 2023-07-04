@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
+import 'package:easy_agent/screens/sendsms.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -113,6 +114,8 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
   late List allRequests = [];
   bool canRequestAgain = false;
   bool requestFinished = false;
+  late String ownerPhone = "";
+  final SendSmsController sendSms = SendSmsController();
 
   Future<void> fetchOwnersDetails() async {
     final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.ownerCode}/";
@@ -129,6 +132,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
       supervisorDetails.assignAll(allPosts);
       for(var i in supervisorDetails){
         supervisorId = i['id'].toString();
+        ownerPhone = i['phone_number'];
       }
       setState(() {
         isLoading = false;
@@ -198,6 +202,8 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
         });
 
     if (res.statusCode == 201) {
+      String num = ownerPhone.replaceFirst("0", '+233');
+      sendSms.sendMySms(num, "EasyAgent","${controller.agentUsername} is requesting an amount of GHC${_amountController.text.trim()}");
 
       Get.snackbar("Congratulations", "request sent for approval",
           colorText: defaultWhite,
