@@ -69,45 +69,45 @@ class _UnPaidRequestsState extends State<UnPaidRequests> {
         itemCount: allUnpaidRequests != null ? allUnpaidRequests.length:0,
           itemBuilder: (context,index){
             items = allUnpaidRequests[index];
-            return Card(
-              elevation: 12,
-              color: secondaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)
-              ),
-              child: ListTile(
-                onTap: (){
-                  Get.to(() => PayRequest(id:allUnpaidRequests[index]['id'].toString(),amount:allUnpaidRequests[index]['amount'],owner:allUnpaidRequests[index]['owner'].toString(),agent:allUnpaidRequests[index]['agent'].toString()));
-                },
-                title: buildRow("Amount: ", "amount"),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    items["bank"] == "" ? Container():
-                    buildRow("Bank: ", "bank"),
-                    items["network"] == "" ? Container():
-                    buildRow("Network: ", "network"),
-                    buildRow("Approved: ", "request_approved"),
-                    buildRow("Paid: ", "request_paid"),
-                    items["reference"] == "" ? Container():
-                    buildRow("Reference: ", "reference"),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0,top: 2),
-                      child: Row(
-                        children: [
-                          const Text("Date : ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
-                          ),
-                          Text(items['date_requested'].toString().split("T").first, style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                          ),
-                        ],
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 12,
+                color: secondaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)
+                ),
+                child: ListTile(
+                  onTap: (){
+                    Get.to(() => PayRequest(id:allUnpaidRequests[index]['id'].toString(),amount:allUnpaidRequests[index]['amount'],owner:allUnpaidRequests[index]['owner'].toString(),agent:allUnpaidRequests[index]['agent'].toString()));
+                  },
+                  title: buildRow("Amount: ", "amount"),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildRow("Request Type: ", "request_type"),
+                      buildRow("Approved: ", "request_approved"),
+                      buildRow("Paid: ", "request_paid"),
+                      items["reference"] == "" ? Container():
+                      buildRow("Reference: ", "reference"),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0,top: 2),
+                        child: Row(
+                          children: [
+                            const Text("Date : ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                            Text(items['date_requested'].toString().split("T").first, style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const Padding(
-                      padding:  EdgeInsets.only(top:18.0,left: 8,bottom: 10),
-                      child: Text("Tap to pay",style: TextStyle(fontWeight: FontWeight.bold,color: snackBackground),),
-                    )
-                  ],
+                      const Padding(
+                        padding:  EdgeInsets.only(top:18.0,left: 8,bottom: 10),
+                        child: Text("Tap to pay",style: TextStyle(fontWeight: FontWeight.bold,color: snackBackground),),
+                      )
+                    ],
+                  ),
                 ),
               ),
             );

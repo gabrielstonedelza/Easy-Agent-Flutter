@@ -141,31 +141,6 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
       // print(res.body);
     }
   }
-  Future<void> fetchMyRequestsLimit() async {
-    const postUrl = "https://fnetagents.xyz/get_all_my_request_limit/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      requestLimitDetails.assignAll(allPosts);
-
-      for(var i in requestLimitDetails){
-        requestLimit = i['request_limit'];
-      }
-      setState(() {
-        isLoading = false;
-      });
-
-    } else {
-      // print(res.body);
-    }
-  }
 
   Future<void>fetchAllRequestsToday()async{
     const url = "https://fnetagents.xyz/get_all_my_requests_today/";
@@ -199,6 +174,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
           "bank": _currentSelectedBank,
           "amount": _amountController.text.trim(),
           "cash": _currentSelectedRequestType == "Cash" ? _amountController.text.trim() : "0.0",
+          "request_type": _currentSelectedRequestType
         });
 
     if (res.statusCode == 201) {
@@ -230,7 +206,6 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
     }
     _amountController = TextEditingController();
     fetchOwnersDetails();
-    fetchMyRequestsLimit();
     fetchAllRequestsToday();
   }
 
