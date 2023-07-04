@@ -1259,7 +1259,7 @@ class _CashOutState extends State<CashOut> {
                                               int.parse(
                                                   _cashPaidController
                                                       .text) >
-                                                  mtnNow) {
+                                                  physicalNow) {
                                             Get.snackbar("Amount Error",
                                                 "Amount is greater than your Mtn Ecash,please check",
                                                 colorText: defaultWhite,
@@ -1277,7 +1277,7 @@ class _CashOutState extends State<CashOut> {
                                               int.parse(
                                                   _cashPaidController
                                                       .text) >
-                                                  airtelTigoNow) {
+                                                  physicalNow) {
                                             Get.snackbar("Amount Error",
                                                 "Amount is greater than your AirtelTigo Ecash,please check",
                                                 colorText: defaultWhite,
@@ -1295,7 +1295,7 @@ class _CashOutState extends State<CashOut> {
                                               int.parse(
                                                   _cashPaidController
                                                       .text) >
-                                                  vodafoneNow) {
+                                                  physicalNow) {
                                             Get.snackbar("Amount Error",
                                                 "Amount is greater than your Vodafone Ecash,please check",
                                                 colorText: defaultWhite,
