@@ -150,14 +150,14 @@ class _PayToAgentState extends State<PayToAgent> {
       accountBalanceDetailsToday.assignAll(allPosts);
       setState(() {
         isLoading = false;
-        // lastItem.assign(accountBalanceDetailsToday.last);
-        physicalNow = double.parse(accountBalanceDetailsToday[0]['physical']);
-        mtnNow = double.parse(accountBalanceDetailsToday[0]['mtn_e_cash']);
-        airtelTigoNow = double.parse(accountBalanceDetailsToday[0]['tigo_airtel_e_cash']);
-        vodafoneNow = double.parse(accountBalanceDetailsToday[0]['vodafone_e_cash']);
-        eCashNow = double.parse(accountBalanceDetailsToday[0]['mtn_e_cash']) +
-            double.parse(accountBalanceDetailsToday[0]['tigo_airtel_e_cash']) +
-            double.parse(accountBalanceDetailsToday[0]['vodafone_e_cash']);
+        lastItem.assign(accountBalanceDetailsToday.last);
+        physicalNow = double.parse(lastItem[0]['physical']);
+        mtnNow = double.parse(lastItem[0]['mtn_e_cash']);
+        airtelTigoNow = double.parse(lastItem[0]['tigo_airtel_e_cash']);
+        vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
+        eCashNow = double.parse(lastItem[0]['mtn_e_cash']) +
+            double.parse(lastItem[0]['tigo_airtel_e_cash']) +
+            double.parse(lastItem[0]['vodafone_e_cash']);
       });
     } else {
       // print(res.body);
