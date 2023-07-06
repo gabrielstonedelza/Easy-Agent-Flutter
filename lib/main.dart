@@ -1,9 +1,12 @@
 
+import 'dart:async';
+
 import 'package:easy_agent/controllers/localnotificationcontroller.dart';
 import 'package:easy_agent/screens/dashboard.dart';
 import 'package:easy_agent/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:telephony/telephony.dart';
 import 'package:get/get.dart';
@@ -34,6 +37,7 @@ void main() async{
   Get.put(TrialAndMonthlyPaymentController());
   NotificationService().initNotification();
   runApp(const MyApp());
+
 }
 
 class MyApp extends StatefulWidget {
@@ -42,6 +46,8 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
+
 
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
@@ -93,10 +99,12 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
   }
 
+
   @override
   void initState() {
     super.initState();
     initPlatformState();
+
     phoneController.fetchDeviceInfo();
     if (storage.read("token") != null) {
       uToken = storage.read("token");

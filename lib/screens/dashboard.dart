@@ -10,7 +10,7 @@ import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/summaries/reportsummary.dart';
 import 'package:easy_agent/screens/summaries/requestsummary.dart';
 import 'package:easy_agent/widgets/getonlineimage.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_agent/constants.dart';
@@ -47,6 +47,39 @@ class Dashboard extends StatefulWidget {
 
   @override
   State<Dashboard> createState() => _DashboardState();
+}
+
+class TimeChecker {
+  static Timer? _timer;
+
+  static void startTimer(BuildContext context) {
+    stopTimer(); // Stop any existing timers before starting a new one
+
+    _timer = Timer.periodic(const Duration(seconds: 15), (timer) async {
+      // Get the current local time zone
+      String localTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+
+      // Get the current date and time
+      DateTime now = DateTime.now().toUtc();
+
+
+      // Convert the current time to the local time zone
+      DateTime localTime = now.toLocal();
+
+      // Check if the local time is 8:00
+      if (localTime.hour == 00) {
+        // Stop the timer
+        stopTimer();
+        // Navigate to the login page
+        Get.offAll(() => const LoginView());
+      }
+    });
+  }
+
+  static void stopTimer() {
+    _timer?.cancel();
+    _timer = null;
+  }
 }
 
 class _DashboardState extends State<Dashboard> {
@@ -537,10 +570,10 @@ class _DashboardState extends State<Dashboard> {
   void checkTheTime(){
     var hour = DateTime.now().hour;
     switch (hour) {
-      case 00:
-        setState(() {
-          isClosingTimeNow = true;
-        });
+      case 9:
+        // setState(() {
+        //   isClosingTimeNow = true;
+        // });
         logoutUser();
         break;
     // case 01:
@@ -565,10 +598,12 @@ class _DashboardState extends State<Dashboard> {
     //   break;
     }
   }
+
   @override
   void initState() {
     super.initState();
     fetchInbox();
+    TimeChecker.startTimer(context);
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       fetchInbox();
     });
@@ -596,7 +631,7 @@ class _DashboardState extends State<Dashboard> {
         appVersionFromServer = int.parse(storage.read("AppVersion"));
       });
     }
-    checkTheTime();
+    // checkTheTime();
     getLatestAppVersion();
     tpController.fetchFreeTrial(uToken);
     tpController.fetchAccountBalance(uToken);
@@ -630,7 +665,7 @@ class _DashboardState extends State<Dashboard> {
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       getLatestAppVersion();
-      checkTheTime();
+      // checkTheTime();
 
       for (var e in triggered) {
         unTriggerNotifications(e["id"]);
