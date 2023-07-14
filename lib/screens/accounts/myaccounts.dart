@@ -112,17 +112,17 @@ class _MyAccountDashboardState extends State<MyAccountDashboard> {
           //   },
           //   icon: myOnlineImage("wallet.png",70,70),
           // ) : Container(),
-          // accountBalanceDetailsToday.isNotEmpty ? IconButton(
-          //   onPressed: (){
-          //     hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today therefore you can't edit.",
-          //         colorText: defaultWhite,
-          //         snackPosition: SnackPosition.BOTTOM,
-          //         duration: const Duration(seconds: 5),
-          //         backgroundColor: warning) :
-          //     Get.to(()=> const UpdateAccountBalance());
-          //   },
-          //   icon: myOnlineImage("pencil.png",70,70),
-          // ) : Container()
+          accountBalanceDetailsToday.isNotEmpty ? IconButton(
+            onPressed: (){
+              hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today therefore you can't edit.",
+                  colorText: defaultWhite,
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 5),
+                  backgroundColor: warning) :
+              Get.to(()=> const UpdateAccountBalance());
+            },
+            icon: myOnlineImage("pencil.png",70,70),
+          ) : Container()
         ],
       ),
       body: isLoading ? const LoadingUi() : accountBalanceDetailsToday.isNotEmpty ? ListView.builder(

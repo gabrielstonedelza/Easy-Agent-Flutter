@@ -36,6 +36,34 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
   late final TextEditingController _tigoAirtelEcashController;
   late final TextEditingController _vodafoneEcashController;
 
+  final List mtnAction = [
+    "Select Action",
+    "Add",
+    "Subtract",
+  ];
+  var _currentSelectedMtnAction = "Select Action";
+
+  final List vodafoneAction = [
+    "Select Action",
+    "Add",
+    "Subtract",
+  ];
+  var _currentSelectedVodafoneAction = "Select Action";
+
+  final List airtelTigoAction = [
+    "Select Action",
+    "Add",
+    "Subtract",
+  ];
+  var _currentSelectedTigoAirtelAction = "Select Action";
+
+  final List physicalAction = [
+    "Select Action",
+    "Add",
+    "Subtract",
+  ];
+  var _currentSelectedPhysicalAction = "Select Action";
+
   late String uToken = "";
   final storage = GetStorage();
 
@@ -149,7 +177,7 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
       ),
       body: ListView(
         children: [
-          const SizedBox(height: 40,),
+          const SizedBox(height: 10,),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Form(
@@ -157,35 +185,94 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0,left: 10),
-                    child: TextFormField(
-                      onChanged: (value){
-                        if(value.isNotEmpty){
-                          setState(() {
-                            physicalSet = true;
-                            physical = physicalNow + double.parse(value);
-                          });
-                        }
-                        else{
-                          setState(() {
-                            physicalSet = false;
-                          });
-                        }
-                      },
-                      controller: physicalController,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Physical Cash = ${physicalNow.toString()}"),
-                      keyboardType: TextInputType.number,
-                      // validator: (value) {
-                      //   if(value!.isEmpty){
-                      //     return "Please enter your physical cash";
-                      //   }
-                      //   return null;
-                      // },
+                  const Padding(
+                    padding: EdgeInsets.only(left:10.0),
+                    child: Center(
+                      child: Text("Please make sure to select action first so you enter amount",style: TextStyle(fontWeight: FontWeight.bold),),
                     ),
+                  ),
+                  const SizedBox(height: 20,),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left:10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0, right: 10),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: physicalAction.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedPhysicalAction(
+                                      newValueSelected);
+                                },
+                                value: _currentSelectedPhysicalAction,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0,left: 10),
+                          child: TextFormField(
+                            onChanged: (value){
+                              if(_currentSelectedPhysicalAction == "Select Action"){
+                                Get.snackbar("Action Error", "please select action.",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: warning);
+                              }
+                              else{
+                                if(value.isNotEmpty && _currentSelectedPhysicalAction == "Add"){
+                                  setState(() {
+                                    physicalSet = true;
+                                    physical = physicalNow + double.parse(value);
+                                  });
+                                }
+                                else if(value.isNotEmpty && _currentSelectedPhysicalAction == "Subtract"){
+                                  setState(() {
+                                    physicalSet = true;
+                                    physical = physicalNow - double.parse(value);
+                                  });
+                                }
+                                else{
+                                  setState(() {
+                                    physicalSet = false;
+                                  });
+                                }
+                              }
+                            },
+                            readOnly: _currentSelectedPhysicalAction == "Select Action" ? true : false,
+                            controller: physicalController,
+                            cursorColor: secondaryColor,
+                            cursorRadius: const Radius.elliptical(10, 10),
+                            cursorWidth: 10,
+                            decoration: buildInputDecoration("Cash = ${physicalNow.toString()}"),
+                            keyboardType: TextInputType.number,
+                            // validator: (value) {
+                            //   if(value!.isEmpty){
+                            //     return "Please enter your physical cash";
+                            //   }
+                            //   return null;
+                            // },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   physicalSet ? Padding(
                     padding: const EdgeInsets.only(top:8.0,bottom: 8),
@@ -198,36 +285,82 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                       ],
                     ),
                   ): Container(),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: TextFormField(
-                      onChanged: (value){
-                        if(value.isNotEmpty){
-                          setState(() {
-                            mtnSet = true;
-                            mtn = mtnNow + double.parse(value);
-                          });
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left:10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0, right: 10),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: mtnAction.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedMtnAction(
+                                      newValueSelected);
+                                },
+                                value: _currentSelectedMtnAction,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: TextFormField(
+                            onChanged: (value){
+                              if(_currentSelectedMtnAction == "Select Action"){
+                                Get.snackbar("Action Error", "please select action.",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: warning);
+                              }
+                              else{
+                                if(value.isNotEmpty && _currentSelectedMtnAction == "Add"){
+                                  setState(() {
+                                    mtnSet = true;
+                                    mtn = mtnNow + double.parse(value);
+                                  });
+                                }
+                                else if(value.isNotEmpty && _currentSelectedMtnAction == "Subtract"){
+                                  setState(() {
+                                    mtnSet = true;
+                                    mtn = mtnNow - double.parse(value);
+                                  });
+                                }
+                                else{
+                                  setState(() {
+                                    mtnSet = false;
+                                  });
+                                }
+                              }
 
-                        }
-                        else{
-                          setState(() {
-                            mtnSet = false;
-                          });
-                        }
-                      },
-                      controller: _mtnEcashController,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Mtn Ecash = ${mtnNow.toString()}"),
-                      keyboardType: TextInputType.number,
-                      // validator: (value) {
-                      //   if(value!.isEmpty){
-                      //     return "Please enter your mtn ecash";
-                      //   }
-                      //   return null;
-                      // },
-                    ),
+                            },
+                            readOnly: _currentSelectedMtnAction == "Select Action" ? true : false,
+                            controller: _mtnEcashController,
+                            cursorColor: secondaryColor,
+                            cursorRadius: const Radius.elliptical(10, 10),
+                            cursorWidth: 10,
+                            decoration: buildInputDecoration("Mtn = ${mtnNow.toString()}"),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   mtnSet ? Padding(
                     padding: const EdgeInsets.only(top:8.0,bottom: 8),
@@ -241,36 +374,88 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                     ),
                   ): Container(),
                   const SizedBox(height: 10,),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: TextFormField(
-                      onChanged: (value){
-                        if(value.isNotEmpty){
-                          setState(() {
-                            airtelTigoSet = true;
-                            airteltigo = airtelTigoNow + double.parse(value);
-                          });
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left:10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0, right: 10),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: airtelTigoAction.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedAirtelTigoAction(
+                                      newValueSelected);
+                                },
+                                value: _currentSelectedTigoAirtelAction,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: TextFormField(
+                            onChanged: (value){
+                              if(_currentSelectedTigoAirtelAction == "Select Action"){
+                                Get.snackbar("Action Error", "please select action.",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: warning);
+                              }
+                              else{
+                                if(value.isNotEmpty && _currentSelectedTigoAirtelAction == "Add"){
+                                  setState(() {
+                                    airtelTigoSet = true;
+                                    airteltigo = airtelTigoNow + double.parse(value);
+                                  });
+                                }
+                                else if(value.isNotEmpty && _currentSelectedTigoAirtelAction == "Subtract"){
+                                  setState(() {
+                                    airtelTigoSet = true;
+                                    airteltigo = airtelTigoNow - double.parse(value);
+                                  });
+                                }
+                                else{
+                                  setState(() {
+                                    airtelTigoSet = false;
+                                  });
+                                }
+                              }
 
-                        }
-                        else{
-                          setState(() {
-                            airtelTigoSet = false;
-                          });
-                        }
-                      },
-                      controller: _tigoAirtelEcashController,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Tigo Airtel Ecash = ${airtelTigoNow.toString()}"),
-                      keyboardType: TextInputType.number,
-                      // validator: (value) {
-                      //   if(value!.isEmpty){
-                      //     return "Please enter your tigoairtel ecash";
-                      //   }
-                      //   return null;
-                      // },
-                    ),
+                            },
+                            readOnly: _currentSelectedTigoAirtelAction == "Select Action" ? true : false,
+                            controller: _tigoAirtelEcashController,
+                            cursorColor: secondaryColor,
+                            cursorRadius: const Radius.elliptical(10, 10),
+                            cursorWidth: 10,
+                            decoration: buildInputDecoration("TigoAirtel = ${airtelTigoNow.toString()}"),
+                            keyboardType: TextInputType.number,
+                            // validator: (value) {
+                            //   if(value!.isEmpty){
+                            //     return "Please enter your tigoairtel ecash";
+                            //   }
+                            //   return null;
+                            // },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   airtelTigoSet ? Padding(
                     padding: const EdgeInsets.only(top:8.0,bottom: 8),
@@ -284,35 +469,82 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
                     ),
                   ): Container(),
                   const SizedBox(height: 10,),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: TextFormField(
-                      onChanged: (value){
-                        if(value.isNotEmpty){
-                          setState(() {
-                            vodafoneSet = true;
-                            vodafone = vodafoneNow + double.parse(value);
-                          });
-                        }
-                        else{
-                          setState(() {
-                            vodafoneSet = false;
-                          });
-                        }
-                      },
-                      controller: _vodafoneEcashController,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Voda Ecash  = ${vodafoneNow.toString()}"),
-                      keyboardType: TextInputType.number,
-                      // validator: (value) {
-                      //   if(value!.isEmpty){
-                      //     return "Please enter your voda ecash";
-                      //   }
-                      //   return null;
-                      // },
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left:10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0, right: 10),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: vodafoneAction.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedVodafoneAction(
+                                      newValueSelected);
+                                },
+                                value: _currentSelectedVodafoneAction,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: TextFormField(
+                            onChanged: (value){
+
+                              if(_currentSelectedVodafoneAction == "Select Action"){
+                                Get.snackbar("Action Error", "please select action.",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: warning);
+                              }
+                              else{
+                                if(value.isNotEmpty && _currentSelectedVodafoneAction == "Add"){
+                                  setState(() {
+                                    vodafoneSet = true;
+                                    vodafone = vodafoneNow + double.parse(value);
+                                  });
+                                }
+                                else if(value.isNotEmpty && _currentSelectedVodafoneAction == "Subtract"){
+                                  setState(() {
+                                    vodafoneSet = true;
+                                    vodafone = vodafoneNow - double.parse(value);
+                                  });
+                                }
+                                else{
+                                  setState(() {
+                                    vodafoneSet = false;
+                                  });
+                                }
+                              }
+                            },
+                            readOnly: _currentSelectedVodafoneAction == "Select Action" ? true : false,
+                            controller: _vodafoneEcashController,
+                            cursorColor: secondaryColor,
+                            cursorRadius: const Radius.elliptical(10, 10),
+                            cursorWidth: 10,
+                            decoration: buildInputDecoration("Vodafone  = ${vodafoneNow.toString()}"),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   vodafoneSet ? Padding(
                     padding: const EdgeInsets.only(top:8.0,bottom: 8),
@@ -354,6 +586,27 @@ class _UpdateAccountBalanceState extends State<UpdateAccountBalance> {
         ],
       ),
     );
+  }
+
+  void _onDropDownItemSelectedPhysicalAction(newValueSelected) {
+    setState(() {
+      _currentSelectedPhysicalAction = newValueSelected;
+    });
+  }
+  void _onDropDownItemSelectedMtnAction(newValueSelected) {
+    setState(() {
+      _currentSelectedMtnAction = newValueSelected;
+    });
+  }
+  void _onDropDownItemSelectedAirtelTigoAction(newValueSelected) {
+    setState(() {
+      _currentSelectedTigoAirtelAction = newValueSelected;
+    });
+  }
+  void _onDropDownItemSelectedVodafoneAction(newValueSelected) {
+    setState(() {
+      _currentSelectedVodafoneAction = newValueSelected;
+    });
   }
 
   InputDecoration buildInputDecoration(String text) {
