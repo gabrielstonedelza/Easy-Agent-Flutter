@@ -533,7 +533,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   bool isLatestAppVersion = false;
-  int appVersionNow = 5;
+  int appVersionNow = 6;
   late int appVersion = 0;
   late int appVersionFromServer = 0;
   late List appVersions = [];
