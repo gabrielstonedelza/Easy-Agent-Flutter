@@ -47,6 +47,8 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     oTP = rand.toInt();
   }
   late String userEmail = "";
+  late String agentUsername = "";
+  late String companyName = "";
 
   Future<void> getUserDetails(String token) async {
     const profileLink = "https://fnetagents.xyz/get_user_details/";
@@ -62,6 +64,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
         userId = i['id'].toString();
         agentPhone = i['phone_number'];
         userEmail = i['email'];
+        companyName = i['company_name'];
       }
 
       setState(() {
@@ -134,7 +137,6 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
       Get.offAll(() => const LoginView()); // Remove the const keyword
     }
   }
-  late String agentUsername = "";
 
   Future<void> sendOtp() async {
     final deUrl = "https://fnetagents.xyz/send_otp/$oTP/$userEmail/$agentUsername/";
@@ -167,8 +169,14 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
 
     Timer(const Duration(seconds: 10), () {
       String num = agentPhone.replaceFirst("0", '+233');
-      sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
-      sendOtp();
+      if(companyName == "Fnet Enterprise"){
+        sendSms.sendMySms(num, "FNET","Your code $oTP");
+        sendOtp();
+      }
+      else{
+        sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
+        sendOtp();
+      }
     }
     );
   }
@@ -236,7 +244,14 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                  isCompleted ? TextButton(
                    onPressed: (){
                      String num = agentPhone.replaceFirst("0", '+233');
-                     sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
+                     if(companyName == "Fnet Enterprise"){
+                       sendSms.sendMySms(num, "FNET","Your code $oTP");
+                       sendOtp();
+                     }
+                     else{
+                       sendSms.sendMySms(num, "EasyAgent","Your code $oTP");
+                       sendOtp();
+                     }
                      sendOtp();
                      Get.snackbar(
                          "Check Phone","code was sent again",

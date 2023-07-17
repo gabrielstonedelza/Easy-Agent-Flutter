@@ -168,6 +168,12 @@ class _CashInState extends State<CashIn> {
   late List ownerDetails = [];
   late String ownerId = "";
   late String ownerUsername = "";
+  late String userEmail = "";
+  late String agentUsername = "";
+  late String companyName = "";
+  late String userId = "";
+  late String agentPhone = "";
+  List profileDetails = [];
 
   Future<void> fetchOwnersDetails() async {
     final postUrl =
@@ -192,6 +198,33 @@ class _CashInState extends State<CashIn> {
       });
     } else {
       // print(res.body);
+    }
+  }
+  Future<void> getUserDetails(String token) async {
+    const profileLink = "https://fnetagents.xyz/get_user_details/";
+    var link = Uri.parse(profileLink);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $token"
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      profileDetails = jsonData;
+      for(var i in profileDetails){
+        userId = i['id'].toString();
+        agentPhone = i['phone_number'];
+        userEmail = i['email'];
+        companyName = i['company_name'];
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+    else{
+      if (kDebugMode) {
+        print(response.body);
+      }
     }
   }
 
@@ -226,8 +259,14 @@ class _CashInState extends State<CashIn> {
     if (res.statusCode == 201) {
       if (_currentSelectedDepositType == "Direct") {
         String num = _depositorNumberController.text.replaceFirst("0", '+233');
-        sendSms.sendMySms(num, "EasyAgent",
-            "Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
+        if(companyName == "Fnet Enterprise"){
+          sendSms.sendMySms(num, "FNET","Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
+        }
+        else{
+          sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
+        }
+        // sendSms.sendMySms(num, "EasyAgent",
+        //     "Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
       }
       if (_currentSelectedNetwork == "Mtn") {
         mtn = mtnNow - double.parse(_amountController.text);
@@ -236,7 +275,6 @@ class _CashInState extends State<CashIn> {
         airteltigo = airtelTigoNow;
         vodafone = vodafoneNow;
       }
-
       if (_currentSelectedNetwork == "AirtelTigo") {
         airteltigo = airtelTigoNow - double.parse(_amountController.text);
         physical = physicalNow + double.parse(_amountController.text);
@@ -344,6 +382,7 @@ class _CashInState extends State<CashIn> {
     }
     fetchOwnersDetails();
     generate5digit();
+    getUserDetails(uToken);
     _amountController = TextEditingController();
     _cashReceivedController = TextEditingController();
     _customerPhoneController = TextEditingController();

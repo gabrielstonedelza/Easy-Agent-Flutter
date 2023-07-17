@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
@@ -45,6 +46,39 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
   late List allCustomers = [];
   bool isLoading = true;
   bool isInSystem = false;
+  late String userEmail = "";
+  late String agentUsername = "";
+  late String companyName = "";
+  late String userId = "";
+  late String agentPhone = "";
+  List profileDetails = [];
+  Future<void> getUserDetails(String token) async {
+    const profileLink = "https://fnetagents.xyz/get_user_details/";
+    var link = Uri.parse(profileLink);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $token"
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      profileDetails = jsonData;
+      for(var i in profileDetails){
+        userId = i['id'].toString();
+        agentPhone = i['phone_number'];
+        userEmail = i['email'];
+        companyName = i['company_name'];
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+    else{
+      if (kDebugMode) {
+        print(response.body);
+      }
+    }
+  }
 
 
   late String uToken = "";
@@ -87,6 +121,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
       });
     }
     generate5digit();
+    getUserDetails(uToken);
     name = TextEditingController();
 
     phoneController = TextEditingController();
@@ -131,8 +166,14 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
           backgroundColor: snackBackground);
       String telnum = phoneController.text;
       telnum = telnum.replaceFirst("0", '+233');
-      sendSms.sendMySms(telnum,"EasyAgent",
-          "Welcome ${name.text}, you are now registered on Easy Agent App.Your unique code for transactions is ($customerCode),please do not share this code with anyone,store it somewhere on your phone and delete this messages.For more information please kindly call 0550222888.");
+      if(companyName == "Fnet Enterprise"){
+        sendSms.sendMySms(telnum, "FNET","Welcome ${name.text}, you are now registered on Easy Agent App.Your unique code for transactions is ($customerCode),please do not share this code with anyone,store it somewhere on your phone and delete this messages.For more information please kindly call 0550222888..");
+      }
+      else{
+        sendSms.sendMySms(telnum, "EasyAgent","Welcome ${name.text}, you are now registered on Easy Agent App.Your unique code for transactions is ($customerCode),please do not share this code with anyone,store it somewhere on your phone and delete this messages.For more information please kindly call 0550222888..");
+      }
+      // sendSms.sendMySms(telnum,"EasyAgent",
+      //     "Welcome ${name.text}, you are now registered on Easy Agent App.Your unique code for transactions is ($customerCode),please do not share this code with anyone,store it somewhere on your phone and delete this messages.For more information please kindly call 0550222888.");
       Get.offAll(()=>const Dashboard());
     }
     else{

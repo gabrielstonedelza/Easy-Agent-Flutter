@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:easy_agent/controllers/profilecontroller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -61,6 +62,12 @@ class _PayToAgentState extends State<PayToAgent> {
   late List allFraudsters = [];
   bool isFraudster = false;
   final SendSmsController sendSms = SendSmsController();
+  late String userEmail = "";
+  late String agentUsername = "";
+  late String companyName = "";
+  late String userId = "";
+  late String agentPhone = "";
+  List profileDetails = [];
 
   Future<void> getAllFraudsters() async {
     try {
@@ -81,6 +88,33 @@ class _PayToAgentState extends State<PayToAgent> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+  Future<void> getUserDetails(String token) async {
+    const profileLink = "https://fnetagents.xyz/get_user_details/";
+    var link = Uri.parse(profileLink);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $token"
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      profileDetails = jsonData;
+      for(var i in profileDetails){
+        userId = i['id'].toString();
+        agentPhone = i['phone_number'];
+        userEmail = i['email'];
+        companyName = i['company_name'];
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+    else{
+      if (kDebugMode) {
+        print(response.body);
+      }
     }
   }
 
@@ -106,7 +140,13 @@ class _PayToAgentState extends State<PayToAgent> {
 
       addAccountsToday();
       String num = _depositorPhoneController.text.replaceFirst("0", '+233');
-      sendSms.sendMySms(num, "EasyAgent","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,");
+      if(companyName == "Fnet Enterprise"){
+        sendSms.sendMySms(num, "FNET","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,.");
+      }
+      else{
+        sendSms.sendMySms(num, "EasyAgent","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,.");
+      }
+      // sendSms.sendMySms(num, "EasyAgent","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,");
 
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
@@ -208,6 +248,7 @@ class _PayToAgentState extends State<PayToAgent> {
     _agentPhoneController = TextEditingController();
     _referenceController = TextEditingController();
     fetchAccountBalance();
+    getUserDetails(uToken);
   }
 
   @override

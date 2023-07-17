@@ -230,6 +230,40 @@ class _BankDepositState extends State<BankDeposit> {
   late List ownerDetails = [];
   late String ownerId = "";
   late String ownerUsername = "";
+  late String userEmail = "";
+  late String agentUsername = "";
+  late String companyName = "";
+  late String userId = "";
+  late String agentPhone = "";
+  List profileDetails = [];
+
+  Future<void> getUserDetails(String token) async {
+    const profileLink = "https://fnetagents.xyz/get_user_details/";
+    var link = Uri.parse(profileLink);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $token"
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      profileDetails = jsonData;
+      for(var i in profileDetails){
+        userId = i['id'].toString();
+        agentPhone = i['phone_number'];
+        userEmail = i['email'];
+        companyName = i['company_name'];
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+    else{
+      if (kDebugMode) {
+        print(response.body);
+      }
+    }
+  }
 
   Future<void> fetchOwnersDetails() async {
     final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
@@ -287,7 +321,13 @@ class _BankDepositState extends State<BankDeposit> {
 
     if (res.statusCode == 201) {
       String num = _customerPhoneController.text.replaceFirst("0", '+233');
-      sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} into your $_currentSelectedBank by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}. Thank you for working with Easy Agent.");
+      if(companyName == "Fnet Enterprise"){
+        sendSms.sendMySms(num, "FNET","Your deposit of ${_amountController.text.trim()} into your $_currentSelectedBank by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}. Thank you for working with Easy Agent.");
+      }
+      else{
+        sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} into your $_currentSelectedBank by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}. Thank you for working with Easy Agent.");
+      }
+      // sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} into your $_currentSelectedBank by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}. Thank you for working with Easy Agent.");
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -592,6 +632,7 @@ class _BankDepositState extends State<BankDeposit> {
     }
     fetchOwnersDetails();
     fetchAllInstalled();
+    getUserDetails(uToken);
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _depositorNameController = TextEditingController();

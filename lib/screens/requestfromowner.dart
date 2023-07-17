@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/sendsms.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -160,6 +161,41 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
     });
   }
 
+  late String userEmail = "";
+  late String agentUsername = "";
+  late String companyName = "";
+  late String userId = "";
+  late String agentPhone = "";
+  List profileDetails = [];
+
+  Future<void> getUserDetails(String token) async {
+    const profileLink = "https://fnetagents.xyz/get_user_details/";
+    var link = Uri.parse(profileLink);
+    http.Response response = await http.get(link, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $token"
+    });
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      profileDetails = jsonData;
+      for(var i in profileDetails){
+        userId = i['id'].toString();
+        agentPhone = i['phone_number'];
+        userEmail = i['email'];
+        companyName = i['company_name'];
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+    else{
+      if (kDebugMode) {
+        print(response.body);
+      }
+    }
+  }
+
   processRequest() async {
     const registerUrl = "https://fnetagents.xyz/agent_request_from_owner/";
     final myLink = Uri.parse(registerUrl);
@@ -179,7 +215,13 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
 
     if (res.statusCode == 201) {
       String num = ownerPhone.replaceFirst("0", '+233');
-      sendSms.sendMySms(num, "EasyAgent","${controller.agentUsername} is requesting an amount of GHC${_amountController.text.trim()}");
+      if(companyName == "Fnet Enterprise"){
+        sendSms.sendMySms(num, "FNET","${controller.agentUsername} is requesting an amount of GHC${_amountController.text.trim()}.");
+      }
+      else{
+        sendSms.sendMySms(num, "EasyAgent","${controller.agentUsername} is requesting an amount of GHC${_amountController.text.trim()}.");
+      }
+      // sendSms.sendMySms(num, "EasyAgent","${controller.agentUsername} is requesting an amount of GHC${_amountController.text.trim()}");
 
       Get.snackbar("Congratulations", "request sent for approval",
           colorText: defaultWhite,
@@ -206,6 +248,7 @@ class _RequestFromOwnerState extends State<RequestFromOwner> {
     }
     _amountController = TextEditingController();
     fetchOwnersDetails();
+    getUserDetails(uToken);
     fetchAllRequestsToday();
   }
 
