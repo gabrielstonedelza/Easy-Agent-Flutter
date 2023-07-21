@@ -79,7 +79,7 @@ class _BankWithdrawalSummaryState extends State<BankWithdrawalSummary> {
               items = bankWithdrawalDates[i];
               return Column(
                 children: [
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 5,),
                   GestureDetector(
                     onTap: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context){
@@ -117,13 +117,7 @@ class _BankWithdrawalSummaryState extends State<BankWithdrawalSummary> {
               );
             }
         ),
-        floatingActionButton:FloatingActionButton(
-          backgroundColor: snackBackground,
-          child: const Icon(Icons.add,size: 30,),
-          onPressed: (){
-            Get.to(() => const BankWithdrawal());
-          },
-        )
+
     );
   }
 }

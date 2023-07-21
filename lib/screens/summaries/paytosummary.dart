@@ -189,64 +189,6 @@ class _PayToSummaryState extends State<PayToSummary> {
                 },),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: snackBackground,
-            onPressed: (){
-              showMaterialModalBottomSheet(
-                context: context,
-                builder: (context) => Card(
-                  elevation: 12,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(10),
-                          topLeft: Radius.circular(10))),
-                  child: SizedBox(
-                    height: 150,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Center(
-                            child: Text("Select",
-                                style: TextStyle(
-                                    fontWeight:
-                                    FontWeight.bold))),
-                        Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Get.to(() => const PayToAgent());
-                                // Get.back();
-                              },
-                              child: Column(
-                                children: [
-                                  myBasicWidget("manager.png","Agent",""),
-                                ],
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Get.to(
-                                        () => const PayToMerchant());
-                              },
-                              child: Column(
-                                children: [
-                                  myBasicWidget("clerk.png","Merchant",""),
-
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-          },
-            child: const Icon(Icons.add,size: 30,),
-          ),
         ),
       ),
     );

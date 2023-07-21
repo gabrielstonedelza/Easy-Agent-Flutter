@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:device_apps/device_apps.dart';
-import 'package:easy_agent/screens/paymentandrebalancing.dart';
+import 'package:easy_agent/screens/payto/agent.dart';
+import 'package:easy_agent/screens/payto/merchant.dart';
+import 'package:easy_agent/screens/reports/addreport.dart';
+import 'package:easy_agent/screens/summaries/allsummaries.dart';
 import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
 import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';
 import 'package:easy_agent/screens/summaries/momocashinsummary.dart';
 import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
 import 'package:easy_agent/screens/summaries/paytosummary.dart';
 import 'package:easy_agent/screens/summaries/reportsummary.dart';
-import 'package:easy_agent/screens/summaries/requestsummary.dart';
+
 import 'package:easy_agent/widgets/getonlineimage.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get_storage/get_storage.dart';
@@ -20,6 +23,7 @@ import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import '../about.dart';
 import '../controllers/authphonecontroller.dart';
@@ -29,10 +33,13 @@ import '../controllers/profilecontroller.dart';
 import '../controllers/trialandmonthlypaymentcontroller.dart';
 import '../widgets/basicui.dart';
 import '../widgets/loadingui.dart';
-import 'accounts/myaccounts.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
+import 'bank/bankdeposit.dart';
+import 'bank/bankwithdrawal.dart';
 import 'calculatecurrency.dart';
+import 'cashincashout/cashin.dart';
+import 'cashincashout/cashout.dart';
 import 'chats/agents_group_chat.dart';
 import 'chats/privatechat.dart';
 import 'commissions.dart';
@@ -499,6 +506,13 @@ class _DashboardState extends State<Dashboard> {
   late List allRequests = [];
   bool hasSomePendings = false;
   late List allPendingList = [];
+  final Uri _url = Uri.parse('https://aop.ecobank.com/register');
+
+  Future<void> _launchInBrowser() async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
+  }
 
   Future<void>fetchAllRequests()async{
     const url = "https://fnetagents.xyz/get_all_my_requests/";
@@ -857,330 +871,302 @@ class _DashboardState extends State<Dashboard> {
                 actions: [
                   IconButton(
                     onPressed: (){
-                      Get.to(() => const CalculateCurrencies());
+                      Get.to(() => const AllSummaries());
                     },
-                    icon: myOnlineImage("budget.png",30,30),
+                    icon: myOnlineImage("summaries.png",30,30),
                   ),
-                  IconButton(
-                    onPressed: (){
-                      Get.to(() => const MyReports());
-                    },
-                    icon: myOnlineImage("report.png",30,30),
+                  Padding(
+                    padding: const EdgeInsets.only(right:8.0),
+                    child: IconButton(
+                      onPressed: (){
+                        Get.to(() => const AddNewReport());
+                      },
+                      icon: myOnlineImage("market-analysis.png",30,30),
+                    ),
                   )
                 ],
               ),
-              body: isLoading ? const LoadingUi() : Padding(
-                padding: const EdgeInsets.only(left:8.0,right: 8),
-                child: ListView(
-                  children: [
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    isLatestAppVersion ?  Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("pay.png","Pay To",""),
-                                onTap: () {
-                                  tpController.accountBalanceDetailsToday.isNotEmpty ?
-                                   hasClosedAccountToday ? Get.snackbar("Error", "You have already closed accounts for today",
-                                      colorText: defaultWhite,
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      duration: const Duration(seconds: 5),
-                                      backgroundColor: warning) : Get.to(() => const PayToSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
-                                      colorText: defaultWhite,
-                                      backgroundColor: warning,
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      duration: const Duration(seconds: 5));
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("money-withdrawal.png","Cash In",""),
-
-                                onTap: () {
-                                  tpController.accountBalanceDetailsToday.isNotEmpty ?
-                                     hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
-                                      colorText: defaultWhite,
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      duration: const Duration(seconds: 5),
-                                      backgroundColor: warning) :   Get.to(() => const MomoCashInSummary()) : Get.snackbar("Account balance error", "Please add account balance for today",
-                                      colorText: defaultWhite,
-                                      backgroundColor: warning,
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      duration: const Duration(seconds: 5));
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("commission.png","Cash Out",""),
-                                onTap: () {
-                                  tpController.accountBalanceDetailsToday.isNotEmpty ? hasClosedAccountToday ? Get.snackbar("Error", "You have already closed your accounts for today",
-                                      colorText: defaultWhite,
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      duration: const Duration(seconds: 5),
-                                      backgroundColor: warning) : Get.to(() => const MomoCashOutSummary()) :Get.snackbar("Account balance error", "Please add account balance for today",
-                                      colorText: defaultWhite,
-                                      backgroundColor: warning,
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      duration: const Duration(seconds: 5));
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Divider(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("telephone-call.png","Airtime","Bundles"),
-
-                                onTap: () async{
-                                  DeviceApps.openApp('com.wMY247KIOSK_15547762');
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("wallet.png","Wallet",""),
-
-                                onTap: () {
-                                  checkMtnBalance();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("manager.png","Agent","Accounts"),
-
-                                onTap: () {
-                                  Get.to(() => const AgentAccounts());
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Divider(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("bank.png","Bank","Deposit"),
-
-                                onTap: () {
-                                  Get.to(() => const BankDepositSummary());
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("bank.png","Bank","Withdrawals"),
-
-                                onTap: () {
-                                  Get.to(() => const BankWithdrawalSummary());
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("bank.png","Financial","Services"),
-
-                                onTap: () {
-                                  showInstalled();
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Divider(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("group.png","Customer","Registration"),
-                                onTap: () {
-                                  Get.to(() => const CustomerRegistration());
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("group.png","Customer","Accounts"),
-
-                                onTap: () {
-                                  Get.to(() => const CustomerAccountRegistration());
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("group.png","My","Customers"),
-
-                                onTap: () {
-                                  Get.to(() => const MyCustomers());
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Divider(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("cash-payment.png","Payment &","Rebalancing"),
-                                onTap: () {
-                                  Get.to(() => const PaymentAndReBalancing());
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("wallet-add.png","Accounts",""),
-                                onTap: () {
-                                  Get.to(() => const MyAccountDashboard());
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("digital-wallet.png","Requests",""),
-
-                                onTap: () {
-                                  Get.to(() => const RequestSummary());
-                                },
-                              ),
-                            ),
-
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Divider(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("conversation.png","Chat",""),
-
-                                onTap: () {
-                                  showMaterialModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => SizedBox(
-                                      height: 200,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top:25.0),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: GestureDetector(
+              body: ListView(
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("payment-method.png","Pay To",""),
+                              onTap: () {
+                                showMaterialModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => Card(
+                                    elevation: 12,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(10),
+                                            topLeft: Radius.circular(10))),
+                                    child: SizedBox(
+                                      height: 150,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const Center(
+                                              child: Text("Select",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                      FontWeight.bold))),
+                                          Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(() => const PayToAgent());
+                                                  // Get.back();
+                                                },
                                                 child: Column(
                                                   children: [
-                                                    myBasicWidget("clerk.png","Owner",""),
+                                                    myBasicWidget("employee.png","Agent",""),
                                                   ],
                                                 ),
-                                                onTap: () {
-                                                  Get.to(()=> const PrivateChat());
-                                                },
                                               ),
-                                            ),
-                                            Expanded(
-                                              child: GestureDetector(
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.to(
+                                                          () => const PayToMerchant());
+                                                },
                                                 child: Column(
                                                   children: [
-                                                    myBasicWidget("manager.png","Agent",""),
+                                                    myBasicWidget("cashier.png","Merchant",""),
+
                                                   ],
                                                 ),
-                                                onTap: () {
-                                                  Get.to(() => const AgentsGroupChat());
-                                                },
                                               ),
-                                            ),
-                                          ],
-                                        ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  );
-
-                                },
-                              ),
+                                  ),
+                                );
+                              },
                             ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("customer-support.png","Customer","Service"),
-
-                                onTap: () {
-                                  Get.to(() => const CustomerService());
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                child: myBasicWidget("commissions.png","Commissions",""),
-
-                                onTap: () {
-                                  Get.to(() => const Commissions());
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ) : const Padding(
-                      padding: EdgeInsets.only(top:18.0,left: 18),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(child: Text("Please update",style: TextStyle(fontWeight: FontWeight.bold),)),
-                          Padding(
-                            padding: EdgeInsets.only(top:8.0,bottom:8),
-                            child: Center(child: Text("Contact the admin for the latest app update",style: TextStyle(fontWeight: FontWeight.bold),)),
                           ),
-                          SizedBox(height: 10,),
-                          Center(child: Text("Make sure to logout before installing the latest one",style: TextStyle(fontWeight: FontWeight.bold),)),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("money-withdrawal.png","Cash In",""),
+
+                              onTap: () {
+                                Get.to(() => const CashIn());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("commission.png","Cash Out",""),
+                              onTap: () {
+                                Get.to(() => const CashOut());
+                              },
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("ecomobile-card.png","Ecobank","Accounts"),
+                              onTap: () async{
+                                await _launchInBrowser();
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("wallet.png","Wallet",""),
 
+                              onTap: () {
+                                checkMtnBalance();
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("employee.png","Agent","Accounts"),
+
+                              onTap: () {
+                                Get.to(() => const AgentAccounts());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("bank.png","Bank","Deposit"),
+
+                              onTap: () {
+                                Get.to(() => const BankDeposit());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("bank.png","Bank","Withdrawals"),
+
+                              onTap: () {
+                                Get.to(() => const BankWithdrawal());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("bank.png","Financial","Services"),
+
+                              onTap: () {
+                                showInstalled();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("group.png","Customer","Registration"),
+                              onTap: () {
+                                Get.to(() => const CustomerRegistration());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("group.png","Customer","Accounts"),
+
+                              onTap: () {
+                                Get.to(() => const CustomerAccountRegistration());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("group.png","My","Customers"),
+
+                              onTap: () {
+                                Get.to(() => const MyCustomers());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("conversation.png","Chat",""),
+
+                              onTap: () {
+                                showMaterialModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => SizedBox(
+                                    height: 200,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top:25.0),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: GestureDetector(
+                                              child: Column(
+                                                children: [
+                                                  myBasicWidget("cashier.png","Owner",""),
+                                                ],
+                                              ),
+                                              onTap: () {
+                                                Get.to(()=> const PrivateChat());
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: GestureDetector(
+                                              child: Column(
+                                                children: [
+                                                  myBasicWidget("employee.png","Agent",""),
+                                                ],
+                                              ),
+                                              onTap: () {
+                                                Get.to(() => const AgentsGroupChat());
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("customer-cares.png","Customer","Service"),
+
+                              onTap: () {
+                                Get.to(() => const CustomerService());
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: myBasicWidget("commissions.png","Commissions",""),
+
+                              onTap: () {
+                                Get.to(() => const Commissions());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  )
+                ],
+              ),
             )
     ) : Scaffold(
             body: Column(

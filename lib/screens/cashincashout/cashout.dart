@@ -68,19 +68,8 @@ class _CashOutState extends State<CashOut> {
         subscriptionId: 1);
   }
 
-  late List accountBalanceDetailsToday = [];
   bool isLoading = true;
-  late List lastItem = [];
-  late double physical = 0.0;
-  late double mtn = 0.0;
-  late double airteltigo = 0.0;
-  late double vodafone = 0.0;
-  late double eCash = 0.0;
-  late double mtnNow = 0.0;
-  late double airtelTigoNow = 0.0;
-  late double vodafoneNow = 0.0;
-  late double physicalNow = 0.0;
-  late double eCashNow = 0.0;
+
 
   late String uToken = "";
   final storage = GetStorage();
@@ -166,26 +155,7 @@ class _CashOutState extends State<CashOut> {
     });
 
     if (res.statusCode == 201) {
-      if (_currentSelectedNetwork == "Mtn") {
-        mtn = mtnNow + double.parse(_cashPaidController.text);
-        physical = physicalNow - double.parse(_cashPaidController.text);
-        //
-        airteltigo = airtelTigoNow;
-        vodafone = vodafoneNow;
-      }
-      if (_currentSelectedNetwork == "AirtelTigo") {
-        airteltigo = airtelTigoNow + double.parse(_cashPaidController.text);
-        physical = physicalNow - double.parse(_cashPaidController.text);
-        mtn = mtnNow;
-        vodafone = vodafoneNow;
-      }
-      if (_currentSelectedNetwork == "Vodafone") {
-        vodafone = vodafoneNow + double.parse(_cashPaidController.text);
-        physical = physicalNow - double.parse(_cashPaidController.text);
-        mtn = mtnNow;
-        airteltigo = airtelTigoNow;
-      }
-      addAccountsToday();
+
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -206,64 +176,6 @@ class _CashOutState extends State<CashOut> {
     }
   }
 
-  addAccountsToday() async {
-    const accountUrl = "https://fnetagents.xyz/add_balance_to_start/";
-    final myLink = Uri.parse(accountUrl);
-    http.Response response = await http.post(myLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": "Token $uToken"
-    }, body: {
-      "physical": physical.toString(),
-      "mtn_e_cash": mtn.toString(),
-      "tigo_airtel_e_cash": airteltigo.toString(),
-      "vodafone_e_cash": vodafone.toString(),
-      "isStarted": "True",
-      "agent": profileController.userId,
-    });
-    if (response.statusCode == 201) {
-      Get.snackbar("Success", "Your accounts was updated",
-          colorText: defaultWhite,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: snackBackground);
-
-      // Get.offAll(() => const Dashboard());
-    } else {
-      Get.snackbar("Account", "something happened",
-          colorText: defaultWhite,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: warning);
-    }
-  }
-
-  Future<void> fetchAccountBalance() async {
-    const postUrl =
-        "https://fnetagents.xyz/get_my_account_balance_started_today/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      accountBalanceDetailsToday.assignAll(allPosts);
-      setState(() {
-        isLoading = false;
-        lastItem.assign(accountBalanceDetailsToday.last);
-        physicalNow = double.parse(lastItem[0]['physical']);
-        mtnNow = double.parse(lastItem[0]['mtn_e_cash']);
-        airtelTigoNow = double.parse(lastItem[0]['tigo_airtel_e_cash']);
-        vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
-        eCashNow = double.parse(lastItem[0]['mtn_e_cash']) +
-            double.parse(lastItem[0]['tigo_airtel_e_cash']) +
-            double.parse(lastItem[0]['vodafone_e_cash']);
-      });
-    } else {
-      // print(res.body);
-    }
-  }
 
   bool hasOTP = false;
   bool sentOTP = false;
@@ -325,7 +237,6 @@ class _CashOutState extends State<CashOut> {
     _customerPhoneController = TextEditingController();
     controller.getAllCustomers(uToken);
     controller.getAllFraudsters(uToken);
-    fetchAccountBalance();
   }
 
   @override
@@ -1244,60 +1155,6 @@ class _CashOutState extends State<CashOut> {
                                             Get.snackbar(
                                                 "Network or Type Error",
                                                 "please select network and type",
-                                                colorText: defaultWhite,
-                                                backgroundColor:
-                                                warning,
-                                                snackPosition:
-                                                SnackPosition
-                                                    .BOTTOM,
-                                                duration:
-                                                const Duration(
-                                                    seconds: 5));
-                                            return;
-                                          } else if (_currentSelectedNetwork ==
-                                              "Mtn" &&
-                                              int.parse(
-                                                  _cashPaidController
-                                                      .text) >
-                                                  physicalNow) {
-                                            Get.snackbar("Amount Error",
-                                                "Amount is greater than your Mtn Ecash,please check",
-                                                colorText: defaultWhite,
-                                                backgroundColor:
-                                                warning,
-                                                snackPosition:
-                                                SnackPosition
-                                                    .BOTTOM,
-                                                duration:
-                                                const Duration(
-                                                    seconds: 5));
-                                            return;
-                                          } else if (_currentSelectedNetwork ==
-                                              "AirtelTigo" &&
-                                              int.parse(
-                                                  _cashPaidController
-                                                      .text) >
-                                                  physicalNow) {
-                                            Get.snackbar("Amount Error",
-                                                "Amount is greater than your AirtelTigo Ecash,please check",
-                                                colorText: defaultWhite,
-                                                backgroundColor:
-                                                warning,
-                                                snackPosition:
-                                                SnackPosition
-                                                    .BOTTOM,
-                                                duration:
-                                                const Duration(
-                                                    seconds: 5));
-                                            return;
-                                          } else if (_currentSelectedNetwork ==
-                                              "Vodafone" &&
-                                              int.parse(
-                                                  _cashPaidController
-                                                      .text) >
-                                                  physicalNow) {
-                                            Get.snackbar("Amount Error",
-                                                "Amount is greater than your Vodafone Ecash,please check",
                                                 colorText: defaultWhite,
                                                 backgroundColor:
                                                 warning,

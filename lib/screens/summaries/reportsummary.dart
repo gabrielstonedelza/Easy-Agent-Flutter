@@ -134,13 +134,6 @@ class _MyReportsState extends State<MyReports> {
               ),
             );
           }),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: snackBackground,
-        onPressed: (){
-          Get.to(() => const AddNewReport());
-        },
-        child: const Icon(Icons.add,size: 30,color: defaultWhite,),
-      ),
     );
   }
 

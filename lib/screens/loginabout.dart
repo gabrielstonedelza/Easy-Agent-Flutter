@@ -14,6 +14,7 @@ class LoginAboutPage extends StatefulWidget {
 }
 
 class _LoginAboutPageState extends State<LoginAboutPage> {
+  
   void launchWhatsapp({@required number,@required message})async{
     String url = "whatsapp://send?phone=$number&text=$message";
     await canLaunch(url) ? launch(url) : Get.snackbar("Sorry", "Cannot open whatsapp",
