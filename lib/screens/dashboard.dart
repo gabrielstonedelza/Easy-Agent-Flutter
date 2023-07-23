@@ -32,15 +32,16 @@ import '../controllers/notificationcontroller.dart';
 import '../controllers/profilecontroller.dart';
 import '../controllers/trialandmonthlypaymentcontroller.dart';
 import '../widgets/basicui.dart';
-import '../widgets/loadingui.dart';
 import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
 import 'bank/bankdeposit.dart';
 import 'bank/bankwithdrawal.dart';
 import 'calculatecurrency.dart';
+import 'calculatedenominations.dart';
 import 'cashincashout/cashin.dart';
 import 'cashincashout/cashout.dart';
 import 'chats/agents_group_chat.dart';
+import 'chats/myowneragents.dart';
 import 'chats/privatechat.dart';
 import 'commissions.dart';
 import 'customers/customeraccounts.dart';
@@ -74,7 +75,7 @@ class TimeChecker {
       DateTime localTime = now.toLocal();
 
       // Check if the local time is 8:00
-      if (localTime.hour == 00) {
+      if (localTime.hour == 12) {
         // Stop the timer
         stopTimer();
         // Navigate to the login page
@@ -871,6 +872,12 @@ class _DashboardState extends State<Dashboard> {
                 actions: [
                   IconButton(
                     onPressed: (){
+                      Get.to(() => const CalculateDenominations());
+                    },
+                    icon: myOnlineImage("accounting.png",30,30),
+                  ),
+                  IconButton(
+                    onPressed: (){
                       Get.to(() => const AllSummaries());
                     },
                     icon: myOnlineImage("summaries.png",30,30),
@@ -1128,6 +1135,18 @@ class _DashboardState extends State<Dashboard> {
                                               ),
                                               onTap: () {
                                                 Get.to(() => const AgentsGroupChat());
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: GestureDetector(
+                                              child: Column(
+                                                children: [
+                                                  myBasicWidget("employee.png","Agent","Private Chat"),
+                                                ],
+                                              ),
+                                              onTap: () {
+                                                Get.to(() => const AllOwnerUsers());
                                               },
                                             ),
                                           ),

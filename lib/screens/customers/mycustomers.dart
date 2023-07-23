@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import '../../controllers/customerscontroller.dart';
 import '../../widgets/loadingui.dart';
+import 'mycustomersaccounts.dart';
 
 class MyCustomers extends StatefulWidget {
   const MyCustomers({Key? key}) : super(key: key);
@@ -75,6 +76,9 @@ class _MyCustomersState extends State<MyCustomers> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                   child: ListTile(
+                    onTap: (){
+                      Get.to(()=>  MyCustomersAccounts(phone_number:allMyCustomers[index]['phone']));
+                    },
                     title: buildRow("Name: ", "name"),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,6 +108,10 @@ class _MyCustomersState extends State<MyCustomers> {
                             ],
                           ),
                         ),
+                        const Padding(
+                          padding: EdgeInsets.only(top:18.0,left: 8,bottom: 10),
+                          child: Text("Tap to view accounts",style: TextStyle(fontWeight: FontWeight.bold)),
+                        )
                       ],
                     ),
                   ),
