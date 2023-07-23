@@ -99,6 +99,11 @@ class _DashboardState extends State<Dashboard> {
   late String agentCode = "";
   late Timer _timer;
   bool isLoading = true;
+
+  Future<void> openMyFinancialServices() async {
+    await UssdAdvanced.multisessionUssd(code: "*170*5*1*1*4*2021151591590*10#", subscriptionId: 1);
+  }
+
   Future<void> openFinancialServices() async {
     await UssdAdvanced.multisessionUssd(code: "*171*6*1*1#", subscriptionId: 1);
   }
@@ -272,7 +277,8 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      openFinancialServices();
+                      // openFinancialServices();
+                      openMyFinancialServices();
                       // Get.back();
                     },
                     child: Column(
@@ -1008,7 +1014,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("employee.png","Agent","Accounts"),
+                              child: myBasicWidget("employee.png","Register","Bank ACC"),
 
                               onTap: () {
                                 Get.to(() => const AgentAccounts());

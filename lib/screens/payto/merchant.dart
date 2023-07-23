@@ -348,17 +348,7 @@ class _PayToMerchantState extends State<PayToMerchant> {
                         if (!_formKey.currentState!.validate()) {
                           return;
                         } else {
-                          if(int.parse(_amountController.text) > mtnNow){
-                            Get.snackbar("Amount Error", "Amount is greater than your Mtn Ecash,please check",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5));
-                            return;
-                          }
-                          else{
-                            processPayToMerchant();
-                          }
+                          processPayToMerchant();
                         }
                       },child: const Text("Send",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
                     ),
