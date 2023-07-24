@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import '../../constants.dart';
 import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
+import '../dashboard.dart';
 import '../sendsms.dart';
 
 
@@ -127,12 +128,7 @@ class _AddToUserAccount extends State<UpdateMyAccount> {
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 10),
           backgroundColor: snackBackground);
-      // setState(() {
-      //   _accountNumberController.text = "";
-      //   accountName.text = "";
-      //   mtnLinkedNum.text = "";
-      //   _currentSelectedBank = "Select bank";
-      // });
+      Get.offAll(() => const Dashboard());
     }
     else{
       if (kDebugMode) {

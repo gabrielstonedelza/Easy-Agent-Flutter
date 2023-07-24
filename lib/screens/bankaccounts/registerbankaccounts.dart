@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:easy_agent/screens/dashboard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -144,13 +145,7 @@ class _AddToUserAccount extends State<AddToMyAccount> {
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 10),
           backgroundColor: snackBackground);
-      setState(() {
-        _accountNumberController.text = "";
-        accountName.text = "";
-        phone.text = "";
-        mtnLinkedNum.text = "";
-        _currentSelectedBank = "Select bank";
-      });
+      Get.offAll(() => const Dashboard());
     }
     else{
       if (kDebugMode) {
