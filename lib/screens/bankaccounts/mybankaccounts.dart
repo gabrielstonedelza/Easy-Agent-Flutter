@@ -25,6 +25,17 @@ class _MyBankAccountsState extends State<MyBankAccounts> {
   var items;
   bool isLoading = true;
   late List allMyAccounts = [];
+  void _startPosting()async{
+    setState(() {
+      isPosting = true;
+    });
+    await Future.delayed(const Duration(seconds: 4));
+    setState(() {
+      isPosting = false;
+    });
+  }
+
+  bool isPosting = false;
 
   Future<void> getAllMyBankAccounts() async {
     const url = "https://fnetagents.xyz/get_agent_accounts/";
@@ -56,6 +67,19 @@ class _MyBankAccountsState extends State<MyBankAccounts> {
       });
     }
     getAllMyBankAccounts();
+  }
+
+  deleteBankAccount(String id) async {
+    final url = "https://fnetagents.xyz/delete_agent_bank_account/$id/";
+    var myLink = Uri.parse(url);
+    final response = await http.get(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $uToken"
+    });
+
+    if (response.statusCode == 204) {
+      getAllMyBankAccounts();
+    } else {}
   }
 
   @override
@@ -129,6 +153,13 @@ class _MyBankAccountsState extends State<MyBankAccounts> {
                             fontSize: 15, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                       )
                     ],
+                  ),
+                  trailing: isPosting ? const CircularProgressIndicator() :IconButton(
+                    onPressed: (){
+                      _startPosting();
+                      deleteBankAccount(allMyAccounts[index]['id'].toString());
+                    },
+                    icon: const Icon(Icons.delete_forever,color:warning,size: 30,),
                   ),
                 ),
               ),

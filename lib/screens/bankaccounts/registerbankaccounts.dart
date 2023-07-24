@@ -70,6 +70,7 @@ class _AddToUserAccount extends State<AddToMyAccount> {
 
   var _currentSelectedBank = "Select bank";
 
+
   Future<void>fetchMyAccounts() async {
     const url = "https://fnetagents.xyz/get_agent_accounts/";
     var myLink = Uri.parse(url);
@@ -89,6 +90,33 @@ class _AddToUserAccount extends State<AddToMyAccount> {
     });
   }
   final ProfileController controller = Get.find();
+  late List ownerDetails = [];
+  late String ownerId = "";
+  late String ownerUsername = "";
+  Future<void> fetchOwnersDetails() async {
+    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.ownerCode}/";
+    final pLink = Uri.parse(postUrl);
+    http.Response res = await http.get(pLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    });
+    if (res.statusCode == 200) {
+      final codeUnits = res.body;
+      var jsonData = jsonDecode(codeUnits);
+      var allPosts = jsonData;
+      ownerDetails.assignAll(allPosts);
+      for(var i in ownerDetails){
+        ownerId = i['id'].toString();
+        ownerUsername = i['username'];
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      // print(res.body);
+    }
+  }
 
   late final TextEditingController _accountNumberController = TextEditingController();
   late final TextEditingController phone = TextEditingController();
@@ -108,6 +136,7 @@ class _AddToUserAccount extends State<AddToMyAccount> {
       "account_name": accountName.text,
       "phone": phone.text,
       "mtn_linked_number": mtnLinkedNum.text,
+      "owner": ownerId,
     });
     if(res.statusCode == 201){
       Get.snackbar("Congratulations", "Account was added successfully",
@@ -118,6 +147,8 @@ class _AddToUserAccount extends State<AddToMyAccount> {
       setState(() {
         _accountNumberController.text = "";
         accountName.text = "";
+        phone.text = "";
+        mtnLinkedNum.text = "";
         _currentSelectedBank = "Select bank";
       });
     }
@@ -136,12 +167,14 @@ class _AddToUserAccount extends State<AddToMyAccount> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchMyAccounts();
+
     if(storage.read("token") != null){
       setState(() {
         uToken = storage.read("token");
       });
     }
+    fetchOwnersDetails();
+    fetchMyAccounts();
   }
 
 
@@ -294,7 +327,6 @@ class _AddToUserAccount extends State<AddToMyAccount> {
                       },
                     ),
                   ),
-
                   isPosting ? const LoadingUi() : RawMaterialButton(
                     onPressed: () {
                       _startPosting();

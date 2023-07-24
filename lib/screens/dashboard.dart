@@ -858,12 +858,12 @@ class _DashboardState extends State<Dashboard> {
                 },),
                 backgroundColor: snackBackground,
                 actions: [
-                  IconButton(
-                    onPressed: (){
-                      Get.to(() => const AddToMyAccount());
-                    },
-                    icon: myOnlineImage("bank-account.png",30,30),
-                  ),
+                  // IconButton(
+                  //   onPressed: (){
+                  //     Get.to(() => const AddToMyAccount());
+                  //   },
+                  //   icon: myOnlineImage("bank-account.png",30,30),
+                  // ),
                   IconButton(
                     onPressed: (){
                       Get.to(() => const CalculateDenominations());
@@ -1002,10 +1002,10 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("employee.png","Register","Bank ACC"),
+                              child: myBasicWidget("bank-account.png","Bank","Linkage"),
 
                               onTap: () {
-                                Get.to(() => const AgentAccounts());
+                                Get.to(() => const AddToMyAccount());
                               },
                             ),
                           ),
