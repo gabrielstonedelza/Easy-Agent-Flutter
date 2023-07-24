@@ -36,6 +36,9 @@ import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
 import 'bank/bankdeposit.dart';
 import 'bank/bankwithdrawal.dart';
+import 'bankaccounts/getaccountsandpull.dart';
+import 'bankaccounts/getaccountsandpush.dart';
+import 'bankaccounts/registerbankaccounts.dart';
 import 'calculatecurrency.dart';
 import 'calculatedenominations.dart';
 import 'cashincashout/cashin.dart';
@@ -75,7 +78,7 @@ class TimeChecker {
       DateTime localTime = now.toLocal();
 
       // Check if the local time is 8:00
-      if (localTime.hour == 12) {
+      if (localTime.hour == 00) {
         // Stop the timer
         stopTimer();
         // Navigate to the login page
@@ -278,7 +281,8 @@ class _DashboardState extends State<Dashboard> {
                   GestureDetector(
                     onTap: () {
                       // openFinancialServices();
-                      openMyFinancialServices();
+                      // openMyFinancialServices();
+                      Get.to(() => const GetMyAccountsAndPush());
                       // Get.back();
                     },
                     child: Column(
@@ -319,7 +323,8 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      openFinancialServicesPullFromBank();
+                      // openFinancialServicesPullFromBank();
+                      Get.to(() => const GetMyAccountsAndPull());
                     },
                     child: Column(
                       children: [
@@ -591,32 +596,9 @@ class _DashboardState extends State<Dashboard> {
   void checkTheTime(){
     var hour = DateTime.now().hour;
     switch (hour) {
-      case 9:
-        // setState(() {
-        //   isClosingTimeNow = true;
-        // });
+      case 00:
         logoutUser();
         break;
-    // case 01:
-    //   setState(() {
-    //     isMidNight = true;
-    //   });
-    //   break;
-    // case 02:
-    //   setState(() {
-    //     isMidNight = true;
-    //   });
-    //   break;
-    // case 03:
-    //   setState(() {
-    //     isMidNight = true;
-    //   });
-    //   break;
-    // case 04:
-    //   setState(() {
-    //     isMidNight = false;
-    //   });
-    //   break;
     }
   }
 
@@ -653,7 +635,7 @@ class _DashboardState extends State<Dashboard> {
       });
     }
     // checkTheTime();
-    getLatestAppVersion();
+    // getLatestAppVersion();
     tpController.fetchFreeTrial(uToken);
     tpController.fetchAccountBalance(uToken);
     tpController.fetchMonthlyPayment(uToken);
@@ -685,7 +667,7 @@ class _DashboardState extends State<Dashboard> {
     });
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      getLatestAppVersion();
+      // getLatestAppVersion();
       // checkTheTime();
 
       for (var e in triggered) {
@@ -878,6 +860,12 @@ class _DashboardState extends State<Dashboard> {
                 actions: [
                   IconButton(
                     onPressed: (){
+                      Get.to(() => const AddToMyAccount());
+                    },
+                    icon: myOnlineImage("bank-account.png",30,30),
+                  ),
+                  IconButton(
+                    onPressed: (){
                       Get.to(() => const CalculateDenominations());
                     },
                     icon: myOnlineImage("accounting.png",30,30),
@@ -997,7 +985,7 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("ecomobile-card.png","Ecobank","Accounts"),
+                              child: myBasicWidget("ecomobile-card.png","CASA","Accounts"),
                               onTap: () async{
                                 await _launchInBrowser();
                               },

@@ -16,6 +16,7 @@ class ProfileController extends GetxController{
   late String agentFullName = "";
   late String companyName = "";
   late String companyNumber = "";
+  late String phoneNumber = "";
 
   Future<void> getUserProfile(String token) async {
     try {
@@ -69,6 +70,7 @@ class ProfileController extends GetxController{
           companyNumber = i['company_number'];
           agentUsername = i['username'];
           agentFullName = i['full_name'];
+          phoneNumber = i['phone_number'];
         }
         update();
       }
