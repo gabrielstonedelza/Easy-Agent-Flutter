@@ -635,7 +635,7 @@ class _BankDepositState extends State<BankDeposit> {
     getUserDetails(uToken);
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
-    _depositorNameController = TextEditingController(text: profileController.agentFullName);
+    _depositorNameController = TextEditingController();
     _depositorNumberController = TextEditingController();
     _customerAccountNameController = TextEditingController();
     _d200Controller = TextEditingController();
