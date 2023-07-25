@@ -84,7 +84,7 @@ class _HoldAccountState extends State<HoldAccount> {
     _amountController = TextEditingController();
     _customerPhoneNumberController = TextEditingController();
     _reasonController = TextEditingController();
-    _agentPhoneNumberController = TextEditingController(text: controller.agentPhone);
+    _agentPhoneNumberController = TextEditingController();
     _transactionIdController = TextEditingController();
   }
 
@@ -155,19 +155,19 @@ class _HoldAccountState extends State<HoldAccount> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
-                      readOnly: true,
+
                       controller: _agentPhoneNumberController,
                       focusNode: agentPhoneNumberFocusNode,
                       cursorRadius: const Radius.elliptical(10, 10),
                       cursorWidth: 10,
                       cursorColor: secondaryColor,
                       decoration: buildInputDecoration("Your number"),
-                      keyboardType: TextInputType.text,
-                      // validator: (value) {
-                      //   if (value!.isEmpty) {
-                      //     return "Please enter agent id";
-                      //   }
-                      // },
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter number";
+                        }
+                      },
                     ),
                   ),
                   Padding(

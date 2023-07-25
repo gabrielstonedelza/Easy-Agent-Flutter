@@ -94,37 +94,37 @@ class _AboutPageState extends State<AboutPage> {
         foregroundColor: Colors.transparent,
         onPressed: (){
           Get.defaultDialog(
-            title: "Hi there 😃",
-            content: Column(
-              children: [
-                // Lottie.asset("assets/images/hiwink.json",width: 80,height: 80),
-               const Padding(
-                 padding: EdgeInsets.only(left: 8.0),
-                 child: Text("you can contact our customer service via "),
-               ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Click to "),
-                    IconButton(
-                      onPressed: (){
-                        _callNumber();
-                      },
-                      icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/3059/3059590.png",40,40),
-                    ),
-                    IconButton(
-                      onPressed: () async{
-                        launchWhatsapp(number: "+233550222888", message: "Hello 😀");
-                      },
-                      icon: myOnlineImage("https://cdn-icons-png.flaticon.com/128/733/733585.png",40,40),
-                    ),
-                  ],
-                ),
-              ],
-            )
+              title: "Hi there 😃",
+              content: Column(
+                children: [
+                  // Lottie.asset("assets/images/hiwink.json",width: 80,height: 80),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Text("you can contact our customer service via "),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Click to call"),
+                      IconButton(
+                        onPressed: (){
+                          _callNumber();
+                        },
+                        icon: myOnlineImage("telephone-call.png",40,40),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () async{
+                      launchWhatsapp(number: "+233550222888", message: "Hello 😀");
+                    },
+                    icon: myOnlineImage("whatsapp.png",40,40),
+                  ),
+                ],
+              )
           );
         },
-        child: myOnlineImage("https://cdn-icons-png.flaticon.com/128/2995/2995946.png",70,70),
+        child: myOnlineImage("customer-cares.png",40,40),
       ),
     );
   }
