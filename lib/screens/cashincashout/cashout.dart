@@ -70,7 +70,6 @@ class _CashOutState extends State<CashOut> {
 
   bool isLoading = true;
 
-
   late String uToken = "";
   final storage = GetStorage();
   bool isDeCustomer = false;
@@ -155,7 +154,6 @@ class _CashOutState extends State<CashOut> {
     });
 
     if (res.statusCode == 201) {
-
       Get.snackbar("Congratulations", "Transaction was successful",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -175,7 +173,6 @@ class _CashOutState extends State<CashOut> {
           backgroundColor: warning);
     }
   }
-
 
   bool hasOTP = false;
   bool sentOTP = false;
@@ -351,6 +348,11 @@ class _CashOutState extends State<CashOut> {
                                   isCustomer = false;
                                   sentOTP = false;
                                 });
+                                FocusScopeNode currentFocus =
+                                    FocusScope.of(context);
+                                if (!currentFocus.hasPrimaryFocus) {
+                                  currentFocus.unfocus();
+                                }
                                 Get.defaultDialog(
                                     buttonColor: primaryColor,
                                     title: "Confirm customer",
@@ -1129,67 +1131,82 @@ class _CashOutState extends State<CashOut> {
                                   isPosting
                                       ? const LoadingUi()
                                       : amountIsNotEmpty && !isFraudster
-                                          ?Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: RawMaterialButton(
-                                      fillColor: secondaryColor,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12)
-                                      ),
-                                      onPressed: (){
-                                        _startPosting();
-                                        FocusScopeNode currentFocus =
-                                        FocusScope.of(context);
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: RawMaterialButton(
+                                                fillColor: secondaryColor,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12)),
+                                                onPressed: () {
+                                                  _startPosting();
+                                                  FocusScopeNode currentFocus =
+                                                      FocusScope.of(context);
 
-                                        if (!currentFocus
-                                            .hasPrimaryFocus) {
-                                          currentFocus.unfocus();
-                                        }
-                                        if (!_formKey.currentState!
-                                            .validate()) {
-                                          return;
-                                        } else {
-
-                                           if (_currentSelectedNetwork ==
-                                              "Select Network") {
-                                            Get.snackbar(
-                                                "Network or Type Error",
-                                                "please select network and type",
-                                                colorText: defaultWhite,
-                                                backgroundColor:
-                                                warning,
-                                                snackPosition:
-                                                SnackPosition
-                                                    .BOTTOM,
-                                                duration:
-                                                const Duration(
-                                                    seconds: 5));
-                                            return;
-                                          }
-                                           else if (double.parse(_cashPaidController.text) > double.parse(_amountReceivedController.text)) {
-                                             Get.snackbar("Amount Error",
-                                                 "Cash paid cannot be greater than amount received",
-                                                 colorText: defaultWhite,
-                                                 backgroundColor: warning,
-                                                 snackPosition:
-                                                 SnackPosition.BOTTOM,
-                                                 duration:
-                                                 const Duration(seconds: 5));
-                                             return;
-                                           }
-
-                                           else {
-                                            processMomoWithdrawal();
-                                          }
-                                        }
-                                      },child: const Text("Save",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
-                                    ),
-                                  )
+                                                  if (!currentFocus
+                                                      .hasPrimaryFocus) {
+                                                    currentFocus.unfocus();
+                                                  }
+                                                  if (!_formKey.currentState!
+                                                      .validate()) {
+                                                    return;
+                                                  } else {
+                                                    if (_currentSelectedNetwork ==
+                                                        "Select Network") {
+                                                      Get.snackbar(
+                                                          "Network or Type Error",
+                                                          "please select network and type",
+                                                          colorText:
+                                                              defaultWhite,
+                                                          backgroundColor:
+                                                              warning,
+                                                          snackPosition:
+                                                              SnackPosition
+                                                                  .BOTTOM,
+                                                          duration:
+                                                              const Duration(
+                                                                  seconds: 5));
+                                                      return;
+                                                    } else if (double.parse(
+                                                            _cashPaidController
+                                                                .text) >
+                                                        double.parse(
+                                                            _amountReceivedController
+                                                                .text)) {
+                                                      Get.snackbar(
+                                                          "Amount Error",
+                                                          "Cash paid cannot be greater than amount received",
+                                                          colorText:
+                                                              defaultWhite,
+                                                          backgroundColor:
+                                                              warning,
+                                                          snackPosition:
+                                                              SnackPosition
+                                                                  .BOTTOM,
+                                                          duration:
+                                                              const Duration(
+                                                                  seconds: 5));
+                                                      return;
+                                                    } else {
+                                                      processMomoWithdrawal();
+                                                    }
+                                                  }
+                                                },
+                                                child: const Text(
+                                                  "Save",
+                                                  style: TextStyle(
+                                                      color: defaultWhite,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                            )
                                           : Container(),
                                 ],
                               )
                             : Container(),
-
                       ],
                     ),
                   ),
