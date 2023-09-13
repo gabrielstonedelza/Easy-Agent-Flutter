@@ -65,7 +65,7 @@ dependencies:
   image_picker:
   image_cropper:
   device_apps: ^2.2.0
-  flutter_native_timezone: ^1.0.0
+#  flutter_native_timezone:
 
 dev_dependencies:
   flutter_test:

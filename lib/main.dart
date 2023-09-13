@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:easy_agent/controllers/localnotificationcontroller.dart';
@@ -6,7 +5,6 @@ import 'package:easy_agent/screens/dashboard.dart';
 import 'package:easy_agent/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:telephony/telephony.dart';
 import 'package:get/get.dart';
@@ -23,7 +21,7 @@ onBackgroundMessage(SmsMessage message) {
   debugPrint("onBackgroundMessage called");
 }
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -37,7 +35,6 @@ void main() async{
   Get.put(TrialAndMonthlyPaymentController());
   NotificationService().initNotification();
   runApp(const MyApp());
-
 }
 
 class MyApp extends StatefulWidget {
@@ -46,8 +43,6 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-
-
 
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
@@ -66,17 +61,15 @@ class _MyAppState extends State<MyApp> {
       _message = message.body ?? "Error reading message body.";
       Get.defaultDialog(
           content: Column(
-            children: [
-              Text(_message)
-            ],
+            children: [Text(_message)],
           ),
           confirm: TextButton(
-            onPressed: (){
+            onPressed: () {
               Get.back();
             },
-            child: const Text("OK",style:TextStyle(fontWeight:FontWeight.bold)),
-          )
-      );
+            child:
+                const Text("OK", style: TextStyle(fontWeight: FontWeight.bold)),
+          ));
     });
   }
 
@@ -88,17 +81,15 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-
     final bool? result = await telephony.requestPhoneAndSmsPermissions;
 
     if (result != null && result) {
-      telephony.listenIncomingSms(onNewMessage: onMessage, onBackgroundMessage: onBackgroundMessage);
+      telephony.listenIncomingSms(
+          onNewMessage: onMessage, onBackgroundMessage: onBackgroundMessage);
     }
-
 
     if (!mounted) return;
   }
-
 
   @override
   void initState() {
@@ -117,8 +108,7 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         isAuthDevice = true;
       });
-    }
-    else{
+    } else {
       setState(() {
         hasToken = false;
       });
@@ -131,16 +121,15 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       defaultTransition: Transition.leftToRight,
       theme: ThemeData(
-        primaryColor: secondaryColor,
-        appBarTheme: const AppBarTheme(
-            elevation: 0,
-            backgroundColor: snackBackground,
-          titleTextStyle: TextStyle(color: secondaryColor,fontWeight: FontWeight.bold,fontSize: 18)
-        )
-      ),
-      home:hasToken && isAuthDevice ? const Dashboard() : const LoginView(),
+          primaryColor: secondaryColor,
+          appBarTheme: const AppBarTheme(
+              elevation: 0,
+              backgroundColor: snackBackground,
+              titleTextStyle: TextStyle(
+                  color: secondaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18))),
+      home: hasToken && isAuthDevice ? const Dashboard() : const LoginView(),
     );
   }
 }
-
-

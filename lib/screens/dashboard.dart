@@ -5,15 +5,8 @@ import 'package:easy_agent/screens/payto/agent.dart';
 import 'package:easy_agent/screens/payto/merchant.dart';
 import 'package:easy_agent/screens/reports/addreport.dart';
 import 'package:easy_agent/screens/summaries/allsummaries.dart';
-import 'package:easy_agent/screens/summaries/bankdepositsummary.dart';
-import 'package:easy_agent/screens/summaries/bankwithdrawalsummary.dart';
-import 'package:easy_agent/screens/summaries/momocashinsummary.dart';
-import 'package:easy_agent/screens/summaries/momowithdrawsummary.dart';
-import 'package:easy_agent/screens/summaries/paytosummary.dart';
-import 'package:easy_agent/screens/summaries/reportsummary.dart';
 
 import 'package:easy_agent/widgets/getonlineimage.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_agent/constants.dart';
@@ -32,14 +25,12 @@ import '../controllers/notificationcontroller.dart';
 import '../controllers/profilecontroller.dart';
 import '../controllers/trialandmonthlypaymentcontroller.dart';
 import '../widgets/basicui.dart';
-import 'agent/agentaccount.dart';
 import 'authenticatebyphone.dart';
 import 'bank/bankdeposit.dart';
 import 'bank/bankwithdrawal.dart';
 import 'bankaccounts/getaccountsandpull.dart';
 import 'bankaccounts/getaccountsandpush.dart';
 import 'bankaccounts/registerbankaccounts.dart';
-import 'calculatecurrency.dart';
 import 'calculatedenominations.dart';
 import 'cashincashout/cashin.dart';
 import 'cashincashout/cashout.dart';
@@ -60,38 +51,37 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class TimeChecker {
-  static Timer? _timer;
-
-  static void startTimer(BuildContext context) {
-    stopTimer(); // Stop any existing timers before starting a new one
-
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) async {
-      // Get the current local time zone
-      String localTimeZone = await FlutterNativeTimezone.getLocalTimezone();
-
-      // Get the current date and time
-      DateTime now = DateTime.now().toUtc();
-
-
-      // Convert the current time to the local time zone
-      DateTime localTime = now.toLocal();
-
-      // Check if the local time is 8:00
-      if (localTime.hour == 00) {
-        // Stop the timer
-        stopTimer();
-        // Navigate to the login page
-        Get.offAll(() => const LoginView());
-      }
-    });
-  }
-
-  static void stopTimer() {
-    _timer?.cancel();
-    _timer = null;
-  }
-}
+// class TimeChecker {
+//   static Timer? _timer;
+//
+//   static void startTimer(BuildContext context) {
+//     stopTimer(); // Stop any existing timers before starting a new one
+//
+//     _timer = Timer.periodic(const Duration(seconds: 15), (timer) async {
+//       // Get the current local time zone
+//       String localTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+//
+//       // Get the current date and time
+//       DateTime now = DateTime.now().toUtc();
+//
+//       // Convert the current time to the local time zone
+//       DateTime localTime = now.toLocal();
+//
+//       // Check if the local time is 8:00
+//       if (localTime.hour == 00) {
+//         // Stop the timer
+//         stopTimer();
+//         // Navigate to the login page
+//         Get.offAll(() => const LoginView());
+//       }
+//     });
+//   }
+//
+//   static void stopTimer() {
+//     _timer?.cancel();
+//     _timer = null;
+//   }
+// }
 
 class _DashboardState extends State<Dashboard> {
   DateTime now = DateTime.now();
@@ -104,7 +94,8 @@ class _DashboardState extends State<Dashboard> {
   bool isLoading = true;
 
   Future<void> openMyFinancialServices() async {
-    await UssdAdvanced.multisessionUssd(code: "*170*5*1*1*4*2021151591590*10#", subscriptionId: 1);
+    await UssdAdvanced.multisessionUssd(
+        code: "*170*5*1*1*4*2021151591590*10#", subscriptionId: 1);
   }
 
   Future<void> openFinancialServices() async {
@@ -114,7 +105,6 @@ class _DashboardState extends State<Dashboard> {
   Future<void> openFinancialServicesPullFromBank() async {
     await UssdAdvanced.multisessionUssd(code: "*171*6*1*2#", subscriptionId: 1);
   }
-
 
   final _advancedDrawerController = AdvancedDrawerController();
   SmsQuery query = SmsQuery();
@@ -145,7 +135,8 @@ class _DashboardState extends State<Dashboard> {
   bool hasClosedAccountToday = false;
 
   Future<void> fetchAccountBalanceClosed() async {
-    const postUrl = "https://fnetagents.xyz/get_my_account_balance_closed_today/";
+    const postUrl =
+        "https://fnetagents.xyz/get_my_account_balance_closed_today/";
     final pLink = Uri.parse(postUrl);
     http.Response res = await http.get(pLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -157,8 +148,9 @@ class _DashboardState extends State<Dashboard> {
       var jsonData = jsonDecode(codeUnits);
       var allPosts = jsonData;
       accountBalanceDetailsClosedToday.assignAll(allPosts);
-      for(var i in accountBalanceDetailsClosedToday){
-        if(i['date_closed'] == now.toString().split(" ").first && i['isClosed'] == true){
+      for (var i in accountBalanceDetailsClosedToday) {
+        if (i['date_closed'] == now.toString().split(" ").first &&
+            i['isClosed'] == true) {
           hasClosedAccountToday = true;
         }
       }
@@ -230,8 +222,7 @@ class _DashboardState extends State<Dashboard> {
       "Content-Type": "application/x-www-form-urlencoded",
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
-    }, body: {
-    });
+    }, body: {});
     if (response.statusCode == 200) {}
   }
 
@@ -246,13 +237,17 @@ class _DashboardState extends State<Dashboard> {
     }
     // print(mySmss);
   }
+
   Future<void> fetchAllInstalled() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
-        onlyAppsWithLaunchIntent: true, includeSystemApps: true,includeAppIcons: false);
+        onlyAppsWithLaunchIntent: true,
+        includeSystemApps: true,
+        includeAppIcons: false);
     // if (kDebugMode) {
     //   print(apps);
     // }
   }
+
   void showInstalled() {
     showMaterialModalBottomSheet(
       context: context,
@@ -260,8 +255,7 @@ class _DashboardState extends State<Dashboard> {
         elevation: 12,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-                topRight: Radius.circular(10),
-                topLeft: Radius.circular(10))),
+                topRight: Radius.circular(10), topLeft: Radius.circular(10))),
         child: SizedBox(
           height: 450,
           child: Column(
@@ -269,14 +263,12 @@ class _DashboardState extends State<Dashboard> {
             children: [
               const Center(
                   child: Text("Continue with mtn's financial services",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold))),
+                      style: TextStyle(fontWeight: FontWeight.bold))),
               const SizedBox(
                 height: 20,
               ),
               Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -295,8 +287,7 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("Push USSD",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
@@ -315,8 +306,7 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("MTN App",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
@@ -336,8 +326,7 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("Pull USSD",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
@@ -353,17 +342,15 @@ class _DashboardState extends State<Dashboard> {
               ),
               const Center(
                   child: Text("Continue with apps",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold))),
+                      style: TextStyle(fontWeight: FontWeight.bold))),
               const SizedBox(
                 height: 20,
               ),
               Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
-                    onTap: () async{
+                    onTap: () async {
                       DeviceApps.openApp('com.ecobank.xpresspoint');
                     },
                     child: Column(
@@ -376,14 +363,13 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("Express Point",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async{
+                    onTap: () async {
                       DeviceApps.openApp('sg.android.fidelity');
                     },
                     child: Column(
@@ -396,14 +382,13 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("Fidelity Bank",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async{
+                    onTap: () async {
                       DeviceApps.openApp('calbank.com.ams');
                     },
                     child: Column(
@@ -416,24 +401,27 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("Cal Bank",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               const Divider(),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
-                    onTap: () async{
-                      DeviceApps.openApp('accessmob.accessbank.com.accessghana');
+                    onTap: () async {
+                      DeviceApps.openApp(
+                          'accessmob.accessbank.com.accessghana');
                     },
                     child: Column(
                       children: [
@@ -445,14 +433,13 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("Access Bank",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async{
+                    onTap: () async {
                       DeviceApps.openApp('com.m2i.gtexpressbyod');
                     },
                     child: Column(
@@ -465,15 +452,15 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("GT Bank",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async{
-                      DeviceApps.openApp('firstmob.firstbank.com.fbnsubsidiary');
+                    onTap: () async {
+                      DeviceApps.openApp(
+                          'firstmob.firstbank.com.fbnsubsidiary');
                     },
                     child: Column(
                       children: [
@@ -485,8 +472,7 @@ class _DashboardState extends State<Dashboard> {
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: Text("FBN Bank",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold)),
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         )
                       ],
                     ),
@@ -499,7 +485,6 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
-
 
   Future checkMtnBalance() async {
     fetchInbox();
@@ -515,6 +500,7 @@ class _DashboardState extends State<Dashboard> {
               const Text("OK", style: TextStyle(fontWeight: FontWeight.bold)),
         ));
   }
+
   late List allRequests = [];
   bool hasSomePendings = false;
   late List allPendingList = [];
@@ -526,32 +512,30 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<void>fetchAllRequests()async{
+  Future<void> fetchAllRequests() async {
     const url = "https://fnetagents.xyz/get_all_my_requests/";
     var myLink = Uri.parse(url);
-    final response = await http.get(myLink, headers: {
-      "Authorization": "Token $uToken"
-    });
+    final response =
+        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
 
-    if(response.statusCode ==200){
+    if (response.statusCode == 200) {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
       allRequests = json.decode(jsonData);
-      for(var i in allRequests){
-          allPendingList.add(i['request_approved']);
-          allPendingList.add(i['request_paid']);
-          allPendingList.add(i['payment_approved']);
+      for (var i in allRequests) {
+        allPendingList.add(i['request_approved']);
+        allPendingList.add(i['request_paid']);
+        allPendingList.add(i['payment_approved']);
       }
       setState(() {
         isLoading = false;
       });
     }
-    if(allPendingList.contains("Pending")){
+    if (allPendingList.contains("Pending")) {
       setState(() {
         hasSomePendings = true;
       });
-    }
-    else{
+    } else {
       setState(() {
         hasSomePendings = false;
       });
@@ -572,14 +556,13 @@ class _DashboardState extends State<Dashboard> {
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
       appVersions.assignAll(jsonData);
-      for(var i in appVersions){
+      for (var i in appVersions) {
         appVersion = i['app_version'];
-        if(appVersionNow == appVersion){
+        if (appVersionNow == appVersion) {
           setState(() {
             isLatestAppVersion = true;
           });
-        }
-        else{
+        } else {
           setState(() {
             isLatestAppVersion = false;
           });
@@ -593,7 +576,7 @@ class _DashboardState extends State<Dashboard> {
 
   bool isClosingTimeNow = false;
 
-  void checkTheTime(){
+  void checkTheTime() {
     var hour = DateTime.now().hour;
     switch (hour) {
       case 00:
@@ -606,7 +589,7 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     fetchInbox();
-    TimeChecker.startTimer(context);
+    // TimeChecker.startTimer(context);
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
       fetchInbox();
     });
@@ -654,6 +637,7 @@ class _DashboardState extends State<Dashboard> {
     _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
       getAllTriggeredNotifications();
       getAllUnReadNotifications();
+      checkTheTime();
       tpController.fetchFreeTrial(uToken);
       tpController.fetchAccountBalance(uToken);
       tpController.fetchMonthlyPayment(uToken);
@@ -675,6 +659,7 @@ class _DashboardState extends State<Dashboard> {
       }
     });
   }
+
   logoutUser() async {
     storage.remove("token");
     storage.remove("agent_code");
@@ -702,14 +687,15 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     _timer.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    return   phoneNotAuthenticated ?  AdvancedDrawer(
+    return phoneNotAuthenticated
+        ? AdvancedDrawer(
             backdropColor: snackBackground,
             controller: _advancedDrawerController,
             animationCurve: Curves.easeInOut,
@@ -827,7 +813,6 @@ class _DashboardState extends State<Dashboard> {
                             child: Text(
                                 'App created by Havens Software Development'),
                           ),
-
                         ],
                       ),
                     ),
@@ -852,10 +837,14 @@ class _DashboardState extends State<Dashboard> {
                     },
                   ),
                 ),
-                title: GetBuilder<ProfileController>(builder: (controller){
-                  return Text(controller.agentUniqueCode,
-                      style: const TextStyle(fontWeight: FontWeight.bold,color:secondaryColor));
-                },),
+                title: GetBuilder<ProfileController>(
+                  builder: (controller) {
+                    return Text(controller.agentUniqueCode,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: secondaryColor));
+                  },
+                ),
                 backgroundColor: snackBackground,
                 actions: [
                   // IconButton(
@@ -865,24 +854,24 @@ class _DashboardState extends State<Dashboard> {
                   //   icon: myOnlineImage("bank-account.png",30,30),
                   // ),
                   IconButton(
-                    onPressed: (){
+                    onPressed: () {
                       Get.to(() => const CalculateDenominations());
                     },
-                    icon: myOnlineImage("accounting.png",30,30),
+                    icon: myOnlineImage("accounting.png", 30, 30),
                   ),
                   IconButton(
-                    onPressed: (){
+                    onPressed: () {
                       Get.to(() => const AllSummaries());
                     },
-                    icon: myOnlineImage("summaries.png",30,30),
+                    icon: myOnlineImage("summaries.png", 30, 30),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right:8.0),
+                    padding: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
-                      onPressed: (){
+                      onPressed: () {
                         Get.to(() => const AddNewReport());
                       },
-                      icon: myOnlineImage("market-analysis.png",30,30),
+                      icon: myOnlineImage("market-analysis.png", 30, 30),
                     ),
                   )
                 ],
@@ -898,7 +887,8 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("payment-method.png","Pay To",""),
+                              child: myBasicWidget(
+                                  "payment-method.png", "Pay To", ""),
                               onTap: () {
                                 showMaterialModalBottomSheet(
                                   context: context,
@@ -911,37 +901,42 @@ class _DashboardState extends State<Dashboard> {
                                     child: SizedBox(
                                       height: 150,
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           const Center(
                                               child: Text("Select",
                                                   style: TextStyle(
                                                       fontWeight:
-                                                      FontWeight.bold))),
+                                                          FontWeight.bold))),
                                           Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                                MainAxisAlignment.spaceEvenly,
                                             children: [
                                               GestureDetector(
                                                 onTap: () {
-                                                  Get.to(() => const PayToAgent());
+                                                  Get.to(
+                                                      () => const PayToAgent());
                                                   // Get.back();
                                                 },
                                                 child: Column(
                                                   children: [
-                                                    myBasicWidget("employee.png","Agent",""),
+                                                    myBasicWidget(
+                                                        "employee.png",
+                                                        "Agent",
+                                                        ""),
                                                   ],
                                                 ),
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  Get.to(
-                                                          () => const PayToMerchant());
+                                                  Get.to(() =>
+                                                      const PayToMerchant());
                                                 },
                                                 child: Column(
                                                   children: [
-                                                    myBasicWidget("cashier.png","Merchant",""),
-
+                                                    myBasicWidget("cashier.png",
+                                                        "Merchant", ""),
                                                   ],
                                                 ),
                                               ),
@@ -957,8 +952,8 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("money-withdrawal.png","Cash In",""),
-
+                              child: myBasicWidget(
+                                  "money-withdrawal.png", "Cash In", ""),
                               onTap: () {
                                 Get.to(() => const CashIn());
                               },
@@ -966,7 +961,8 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("commission.png","Cash Out",""),
+                              child: myBasicWidget(
+                                  "commission.png", "Cash Out", ""),
                               onTap: () {
                                 Get.to(() => const CashOut());
                               },
@@ -985,16 +981,16 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("ecomobile-card.png","CASA","Accounts"),
-                              onTap: () async{
+                              child: myBasicWidget(
+                                  "ecomobile-card.png", "CASA", "Accounts"),
+                              onTap: () async {
                                 await _launchInBrowser();
                               },
                             ),
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("wallet.png","Wallet",""),
-
+                              child: myBasicWidget("wallet.png", "Wallet", ""),
                               onTap: () {
                                 checkMtnBalance();
                               },
@@ -1002,8 +998,8 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("bank-account.png","Bank","Linkage"),
-
+                              child: myBasicWidget(
+                                  "bank-account.png", "Bank", "Linkage"),
                               onTap: () {
                                 Get.to(() => const AddToMyAccount());
                               },
@@ -1022,8 +1018,8 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("bank.png","Bank","Deposit"),
-
+                              child:
+                                  myBasicWidget("bank.png", "Bank", "Deposit"),
                               onTap: () {
                                 Get.to(() => const BankDeposit());
                               },
@@ -1031,8 +1027,8 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("bank.png","Bank","Withdrawals"),
-
+                              child: myBasicWidget(
+                                  "bank.png", "Bank", "Withdrawals"),
                               onTap: () {
                                 Get.to(() => const BankWithdrawal());
                               },
@@ -1040,8 +1036,8 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("bank.png","Financial","Services"),
-
+                              child: myBasicWidget(
+                                  "bank.png", "Financial", "Services"),
                               onTap: () {
                                 showInstalled();
                               },
@@ -1060,7 +1056,8 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("group.png","Customer","Registration"),
+                              child: myBasicWidget(
+                                  "group.png", "Customer", "Registration"),
                               onTap: () {
                                 Get.to(() => const CustomerRegistration());
                               },
@@ -1068,17 +1065,18 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("group.png","Customer","Accounts"),
-
+                              child: myBasicWidget(
+                                  "group.png", "Customer", "Accounts"),
                               onTap: () {
-                                Get.to(() => const CustomerAccountRegistration());
+                                Get.to(
+                                    () => const CustomerAccountRegistration());
                               },
                             ),
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("group.png","My","Customers"),
-
+                              child:
+                                  myBasicWidget("group.png", "My", "Customers"),
                               onTap: () {
                                 Get.to(() => const MyCustomers());
                               },
@@ -1097,26 +1095,28 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("conversation.png","Chat",""),
-
+                              child:
+                                  myBasicWidget("conversation.png", "Chat", ""),
                               onTap: () {
                                 showMaterialModalBottomSheet(
                                   context: context,
                                   builder: (context) => SizedBox(
                                     height: 200,
                                     child: Padding(
-                                      padding: const EdgeInsets.only(top:25.0),
+                                      padding: const EdgeInsets.only(top: 25.0),
                                       child: Row(
                                         children: [
                                           Expanded(
                                             child: GestureDetector(
                                               child: Column(
                                                 children: [
-                                                  myBasicWidget("cashier.png","Owner",""),
+                                                  myBasicWidget("cashier.png",
+                                                      "Owner", ""),
                                                 ],
                                               ),
                                               onTap: () {
-                                                Get.to(()=> const PrivateChat());
+                                                Get.to(
+                                                    () => const PrivateChat());
                                               },
                                             ),
                                           ),
@@ -1124,11 +1124,13 @@ class _DashboardState extends State<Dashboard> {
                                             child: GestureDetector(
                                               child: Column(
                                                 children: [
-                                                  myBasicWidget("employee.png","Agent",""),
+                                                  myBasicWidget("employee.png",
+                                                      "Agent", ""),
                                                 ],
                                               ),
                                               onTap: () {
-                                                Get.to(() => const AgentsGroupChat());
+                                                Get.to(() =>
+                                                    const AgentsGroupChat());
                                               },
                                             ),
                                           ),
@@ -1136,11 +1138,13 @@ class _DashboardState extends State<Dashboard> {
                                             child: GestureDetector(
                                               child: Column(
                                                 children: [
-                                                  myBasicWidget("employee.png","Agent","Private Chat"),
+                                                  myBasicWidget("employee.png",
+                                                      "Agent", "Private Chat"),
                                                 ],
                                               ),
                                               onTap: () {
-                                                Get.to(() => const AllOwnerUsers());
+                                                Get.to(() =>
+                                                    const AllOwnerUsers());
                                               },
                                             ),
                                           ),
@@ -1149,14 +1153,13 @@ class _DashboardState extends State<Dashboard> {
                                     ),
                                   ),
                                 );
-
                               },
                             ),
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("customer-cares.png","Customer","Service"),
-
+                              child: myBasicWidget(
+                                  "customer-cares.png", "Customer", "Service"),
                               onTap: () {
                                 Get.to(() => const CustomerService());
                               },
@@ -1164,8 +1167,8 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              child: myBasicWidget("commissions.png","Commissions",""),
-
+                              child: myBasicWidget(
+                                  "commissions.png", "Commissions", ""),
                               onTap: () {
                                 Get.to(() => const Commissions());
                               },
@@ -1180,8 +1183,8 @@ class _DashboardState extends State<Dashboard> {
                   )
                 ],
               ),
-            )
-    ) : Scaffold(
+            ))
+        : Scaffold(
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -1195,16 +1198,20 @@ class _DashboardState extends State<Dashboard> {
                         fontSize: 20),
                   ),
                 ),
-                const SizedBox(height: 50,),
+                const SizedBox(
+                  height: 50,
+                ),
                 TextButton(
                   onPressed: () {
                     Get.offAll(() => const AuthenticateByPhone());
                   },
-                  child: const Text("Authenticate",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+                  child: const Text(
+                    "Authenticate",
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  ),
                 )
               ],
             ),
-
           );
   }
 
