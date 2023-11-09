@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../constants.dart';
 import '../screens/authenticatebyphone.dart';
+import '../screens/login.dart';
 
 class LoginController extends GetxController {
   final client = http.Client();
@@ -17,11 +19,10 @@ class LoginController extends GetxController {
   late List agentsUsernames = [];
   late int oTP = 0;
   late String myToken = "";
+  bool hasErrors = false;
 
   String errorMessage = "";
   bool isLoading = false;
-
-
 
   Future<void> getAllAgents() async {
     try {
@@ -40,8 +41,8 @@ class LoginController extends GetxController {
         update();
       }
     } catch (e) {
-      Get.snackbar("Sorry",
-          "something happened or please check your internet connection");
+      // Get.snackbar("Sorry",
+      //     "something happened or please check your internet connection");
     } finally {
       isLoading = false;
     }
@@ -66,6 +67,7 @@ class LoginController extends GetxController {
       isUser = true;
 
       if (agentsUsernames.contains(username)) {
+        hasErrors = false;
         Get.offAll(() => const AuthenticateByPhone());
       } else {
         Get.snackbar(
@@ -75,6 +77,7 @@ class LoginController extends GetxController {
             backgroundColor: Colors.red,
             colorText: Colors.white);
         isLoggingIn = false;
+        hasErrors = true;
         isUser = false;
         storage.remove("token");
         storage.remove("agent_code");
@@ -85,10 +88,37 @@ class LoginController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white);
+      hasErrors = true;
       isLoggingIn = false;
       isUser = false;
       storage.remove("token");
       storage.remove("agent_code");
+    }
+  }
+
+  logoutUser(String token) async {
+    storage.remove("token");
+    storage.remove("agent_code");
+    storage.remove("phoneAuthenticated");
+    storage.remove("IsAuthDevice");
+    storage.remove("AppVersion");
+    Get.offAll(() => const LoginView());
+    const logoutUrl = "https://www.fnetagents.xyz/auth/token/logout";
+    final myLink = Uri.parse(logoutUrl);
+    http.Response response = await http.post(myLink, headers: {
+      'Accept': 'application/json',
+      "Authorization": "Token $token"
+    });
+
+    if (response.statusCode == 200) {
+      Get.snackbar("Success", "You were logged out",
+          colorText: defaultWhite,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: snackBackground);
+      storage.remove("token");
+      storage.remove("agent_code");
+      storage.remove("AppVersion");
+      Get.offAll(() => const LoginView());
     }
   }
 }

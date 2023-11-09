@@ -1,13 +1,11 @@
-import 'dart:convert';
-
 import 'package:easy_agent/controllers/profilecontroller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
+import '../../controllers/accountController.dart';
 import '../../controllers/customerscontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
@@ -22,7 +20,7 @@ class PayToAgent extends StatefulWidget {
 
 class _PayToAgentState extends State<PayToAgent> {
   bool isPosting = false;
-
+  final AccountController accountController = Get.find();
   void _startPosting() async {
     setState(() {
       isPosting = true;
@@ -46,79 +44,12 @@ class _PayToAgentState extends State<PayToAgent> {
   final storage = GetStorage();
   bool isLoading = false;
 
-  late List accountBalanceDetailsToday = [];
-  late List lastItem = [];
-  late double physical = 0.0;
-  late double mtn = 0.0;
-  late double airteltigo = 0.0;
-  late double vodafone = 0.0;
-  late double eCash = 0.0;
-  late double mtnNow = 0.0;
-  late double airtelTigoNow = 0.0;
-  late double vodafoneNow = 0.0;
-  late double physicalNow = 0.0;
-  late double eCashNow = 0.0;
   bool isMtn = false;
   late List allFraudsters = [];
   bool isFraudster = false;
   final SendSmsController sendSms = SendSmsController();
-  late String userEmail = "";
-  late String agentUsername = "";
-  late String companyName = "";
-  late String userId = "";
-  late String agentPhone = "";
-  List profileDetails = [];
 
-  Future<void> getAllFraudsters() async {
-    try {
-      const url = "https://fnetagents.xyz/get_all_fraudsters/";
-      var link = Uri.parse(url);
-      http.Response response = await http.get(link, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Token $uToken"
-      });
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        allFraudsters.assignAll(jsonData);
-      }
-    } catch (e) {
-      Get.snackbar("Sorry",
-          "something happened or please check your internet connection");
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-  Future<void> getUserDetails(String token) async {
-    const profileLink = "https://fnetagents.xyz/get_user_details/";
-    var link = Uri.parse(profileLink);
-    http.Response response = await http.get(link, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": "Token $token"
-    });
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      profileDetails = jsonData;
-      for(var i in profileDetails){
-        userId = i['id'].toString();
-        agentPhone = i['phone_number'];
-        userEmail = i['email'];
-        companyName = i['company_name'];
-      }
-
-      setState(() {
-        isLoading = false;
-      });
-    }
-    else{
-      if (kDebugMode) {
-        print(response.body);
-      }
-    }
-  }
-
-  processPayToAgent() async {
+  Future<void> processPayToAgent() async {
     const registerUrl = "https://fnetagents.xyz/add_pay_to/";
     final myLink = Uri.parse(registerUrl);
     final res = await http.post(myLink, headers: {
@@ -133,18 +64,21 @@ class _PayToAgentState extends State<PayToAgent> {
     });
 
     if (res.statusCode == 201) {
-      mtn = mtnNow - double.parse(_amountController.text);
-      physical = physicalNow + double.parse(_amountController.text);
-      airteltigo = airtelTigoNow;
-      vodafone = vodafoneNow;
+      accountController.mtn =
+          accountController.mtnNow - double.parse(_amountController.text);
+      accountController.physical =
+          accountController.physicalNow + double.parse(_amountController.text);
+      accountController.airteltigo = accountController.airtelTigoNow;
+      accountController.vodafone = accountController.vodafoneNow;
 
       addAccountsToday();
       String num = _depositorPhoneController.text.replaceFirst("0", '+233');
-      if(companyName == "Fnet Enterprise"){
-        sendSms.sendMySms(num, "FNET","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,.");
-      }
-      else{
-        sendSms.sendMySms(num, "EasyAgent","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,.");
+      if (accountController.companyName == "Fnet Enterprise") {
+        sendSms.sendMySms(num, "FNET",
+            "Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,.");
+      } else {
+        sendSms.sendMySms(num, "EasyAgent",
+            "Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,.");
       }
       // sendSms.sendMySms(num, "EasyAgent","Amount GHC${_amountController.text} paid to agent ${_agentPhoneController.text} transaction was successful,");
 
@@ -158,7 +92,6 @@ class _PayToAgentState extends State<PayToAgent> {
 
       Get.offAll(() => const Dashboard());
     } else {
-
       Get.snackbar("Deposit Error", "something went wrong please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -172,50 +105,22 @@ class _PayToAgentState extends State<PayToAgent> {
         code: "*171*1*1*$agentNumber*$agentNumber*$amount*$reference#",
         subscriptionId: 1);
   }
+
   final CustomersController controller = Get.find();
 
-  Future<void> fetchAccountBalance() async {
-    const postUrl =
-        "https://fnetagents.xyz/get_my_account_balance_started_today/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      accountBalanceDetailsToday.assignAll(allPosts);
-      setState(() {
-        isLoading = false;
-        lastItem.assign(accountBalanceDetailsToday.last);
-        physicalNow = double.parse(lastItem[0]['physical']);
-        mtnNow = double.parse(lastItem[0]['mtn_e_cash']);
-        airtelTigoNow = double.parse(lastItem[0]['tigo_airtel_e_cash']);
-        vodafoneNow = double.parse(lastItem[0]['vodafone_e_cash']);
-        eCashNow = double.parse(lastItem[0]['mtn_e_cash']) +
-            double.parse(lastItem[0]['tigo_airtel_e_cash']) +
-            double.parse(lastItem[0]['vodafone_e_cash']);
-      });
-    } else {
-      // print(res.body);
-    }
-  }
   final ProfileController profileController = Get.find();
 
-  addAccountsToday() async {
+  Future<void> addAccountsToday() async {
     const accountUrl = "https://fnetagents.xyz/add_balance_to_start/";
     final myLink = Uri.parse(accountUrl);
     http.Response response = await http.post(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
-      "physical": physical.toString(),
-      "mtn_e_cash": mtn.toString(),
-      "tigo_airtel_e_cash": airteltigo.toString(),
-      "vodafone_e_cash": vodafone.toString(),
+      "physical": accountController.physical.toString(),
+      "mtn_e_cash": accountController.mtn.toString(),
+      "tigo_airtel_e_cash": accountController.airteltigo.toString(),
+      "vodafone_e_cash": accountController.vodafone.toString(),
       "isStarted": "True",
       "agent": profileController.userId
     });
@@ -224,7 +129,6 @@ class _PayToAgentState extends State<PayToAgent> {
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: snackBackground);
-
     } else {
       Get.snackbar("Account", "something happened",
           colorText: defaultWhite,
@@ -247,8 +151,6 @@ class _PayToAgentState extends State<PayToAgent> {
     _depositorPhoneController = TextEditingController();
     _agentPhoneController = TextEditingController();
     _referenceController = TextEditingController();
-    fetchAccountBalance();
-    getUserDetails(uToken);
   }
 
   @override
@@ -272,7 +174,10 @@ class _PayToAgentState extends State<PayToAgent> {
         children: [
           const Padding(
             padding: EdgeInsets.all(18.0),
-            child: Text("Note: Please make sure to allow Easy Agent access in your phones accessibility before proceeding",style: TextStyle(fontWeight: FontWeight.bold,color: warning),),
+            child: Text(
+              "Note: Please make sure to allow Easy Agent access in your phones accessibility before proceeding",
+              style: TextStyle(fontWeight: FontWeight.bold, color: warning),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(18.0),
@@ -284,12 +189,14 @@ class _PayToAgentState extends State<PayToAgent> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
-                      onChanged: (value){
-                        if(value.length == 10 && controller.fraudsterNumbers.contains(value)){
+                      onChanged: (value) {
+                        if (value.length == 10 &&
+                            controller.fraudsterNumbers.contains(value)) {
                           setState(() {
                             isFraudster = true;
                           });
-                          Get.snackbar("Customer Error", "This customer is in the fraud lists.",
+                          Get.snackbar("Customer Error",
+                              "This customer is in the fraud lists.",
                               colorText: defaultWhite,
                               snackPosition: SnackPosition.TOP,
                               duration: const Duration(seconds: 10),
@@ -297,7 +204,8 @@ class _PayToAgentState extends State<PayToAgent> {
                           Get.defaultDialog(
                               buttonColor: primaryColor,
                               title: "Fraud Alert",
-                              middleText: "This customer is in the fraud list,continue",
+                              middleText:
+                                  "This customer is in the fraud list,continue",
                               confirm: RawMaterialButton(
                                   shape: const StadiumBorder(),
                                   fillColor: secondaryColor,
@@ -318,8 +226,7 @@ class _PayToAgentState extends State<PayToAgent> {
                                     "No",
                                     style: TextStyle(color: Colors.white),
                                   )));
-                        }
-                        else{
+                        } else {
                           setState(() {
                             isFraudster = false;
                           });
@@ -397,30 +304,38 @@ class _PayToAgentState extends State<PayToAgent> {
                   const SizedBox(
                     height: 30,
                   ),
-                  isPosting ? const LoadingUi() : !isFraudster ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RawMaterialButton(
-                      fillColor: secondaryColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
-                      ),
-                      onPressed: (){
-                        _startPosting();
-                        FocusScopeNode currentFocus =
-                        FocusScope.of(context);
+                  isPosting
+                      ? const LoadingUi()
+                      : !isFraudster
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: RawMaterialButton(
+                                fillColor: secondaryColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                onPressed: () {
+                                  _startPosting();
+                                  FocusScopeNode currentFocus =
+                                      FocusScope.of(context);
 
-                        if (!currentFocus.hasPrimaryFocus) {
-                          currentFocus.unfocus();
-                        }
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        } else {
-                          processPayToAgent();
-                        }
-                      },child: const Text("Send",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
-                    ),
-                  ): Container(),
-
+                                  if (!currentFocus.hasPrimaryFocus) {
+                                    currentFocus.unfocus();
+                                  }
+                                  if (!_formKey.currentState!.validate()) {
+                                    return;
+                                  } else {
+                                    processPayToAgent();
+                                  }
+                                },
+                                child: const Text(
+                                  "Send",
+                                  style: TextStyle(
+                                      color: defaultWhite,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            )
+                          : Container(),
                 ],
               ),
             ),

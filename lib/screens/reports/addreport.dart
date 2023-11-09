@@ -27,10 +27,9 @@ class _AddNewReportState extends State<AddNewReport> {
 
   FocusNode reportFocusNode = FocusNode();
 
-
   bool isPosting = false;
 
-  void _startPosting()async{
+  void _startPosting() async {
     setState(() {
       isPosting = true;
     });
@@ -39,6 +38,7 @@ class _AddNewReportState extends State<AddNewReport> {
       isPosting = false;
     });
   }
+
   late List ownerDetails = [];
   late String ownerId = "";
 
@@ -60,7 +60,7 @@ class _AddNewReportState extends State<AddNewReport> {
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
       profileDetails = jsonData;
-      for(var i in profileDetails){
+      for (var i in profileDetails) {
         userId = i['id'].toString();
         agentPhone = i['phone_number'];
         ownerCode = i['owner'];
@@ -72,17 +72,18 @@ class _AddNewReportState extends State<AddNewReport> {
     }
   }
 
-  fetchOwnerWithCode() async {
-    final url = "https://fnetagents.xyz/get_supervisor_with_code/${controller.ownerCode}/";
+  Future<void> fetchOwnerWithCode() async {
+    final url =
+        "https://fnetagents.xyz/get_supervisor_with_code/${controller.ownerCode}/";
     var myLink = Uri.parse(url);
     final response =
-    await http.get(myLink, headers: {"Authorization": "Token $uToken"});
+        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
 
     if (response.statusCode == 200) {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
       ownerDetails = json.decode(jsonData);
-      for(var i in ownerDetails){
+      for (var i in ownerDetails) {
         ownerId = i['id'].toString();
       }
       setState(() {
@@ -91,7 +92,7 @@ class _AddNewReportState extends State<AddNewReport> {
     }
   }
 
-  addReport() async {
+  Future<void> addReport() async {
     const accountUrl = "https://fnetagents.xyz/post_report/";
     final myLink = Uri.parse(accountUrl);
     http.Response response = await http.post(myLink, headers: {
@@ -105,12 +106,11 @@ class _AddNewReportState extends State<AddNewReport> {
       Get.snackbar("Success", "report was added",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds:5),
+          duration: const Duration(seconds: 5),
           backgroundColor: snackBackground);
 
       Get.offAll(() => const Dashboard());
     } else {
-
       Get.snackbar("Error", "something happened",
           colorText: defaultWhite,
           snackPosition: SnackPosition.BOTTOM,
@@ -119,7 +119,7 @@ class _AddNewReportState extends State<AddNewReport> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     if (storage.read("token") != null) {
       setState(() {
@@ -132,7 +132,7 @@ class _AddNewReportState extends State<AddNewReport> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     _reportController.dispose();
   }
@@ -143,68 +143,76 @@ class _AddNewReportState extends State<AddNewReport> {
       appBar: AppBar(
         title: const Text("Add New Report"),
       ),
-      body:isLoading
+      body: isLoading
           ? const LoadingUi()
           : ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      maxLines: 5,
-                      controller: _reportController,
-                      focusNode: reportFocusNode,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Report"),
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.newline,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter report";
-                        }
-                        return null;
-                      },
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: TextFormField(
+                            maxLines: 5,
+                            controller: _reportController,
+                            focusNode: reportFocusNode,
+                            cursorRadius: const Radius.elliptical(10, 10),
+                            cursorWidth: 10,
+                            cursorColor: secondaryColor,
+                            decoration: buildInputDecoration("Report"),
+                            keyboardType: TextInputType.multiline,
+                            textInputAction: TextInputAction.newline,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Please enter report";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        isPosting
+                            ? const LoadingUi()
+                            : Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: RawMaterialButton(
+                                  fillColor: secondaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  onPressed: () {
+                                    _startPosting();
+                                    FocusScopeNode currentFocus =
+                                        FocusScope.of(context);
+
+                                    if (!currentFocus.hasPrimaryFocus) {
+                                      currentFocus.unfocus();
+                                    }
+                                    if (!_formKey.currentState!.validate()) {
+                                      return;
+                                    } else {
+                                      addReport();
+                                    }
+                                  },
+                                  child: const Text(
+                                    "Save",
+                                    style: TextStyle(
+                                        color: defaultWhite,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              )
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 30,),
-                  isPosting  ? const LoadingUi() :
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RawMaterialButton(
-                      fillColor: secondaryColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
-                      ),
-                      onPressed: (){
-                        _startPosting();
-                        FocusScopeNode currentFocus = FocusScope.of(context);
-
-                        if (!currentFocus.hasPrimaryFocus) {
-                          currentFocus.unfocus();
-                        }
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        } else {
-                          addReport();
-                        }
-                      },child: const Text("Save",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
-                    ),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
     );
   }
 

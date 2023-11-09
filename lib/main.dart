@@ -9,7 +9,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:telephony/telephony.dart';
 import 'package:get/get.dart';
 import 'constants.dart';
-import 'controllers/agentcontroller.dart';
+import 'controllers/accountController.dart';
 import 'controllers/authphonecontroller.dart';
 import 'controllers/customerscontroller.dart';
 import 'controllers/logincontroller.dart';
@@ -29,7 +29,7 @@ void main() async {
   Get.put(LoginController());
   Get.put(ProfileController());
   Get.put(CustomersController());
-  Get.put(AgentController());
+  Get.put(AccountController());
   Get.put(NotificationController());
   Get.put(AuthPhoneController());
   Get.put(TrialAndMonthlyPaymentController());

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:easy_agent/constants.dart';
 import 'package:easy_agent/screens/dashboard.dart';
@@ -9,11 +8,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/accountController.dart';
 import '../../controllers/customerscontroller.dart';
 import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../customers/registercustomer.dart';
-
 
 class BankWithdrawal extends StatefulWidget {
   const BankWithdrawal({Key? key}) : super(key: key);
@@ -24,11 +23,7 @@ class BankWithdrawal extends StatefulWidget {
 
 class _BankWithdrawalState extends State<BankWithdrawal> {
   final CustomersController controller = Get.find();
-  final List bankType = [
-    "Select bank type",
-    "Interbank",
-    "Easy Banking"
-  ];
+  final List bankType = ["Select bank type", "Interbank", "Easy Banking"];
   var _currentSelectedBankType = "Select bank type";
   final List banks = [
     "Select bank",
@@ -85,11 +80,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
     "Ecobank",
   ];
   var _currentSelectedBank = "Select bank";
-  final List withDrawalTypes = [
-    "Select Withdrawal Type",
-    "POS",
-    "Mobile App"
-  ];
+  final List withDrawalTypes = ["Select Withdrawal Type", "POS", "Mobile App"];
 
   var _currrentWithDrawalType = "Select Withdrawal Type";
   bool isInterBank = false;
@@ -151,63 +142,19 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
   late int d1 = 0;
   late int total = 0;
 
-  late List allFraudsters = [];
   bool isFraudster = false;
 
-  Future<void> getAllFraudsters() async {
-    const url = "https://fnetagents.xyz/get_all_fraudsters/";
-    var link = Uri.parse(url);
-    http.Response response = await http.get(link, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": "Token $uToken"
-    });
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      allFraudsters.assignAll(jsonData);
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
   ProfileController profileController = Get.find();
-  late List ownerDetails = [];
-  late String ownerId = "";
-  late String ownerUsername = "";
+  final AccountController accountController = Get.find();
 
-  Future<void> fetchOwnersDetails() async {
-    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      ownerDetails.assignAll(allPosts);
-      for(var i in ownerDetails){
-        ownerId = i['id'].toString();
-        ownerUsername = i['username'];
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      // print(res.body);
-    }
-  }
-
-
-  processWithdraw(context) async {
+  Future<void> processWithdraw(context) async {
     const registerUrl = "https://fnetagents.xyz/post_bank_withdrawal/";
     final myLink = Uri.parse(registerUrl);
     final res = await http.post(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
-      "owner": ownerId,
+      "owner": accountController.ownerId,
       "agent": profileController.userId,
       "customer": _customerPhoneController.text.trim(),
       "bank": _currentSelectedBank,
@@ -250,7 +197,7 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
         uToken = storage.read("token");
       });
     }
-    fetchOwnersDetails();
+
     _amountController = TextEditingController();
     _customerPhoneController = TextEditingController();
     _d200Controller = TextEditingController();
@@ -262,11 +209,10 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
     _d2Controller = TextEditingController();
     _d1Controller = TextEditingController();
     controller.getAllCustomers(uToken);
-    getAllFraudsters();
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     _amountController.dispose();
     _customerPhoneController.dispose();
@@ -286,777 +232,811 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
       appBar: AppBar(
         title: const Text("Bank Withdrawal"),
       ),
-      body:isLoading ? const LoadingUi() : ListView(
-        children: [
-          const SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      onChanged: (value) {
-                        if(value.length == 10 && allFraudsters.contains(value)){
-                          setState(() {
-                            isFraudster = true;
-                          });
-                          Get.snackbar("Customer Error", "This customer is in the fraud lists.",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              duration: const Duration(seconds: 10),
-                              backgroundColor: warning);
-                          return;
-                        }
-                        else{
-                          setState(() {
-                            isFraudster = false;
-                          });
-                        }
-                        if (value.length == 10 &&
-                            controller.customersNumbers.contains(value)) {
-                          Get.snackbar("Success", "Customer is registered",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              duration: const Duration(seconds: 5),
-                              backgroundColor: snackBackground);
+      body: isLoading
+          ? const LoadingUi()
+          : ListView(
+              children: [
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: TextFormField(
+                            onChanged: (value) {
+                              if (value.length == 10 &&
+                                  accountController.allFraudsters
+                                      .contains(value)) {
+                                setState(() {
+                                  isFraudster = true;
+                                });
+                                Get.snackbar("Customer Error",
+                                    "This customer is in the fraud lists.",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.TOP,
+                                    duration: const Duration(seconds: 10),
+                                    backgroundColor: warning);
+                                return;
+                              } else {
+                                setState(() {
+                                  isFraudster = false;
+                                });
+                              }
+                              if (value.length == 10 &&
+                                  controller.customersNumbers.contains(value)) {
+                                Get.snackbar(
+                                    "Success", "Customer is registered",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.TOP,
+                                    duration: const Duration(seconds: 5),
+                                    backgroundColor: snackBackground);
+                              } else if (value.length == 10 &&
+                                  !controller.customersNumbers
+                                      .contains(value)) {
+                                Get.snackbar("Customer Error",
+                                    "Customer is not registered",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.TOP,
+                                    backgroundColor: warning);
 
-                        } else if (value.length == 10 &&
-                            !controller.customersNumbers.contains(value)) {
-                          Get.snackbar(
-                              "Customer Error", "Customer is not registered",
-                              colorText: defaultWhite,
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: warning);
+                                Timer(
+                                    const Duration(seconds: 3),
+                                    () => Get.to(
+                                        () => const CustomerRegistration()));
+                              }
+                            },
+                            controller: _customerPhoneController,
+                            focusNode: customerPhoneFocusNode,
+                            cursorRadius: const Radius.elliptical(10, 10),
+                            cursorWidth: 10,
+                            cursorColor: secondaryColor,
+                            decoration:
+                                buildInputDecoration("Customer's Number"),
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Please enter customer's number";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                    Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10.0, right: 10),
+                              child: DropdownButton(
+                                hint: const Text("Select bank type"),
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: bankType.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedBankType(
+                                      newValueSelected);
+                                  if (_currentSelectedBankType == "Interbank") {
+                                    setState(() {
+                                      isInterBank = true;
+                                      isOtherBank = false;
+                                    });
+                                  }
+                                  if (_currentSelectedBankType ==
+                                      "Easy Banking") {
+                                    setState(() {
+                                      isOtherBank = true;
+                                      isInterBank = false;
+                                    });
+                                  }
+                                },
+                                value: _currentSelectedBankType,
+                              ),
+                            ),
+                          ),
+                        ),
+                        isInterBank
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: Colors.grey, width: 1)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10),
+                                    child: DropdownButton(
+                                      hint: const Text("Select bank"),
+                                      isExpanded: true,
+                                      underline: const SizedBox(),
+                                      items:
+                                          interBanks.map((dropDownStringItem) {
+                                        return DropdownMenuItem(
+                                          value: dropDownStringItem,
+                                          child: Text(dropDownStringItem),
+                                        );
+                                      }).toList(),
+                                      onChanged: (newValueSelected) {
+                                        _onDropDownItemSelectedBank(
+                                            newValueSelected);
+                                      },
+                                      value: _currentSelectedBank,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        isOtherBank
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: Colors.grey, width: 1)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10),
+                                    child: DropdownButton(
+                                      hint: const Text("Select bank"),
+                                      isExpanded: true,
+                                      underline: const SizedBox(),
+                                      items:
+                                          otherBanks.map((dropDownStringItem) {
+                                        return DropdownMenuItem(
+                                          value: dropDownStringItem,
+                                          child: Text(dropDownStringItem),
+                                        );
+                                      }).toList(),
+                                      onChanged: (newValueSelected) {
+                                        _onDropDownItemSelectedBank(
+                                            newValueSelected);
+                                      },
+                                      value: _currentSelectedBank,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                    Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10.0, right: 10),
+                              child: DropdownButton(
+                                hint: const Text("Select withdrawal type"),
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items:
+                                    withDrawalTypes.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedIdWithDrawalType(
+                                      newValueSelected);
+                                },
+                                value: _currrentWithDrawalType,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: TextFormField(
+                            onChanged: (value) {
+                              if (value.length > 1 && value != "") {
+                                setState(() {
+                                  amountIsNotEmpty = true;
+                                });
+                              }
+                              if (value == "") {
+                                setState(() {
+                                  amountIsNotEmpty = false;
+                                });
+                              }
+                            },
+                            controller: _amountController,
+                            cursorColor: secondaryColor,
+                            cursorRadius: const Radius.elliptical(10, 10),
+                            cursorWidth: 10,
+                            decoration: buildInputDecoration("Amount"),
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Please enter a amount";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        // amountIsNotEmpty
+                        //     ? Column(
+                        //   children: [
+                        //     Row(
+                        //       children: [
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d200 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 200;
+                        //                         d200 = dt;
+                        //                       });
+                        //                     }
+                        //                   },
+                        //                   focusNode: d200FocusNode,
+                        //                   controller: _d200Controller,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "200 GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d200.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         const SizedBox(
+                        //           width: 10,
+                        //         ),
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     // var dt =
+                        //                     //     int.parse(value) * 100;
+                        //                     // setState(() {
+                        //                     //   d100 = dt;
+                        //                     // });
+                        //
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d100 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 100;
+                        //                         d100 = dt;
+                        //                       });
+                        //                     }
+                        //                   },
+                        //                   controller: _d100Controller,
+                        //                   focusNode: d100FocusNode,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "100 GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d100.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     Row(
+                        //       children: [
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     // var dt =
+                        //                     //     int.parse(value) * 50;
+                        //                     // setState(() {
+                        //                     //   d50 = dt;
+                        //                     // });
+                        //
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d50 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 50;
+                        //                         d50 = dt;
+                        //                       });
+                        //                     }
+                        //                   },
+                        //                   focusNode: d50FocusNode,
+                        //                   controller: _d50Controller,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "50 GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d50.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         const SizedBox(
+                        //           width: 10,
+                        //         ),
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     // var dt =
+                        //                     //     int.parse(value) * 20;
+                        //                     // setState(() {
+                        //                     //   d20 = dt;
+                        //                     // });
+                        //                     //
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d20 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 20;
+                        //                         d20 = dt;
+                        //                       });
+                        //                     }
+                        //                   },
+                        //                   focusNode: d20FocusNode,
+                        //                   controller: _d20Controller,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "20 GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d20.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     Row(
+                        //       children: [
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     // var dt =
+                        //                     //     int.parse(value) * 10;
+                        //                     // setState(() {
+                        //                     //   d10 = dt;
+                        //                     // });
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d10 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 10;
+                        //                         d10 = dt;
+                        //                       });
+                        //                     }
+                        //                   },
+                        //                   focusNode: d10FocusNode,
+                        //                   controller: _d10Controller,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "10 GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d10.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         const SizedBox(
+                        //           width: 10,
+                        //         ),
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     // var dt =
+                        //                     //     int.parse(value) * 5;
+                        //                     // setState(() {
+                        //                     //   d5 = dt;
+                        //                     // });
+                        //
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d5 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 5;
+                        //                         d5 = dt;
+                        //                       });
+                        //                     }
+                        //                   },
+                        //                   focusNode: d5FocusNode,
+                        //                   controller: _d5Controller,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "5 GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d5.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     Row(
+                        //       children: [
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     // var dt =
+                        //                     //     int.parse(value) * 2;
+                        //                     // setState(() {
+                        //                     //   d2 = dt;
+                        //                     // });
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d2 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 2;
+                        //                         d2 = dt;
+                        //                       });
+                        //                     }
+                        //
+                        //                   },
+                        //                   focusNode: d2FocusNode,
+                        //                   controller: _d2Controller,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "2GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d2.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         const SizedBox(
+                        //           width: 10,
+                        //         ),
+                        //         Expanded(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(
+                        //                 bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 TextFormField(
+                        //                   onChanged: (value) {
+                        //                     // var dt =
+                        //                     //     int.parse(value) * 1;
+                        //                     // setState(() {
+                        //                     //   d1 = dt;
+                        //                     // });
+                        //                     var dt = 0;
+                        //                     if(value.isEmpty){
+                        //                       setState(() {
+                        //                         dt = 0;
+                        //                         d1 = 0;
+                        //                       });
+                        //                     }
+                        //                     else{
+                        //                       setState(() {
+                        //                         dt = int.parse(value) * 1;
+                        //                         d1 = dt;
+                        //                       });
+                        //                     }
+                        //                   },
+                        //                   focusNode: d1FocusNode,
+                        //                   controller: _d1Controller,
+                        //                   cursorColor: secondaryColor,
+                        //                   cursorRadius:
+                        //                   const Radius.elliptical(
+                        //                       10, 10),
+                        //                   cursorWidth: 10,
+                        //                   decoration:
+                        //                   buildInputDecoration(
+                        //                       "1 GHC Notes"),
+                        //                   keyboardType:
+                        //                   TextInputType.number,
+                        //                 ),
+                        //                 Padding(
+                        //                   padding:
+                        //                   const EdgeInsets.only(
+                        //                       top: 12.0,
+                        //                       bottom: 12),
+                        //                   child: Text(
+                        //                     d1.toString(),
+                        //                     style: const TextStyle(
+                        //                         fontWeight:
+                        //                         FontWeight.bold),
+                        //                   ),
+                        //                 )
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     Row(
+                        //       children: [
+                        //         Expanded(
+                        //             child: amountNotEqualTotal
+                        //                 ? Text(
+                        //               "TOTAL: $total",
+                        //               style: const TextStyle(
+                        //                   fontWeight:
+                        //                   FontWeight.bold,
+                        //                   color: Colors.red,
+                        //                   fontSize: 20),
+                        //             )
+                        //                 : const Text("")),
+                        //         const SizedBox(
+                        //           width: 10,
+                        //         ),
+                        //         const Expanded(child: Text(""))
+                        //       ],
+                        //     ),
+                        //   ],
+                        // )
+                        //     : Container(),
+                        const SizedBox(
+                          height: 30,
+                        ),
 
-                          Timer(const Duration(seconds: 3),
-                                  () => Get.to(() => const CustomerRegistration()));
-                        }
-                      },
-                      controller: _customerPhoneController,
-                      focusNode: customerPhoneFocusNode,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      cursorColor: secondaryColor,
-                      decoration: buildInputDecoration("Customer's Number"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter customer's number";
-                        }
-                        return null;
-                      },
+                        isPosting
+                            ? const LoadingUi()
+                            : Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: RawMaterialButton(
+                                  fillColor: secondaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  onPressed: () {
+                                    _startPosting();
+                                    FocusScopeNode currentFocus =
+                                        FocusScope.of(context);
+
+                                    if (!currentFocus.hasPrimaryFocus) {
+                                      currentFocus.unfocus();
+                                    }
+                                    if (!_formKey.currentState!.validate()) {
+                                      return;
+                                    } else {
+                                      // var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
+                                      // if(int.parse(_amountController.text) != mainTotal){
+                                      //   Get.snackbar("Total Error", "Your total should be equal to the amount",
+                                      //       colorText: defaultWhite,
+                                      //       backgroundColor: warning,
+                                      //       snackPosition: SnackPosition.BOTTOM,
+                                      //       duration: const Duration(seconds: 5)
+                                      //   );
+                                      //   setState(() {
+                                      //     total = mainTotal;
+                                      //     amountNotEqualTotal = true;
+                                      //   });
+                                      //   return;
+                                      // }
+                                      if (_currentSelectedBank ==
+                                          "Select Bank") {
+                                        Get.snackbar(
+                                            "Bank Error", "please select bank",
+                                            colorText: defaultWhite,
+                                            backgroundColor: warning,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            duration:
+                                                const Duration(seconds: 5));
+                                        return;
+                                      } else {
+                                        processWithdraw(context);
+                                      }
+                                    }
+                                  },
+                                  child: const Text(
+                                    "Save",
+                                    style: TextStyle(
+                                        color: defaultWhite,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              )
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10),
-                        child: DropdownButton(
-                          hint: const Text("Select bank type"),
-                          isExpanded: true,
-                          underline: const SizedBox(),
-
-                          items: bankType.map((dropDownStringItem) {
-                            return DropdownMenuItem(
-                              value: dropDownStringItem,
-                              child: Text(dropDownStringItem),
-                            );
-                          }).toList(),
-                          onChanged: (newValueSelected) {
-                            _onDropDownItemSelectedBankType(newValueSelected);
-                            if(_currentSelectedBankType == "Interbank"){
-                              setState(() {
-                                isInterBank = true;
-                                isOtherBank = false;
-                              });
-                            }
-                            if(_currentSelectedBankType == "Easy Banking"){
-                              setState(() {
-                                isOtherBank = true;
-                                isInterBank = false;
-                              });
-                            }
-                          },
-                          value: _currentSelectedBankType,
-                        ),
-                      ),
-                    ),
-                  ),
-                  isInterBank ? Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10),
-                        child: DropdownButton(
-                          hint: const Text("Select bank"),
-                          isExpanded: true,
-                          underline: const SizedBox(),
-
-                          items: interBanks.map((dropDownStringItem) {
-                            return DropdownMenuItem(
-                              value: dropDownStringItem,
-                              child: Text(dropDownStringItem),
-                            );
-                          }).toList(),
-                          onChanged: (newValueSelected) {
-                            _onDropDownItemSelectedBank(newValueSelected);
-                          },
-                          value: _currentSelectedBank,
-                        ),
-                      ),
-                    ),
-                  ) : Container(),
-                  isOtherBank ?  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10),
-                        child: DropdownButton(
-                          hint: const Text("Select bank"),
-                          isExpanded: true,
-                          underline: const SizedBox(),
-
-                          items: otherBanks.map((dropDownStringItem) {
-                            return DropdownMenuItem(
-                              value: dropDownStringItem,
-                              child: Text(dropDownStringItem),
-                            );
-                          }).toList(),
-                          onChanged: (newValueSelected) {
-                            _onDropDownItemSelectedBank(newValueSelected);
-                          },
-                          value: _currentSelectedBank,
-                        ),
-                      ),
-                    ),
-                  ) : Container(),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10),
-                        child: DropdownButton(
-                          hint: const Text("Select withdrawal type"),
-                          isExpanded: true,
-                          underline: const SizedBox(),
-
-                          items: withDrawalTypes.map((dropDownStringItem) {
-                            return DropdownMenuItem(
-                              value: dropDownStringItem,
-                              child: Text(dropDownStringItem),
-                            );
-                          }).toList(),
-                          onChanged: (newValueSelected) {
-                            _onDropDownItemSelectedIdWithDrawalType(newValueSelected);
-                          },
-                          value: _currrentWithDrawalType,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: TextFormField(
-                      onChanged: (value){
-                        if(value.length > 1 && value != ""){
-                          setState(() {
-                            amountIsNotEmpty = true;
-                          });
-                        }
-                        if(value == ""){
-                          setState(() {
-                            amountIsNotEmpty = false;
-                          });
-                        }
-
-                      },
-                      controller: _amountController,
-                      cursorColor: secondaryColor,
-                      cursorRadius: const Radius.elliptical(10, 10),
-                      cursorWidth: 10,
-                      decoration: buildInputDecoration("Amount"),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter a amount";
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  // amountIsNotEmpty
-                  //     ? Column(
-                  //   children: [
-                  //     Row(
-                  //       children: [
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d200 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 200;
-                  //                         d200 = dt;
-                  //                       });
-                  //                     }
-                  //                   },
-                  //                   focusNode: d200FocusNode,
-                  //                   controller: _d200Controller,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "200 GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d200.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         const SizedBox(
-                  //           width: 10,
-                  //         ),
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     // var dt =
-                  //                     //     int.parse(value) * 100;
-                  //                     // setState(() {
-                  //                     //   d100 = dt;
-                  //                     // });
-                  //
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d100 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 100;
-                  //                         d100 = dt;
-                  //                       });
-                  //                     }
-                  //                   },
-                  //                   controller: _d100Controller,
-                  //                   focusNode: d100FocusNode,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "100 GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d100.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     Row(
-                  //       children: [
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     // var dt =
-                  //                     //     int.parse(value) * 50;
-                  //                     // setState(() {
-                  //                     //   d50 = dt;
-                  //                     // });
-                  //
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d50 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 50;
-                  //                         d50 = dt;
-                  //                       });
-                  //                     }
-                  //                   },
-                  //                   focusNode: d50FocusNode,
-                  //                   controller: _d50Controller,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "50 GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d50.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         const SizedBox(
-                  //           width: 10,
-                  //         ),
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     // var dt =
-                  //                     //     int.parse(value) * 20;
-                  //                     // setState(() {
-                  //                     //   d20 = dt;
-                  //                     // });
-                  //                     //
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d20 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 20;
-                  //                         d20 = dt;
-                  //                       });
-                  //                     }
-                  //                   },
-                  //                   focusNode: d20FocusNode,
-                  //                   controller: _d20Controller,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "20 GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d20.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     Row(
-                  //       children: [
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     // var dt =
-                  //                     //     int.parse(value) * 10;
-                  //                     // setState(() {
-                  //                     //   d10 = dt;
-                  //                     // });
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d10 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 10;
-                  //                         d10 = dt;
-                  //                       });
-                  //                     }
-                  //                   },
-                  //                   focusNode: d10FocusNode,
-                  //                   controller: _d10Controller,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "10 GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d10.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         const SizedBox(
-                  //           width: 10,
-                  //         ),
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     // var dt =
-                  //                     //     int.parse(value) * 5;
-                  //                     // setState(() {
-                  //                     //   d5 = dt;
-                  //                     // });
-                  //
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d5 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 5;
-                  //                         d5 = dt;
-                  //                       });
-                  //                     }
-                  //                   },
-                  //                   focusNode: d5FocusNode,
-                  //                   controller: _d5Controller,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "5 GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d5.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     Row(
-                  //       children: [
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     // var dt =
-                  //                     //     int.parse(value) * 2;
-                  //                     // setState(() {
-                  //                     //   d2 = dt;
-                  //                     // });
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d2 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 2;
-                  //                         d2 = dt;
-                  //                       });
-                  //                     }
-                  //
-                  //                   },
-                  //                   focusNode: d2FocusNode,
-                  //                   controller: _d2Controller,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "2GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d2.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         const SizedBox(
-                  //           width: 10,
-                  //         ),
-                  //         Expanded(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(
-                  //                 bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 TextFormField(
-                  //                   onChanged: (value) {
-                  //                     // var dt =
-                  //                     //     int.parse(value) * 1;
-                  //                     // setState(() {
-                  //                     //   d1 = dt;
-                  //                     // });
-                  //                     var dt = 0;
-                  //                     if(value.isEmpty){
-                  //                       setState(() {
-                  //                         dt = 0;
-                  //                         d1 = 0;
-                  //                       });
-                  //                     }
-                  //                     else{
-                  //                       setState(() {
-                  //                         dt = int.parse(value) * 1;
-                  //                         d1 = dt;
-                  //                       });
-                  //                     }
-                  //                   },
-                  //                   focusNode: d1FocusNode,
-                  //                   controller: _d1Controller,
-                  //                   cursorColor: secondaryColor,
-                  //                   cursorRadius:
-                  //                   const Radius.elliptical(
-                  //                       10, 10),
-                  //                   cursorWidth: 10,
-                  //                   decoration:
-                  //                   buildInputDecoration(
-                  //                       "1 GHC Notes"),
-                  //                   keyboardType:
-                  //                   TextInputType.number,
-                  //                 ),
-                  //                 Padding(
-                  //                   padding:
-                  //                   const EdgeInsets.only(
-                  //                       top: 12.0,
-                  //                       bottom: 12),
-                  //                   child: Text(
-                  //                     d1.toString(),
-                  //                     style: const TextStyle(
-                  //                         fontWeight:
-                  //                         FontWeight.bold),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     Row(
-                  //       children: [
-                  //         Expanded(
-                  //             child: amountNotEqualTotal
-                  //                 ? Text(
-                  //               "TOTAL: $total",
-                  //               style: const TextStyle(
-                  //                   fontWeight:
-                  //                   FontWeight.bold,
-                  //                   color: Colors.red,
-                  //                   fontSize: 20),
-                  //             )
-                  //                 : const Text("")),
-                  //         const SizedBox(
-                  //           width: 10,
-                  //         ),
-                  //         const Expanded(child: Text(""))
-                  //       ],
-                  //     ),
-                  //   ],
-                  // )
-                  //     : Container(),
-                  const SizedBox(height: 30,),
-
-                  isPosting  ? const LoadingUi() :
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RawMaterialButton(
-                      fillColor: secondaryColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
-                      ),
-                      onPressed: (){
-                        _startPosting();
-                        FocusScopeNode currentFocus = FocusScope.of(context);
-
-                        if (!currentFocus.hasPrimaryFocus) {
-                          currentFocus.unfocus();
-                        }
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        } else {
-                          // var mainTotal = d200 + d100 + d50 + d20 + d10 + d5 + d2 + d1;
-                          // if(int.parse(_amountController.text) != mainTotal){
-                          //   Get.snackbar("Total Error", "Your total should be equal to the amount",
-                          //       colorText: defaultWhite,
-                          //       backgroundColor: warning,
-                          //       snackPosition: SnackPosition.BOTTOM,
-                          //       duration: const Duration(seconds: 5)
-                          //   );
-                          //   setState(() {
-                          //     total = mainTotal;
-                          //     amountNotEqualTotal = true;
-                          //   });
-                          //   return;
-                          // }
-                          if(_currentSelectedBank == "Select Bank"){
-                            Get.snackbar("Bank Error", "please select bank",
-                                colorText: defaultWhite,
-                                backgroundColor: warning,
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 5));
-                            return;
-                          }
-                          else{
-                            processWithdraw(context);
-                          }
-                        }
-                      },child: const Text("Save",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
-                    ),
-                  )
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -1065,7 +1045,6 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
       _currentSelectedBank = newValueSelected;
     });
   }
-
 
   void _onDropDownItemSelectedIdWithDrawalType(newValueSelected) {
     setState(() {
@@ -1090,4 +1069,3 @@ class _BankWithdrawalState extends State<BankWithdrawal> {
     );
   }
 }
-

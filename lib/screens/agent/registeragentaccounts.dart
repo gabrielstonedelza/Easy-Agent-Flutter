@@ -7,10 +7,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-import '../../controllers/agentcontroller.dart';
+import '../../controllers/accountController.dart';
 import '../../widgets/loadingui.dart';
 import '../sendsms.dart';
-
 
 class AddAgentAccounts extends StatefulWidget {
   const AddAgentAccounts({Key? key}) : super(key: key);
@@ -20,9 +19,9 @@ class AddAgentAccounts extends StatefulWidget {
 }
 
 class _UserRegistration extends State<AddAgentAccounts> {
-  final AgentController controller = Get.find();
+  final AccountController controller = Get.find();
   final _formKey = GlobalKey<FormState>();
-  void _startPosting()async{
+  void _startPosting() async {
     setState(() {
       isPosting = true;
     });
@@ -47,11 +46,7 @@ class _UserRegistration extends State<AddAgentAccounts> {
   bool isInterBank = false;
   bool isOtherBank = false;
 
-  final List bankType = [
-    "Select bank type",
-    "Interbank",
-    "Other"
-  ];
+  final List bankType = ["Select bank type", "Interbank", "Other"];
   var _currentSelectedBankType = "Select bank type";
 
   final List interBanks = [
@@ -111,8 +106,7 @@ class _UserRegistration extends State<AddAgentAccounts> {
   FocusNode accountNumberFocusNode = FocusNode();
   FocusNode accountNameFocusNode = FocusNode();
 
-
-  registerAgentsAccount()async{
+  registerAgentsAccount() async {
     const registerUrl = "https://fnetagents.xyz/register_agents_accounts/";
     final myLink = Uri.parse(registerUrl);
     final res = await http.post(myLink, headers: {
@@ -123,17 +117,14 @@ class _UserRegistration extends State<AddAgentAccounts> {
       "bank": _currentSelectedBank,
       "account_name": accountName.text.trim(),
       "branch": branchController.text.trim(),
-
     });
-    if(res.statusCode == 201){
+    if (res.statusCode == 201) {
       Get.snackbar("Congratulations", "Accounts added successfully",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
           backgroundColor: snackBackground);
-      Get.offAll(()=>const Dashboard());
-    }
-    else{
-
+      Get.offAll(() => const Dashboard());
+    } else {
       Get.snackbar("Error", "Sorry,something happened,please try again",
           colorText: defaultWhite,
           snackPosition: SnackPosition.TOP,
@@ -145,7 +136,7 @@ class _UserRegistration extends State<AddAgentAccounts> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(storage.read("token") != null){
+    if (storage.read("token") != null) {
       setState(() {
         uToken = storage.read("token");
       });
@@ -154,17 +145,15 @@ class _UserRegistration extends State<AddAgentAccounts> {
     accountName = TextEditingController();
     accountNumber = TextEditingController();
     controller.getAllMyAccounts(uToken);
-
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     branchController.dispose();
     accountName.dispose();
     accountNumber.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +184,6 @@ class _UserRegistration extends State<AddAgentAccounts> {
                           hint: const Text("Select bank type"),
                           isExpanded: true,
                           underline: const SizedBox(),
-
                           items: bankType.map((dropDownStringItem) {
                             return DropdownMenuItem(
                               value: dropDownStringItem,
@@ -204,13 +192,13 @@ class _UserRegistration extends State<AddAgentAccounts> {
                           }).toList(),
                           onChanged: (newValueSelected) {
                             _onDropDownItemSelectedBankType(newValueSelected);
-                            if(_currentSelectedBankType == "Interbank"){
+                            if (_currentSelectedBankType == "Interbank") {
                               setState(() {
                                 isInterBank = true;
                                 isOtherBank = false;
                               });
                             }
-                            if(_currentSelectedBankType == "Other"){
+                            if (_currentSelectedBankType == "Other") {
                               setState(() {
                                 isOtherBank = true;
                                 isInterBank = false;
@@ -222,59 +210,66 @@ class _UserRegistration extends State<AddAgentAccounts> {
                       ),
                     ),
                   ),
-                  isInterBank ? Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10),
-                        child: DropdownButton(
-                          hint: const Text("Select bank"),
-                          isExpanded: true,
-                          underline: const SizedBox(),
-                          items: interBanks.map((dropDownStringItem) {
-                            return DropdownMenuItem(
-                              value: dropDownStringItem,
-                              child: Text(dropDownStringItem),
-                            );
-                          }).toList(),
-                          onChanged: (newValueSelected) {
-                            _onDropDownItemSelectedBank(newValueSelected);
-                          },
-                          value: _currentSelectedBank,
-                        ),
-                      ),
-                    ),
-                  ) : Container(),
-                  isOtherBank ?  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10),
-                        child: DropdownButton(
-                          hint: const Text("Select bank"),
-                          isExpanded: true,
-                          underline: const SizedBox(),
-
-                          items: otherBanks.map((dropDownStringItem) {
-                            return DropdownMenuItem(
-                              value: dropDownStringItem,
-                              child: Text(dropDownStringItem),
-                            );
-                          }).toList(),
-                          onChanged: (newValueSelected) {
-                            _onDropDownItemSelectedBank(newValueSelected);
-                          },
-                          value: _currentSelectedBank,
-                        ),
-                      ),
-                    ),
-                  ) : Container(),
+                  isInterBank
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                    Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10.0, right: 10),
+                              child: DropdownButton(
+                                hint: const Text("Select bank"),
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: interBanks.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedBank(newValueSelected);
+                                },
+                                value: _currentSelectedBank,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  isOtherBank
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                    Border.all(color: Colors.grey, width: 1)),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10.0, right: 10),
+                              child: DropdownButton(
+                                hint: const Text("Select bank"),
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: otherBanks.map((dropDownStringItem) {
+                                  return DropdownMenuItem(
+                                    value: dropDownStringItem,
+                                    child: Text(dropDownStringItem),
+                                  );
+                                }).toList(),
+                                onChanged: (newValueSelected) {
+                                  _onDropDownItemSelectedBank(newValueSelected);
+                                },
+                                value: _currentSelectedBank,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
@@ -329,30 +324,36 @@ class _UserRegistration extends State<AddAgentAccounts> {
                       },
                     ),
                   ),
+                  isPosting
+                      ? const LoadingUi()
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RawMaterialButton(
+                            fillColor: secondaryColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            onPressed: () {
+                              _startPosting();
+                              FocusScopeNode currentFocus =
+                                  FocusScope.of(context);
 
-                  isPosting  ? const LoadingUi() :
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RawMaterialButton(
-                      fillColor: secondaryColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
-                      ),
-                      onPressed: (){
-                        _startPosting();
-                        FocusScopeNode currentFocus = FocusScope.of(context);
-
-                        if (!currentFocus.hasPrimaryFocus) {
-                          currentFocus.unfocus();
-                        }
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        } else {
-                          registerAgentsAccount();
-                        }
-                      },child: const Text("Register",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
-                    ),
-                  )
+                              if (!currentFocus.hasPrimaryFocus) {
+                                currentFocus.unfocus();
+                              }
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              } else {
+                                registerAgentsAccount();
+                              }
+                            },
+                            child: const Text(
+                              "Register",
+                              style: TextStyle(
+                                  color: defaultWhite,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),
@@ -361,11 +362,13 @@ class _UserRegistration extends State<AddAgentAccounts> {
       ),
     );
   }
+
   void _onDropDownItemSelectedBank(newValueSelected) {
     setState(() {
       _currentSelectedBank = newValueSelected;
     });
   }
+
   void _onDropDownItemSelectedBankType(newValueSelected) {
     setState(() {
       _currentSelectedBankType = newValueSelected;
@@ -382,5 +385,4 @@ class _UserRegistration extends State<AddAgentAccounts> {
           borderRadius: BorderRadius.circular(12)),
     );
   }
-
 }

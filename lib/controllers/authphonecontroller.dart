@@ -43,10 +43,11 @@ class AuthPhoneController extends GetxController {
         var jsonData = jsonDecode(codeUnits);
         var allPosts = jsonData;
         authPhoneDetails.assignAll(allPosts);
-        for(var i in authPhoneDetails){
-          if(i['finger_print'] == phoneFingerprint){
+        for (var i in authPhoneDetails) {
+          if (i['finger_print'] == phoneFingerprint) {
             isAuthDevice = true;
-            Get.snackbar("Device Auth Success 😀", "Your is already authenticated",
+            Get.snackbar(
+                "Device Auth Success 😀", "Your is already authenticated",
                 colorText: Colors.white,
                 snackPosition: SnackPosition.BOTTOM,
                 backgroundColor: secondaryColor,
@@ -75,7 +76,8 @@ class AuthPhoneController extends GetxController {
     }
   }
 
-  authenticatePhone(String token,String pId,String pModel,String pBrand,String pFinPrint)async{
+  Future<void> authenticatePhone(String token, String pId, String pModel,
+      String pBrand, String pFinPrint) async {
     const requestUrl = "https://fnetagents.xyz/authenticate_agent_phone/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.post(myLink, headers: {
@@ -96,8 +98,7 @@ class AuthPhoneController extends GetxController {
           backgroundColor: snackBackground,
           duration: const Duration(seconds: 5));
       update();
-    }
-    else{
+    } else {
       if (kDebugMode) {
         // print(response.body);
         // Get.snackbar("AuthPhone Error", response.body.toString(),

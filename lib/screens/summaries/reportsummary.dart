@@ -1,13 +1,9 @@
-import 'dart:convert';
-
 import 'package:easy_agent/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
+import '../../controllers/accountController.dart';
 import '../../controllers/customerscontroller.dart';
-import '../../widgets/loadingui.dart';
-import '../reports/addreport.dart';
 
 class MyReports extends StatefulWidget {
   const MyReports({Key? key}) : super(key: key);
@@ -22,44 +18,10 @@ class _MyReportsState extends State<MyReports> {
   final storage = GetStorage();
   var items;
   bool isLoading = true;
-  late List allMyReports = [];
 
-  Future<void> getAllMyReports(String token) async {
-    try {
-      const url = "https://fnetagents.xyz/get_my_reports/";
-      var link = Uri.parse(url);
-      http.Response response = await http.get(link, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Token $token"
-      });
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        allMyReports.assignAll(jsonData);
-      }
-    } catch (e) {
-      Get.snackbar("Sorry",
-          "something happened or please check your internet connection");
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  deletePayment(String id) async {
-    final url = "https://fnetagents.xyz/delete_report/$id";
-    var myLink = Uri.parse(url);
-    final response = await http.get(myLink);
-
-    if (response.statusCode == 204) {
-      // Get.offAll(() => const Dashboard());
-    } else {
-
-    }
-  }
   bool isPosting = false;
 
-  void _startPosting()async{
+  void _startPosting() async {
     setState(() {
       isPosting = true;
     });
@@ -77,64 +39,74 @@ class _MyReportsState extends State<MyReports> {
         uToken = storage.read("token");
       });
     }
-    getAllMyReports(uToken);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Reports"),
-
-      ),
-      body: isLoading
-          ? const LoadingUi()
-          : ListView.builder(
-          itemCount: allMyReports != null ? allMyReports.length : 0,
-          itemBuilder: (context, index) {
-            items = allMyReports[index];
-            return Card(
-              color: secondaryColor,
-              elevation: 12,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                title: buildRow("Date: ", "date_reported"),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left:8.0,bottom: 8),
-                      child: Text("Report : ",style: TextStyle(fontWeight: FontWeight.bold,color: defaultWhite),),
+        appBar: AppBar(
+          title: const Text("My Reports"),
+        ),
+        body: GetBuilder<AccountController>(builder: (controller) {
+          return ListView.builder(
+              itemCount: controller.allMyReports != null
+                  ? controller.allMyReports.length
+                  : 0,
+              itemBuilder: (context, index) {
+                items = controller.allMyReports[index];
+                return Card(
+                  color: secondaryColor,
+                  elevation: 12,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: ListTile(
+                    title: buildRow("Date: ", "date_reported"),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0, bottom: 8),
+                          child: Text(
+                            "Report : ",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: defaultWhite),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 8.0, top: 8, bottom: 8),
+                          child: Text(items['report'],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: defaultWhite)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 8.0, top: 8, bottom: 8),
+                          child: Row(
+                            children: [
+                              const Text("Time: ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: defaultWhite)),
+                              Text(
+                                  items['time_reported']
+                                      .toString()
+                                      .split(".")
+                                      .first,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: defaultWhite)),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left:8.0,top: 8,bottom: 8),
-                      child: Text(items['report'],style: const TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left:8.0,top: 8,bottom: 8),
-                      child: Row(
-                        children: [
-                          const Text("Time: ",style: TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
-                          Text(items['time_reported'].toString().split(".").first,style: const TextStyle(fontWeight: FontWeight.bold,color: defaultWhite)),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                // trailing: IconButton(
-                //   icon: Image.asset("assets/images/cancel.png",width: 30,height: 30,),
-                //   onPressed: (){
-                //     _startPosting();
-                //     getAllMyReports(uToken);
-                //     deletePayment(allMyReports[index]['id'].toString());
-                //   },
-                // ),
-              ),
-            );
-          }),
-    );
+                  ),
+                );
+              });
+        }));
   }
 
   Padding buildRow(String mainTitle, String subtitle) {
@@ -151,7 +123,9 @@ class _MyReportsState extends State<MyReports> {
             child: Text(
               items[subtitle],
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ),
         ],

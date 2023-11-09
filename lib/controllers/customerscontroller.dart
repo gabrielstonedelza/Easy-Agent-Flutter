@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class CustomersController extends GetxController{
+class CustomersController extends GetxController {
   late List allCustomers = [];
   late List allMyCustomers = [];
   late List customersNumbers = [];
@@ -11,7 +11,6 @@ class CustomersController extends GetxController{
   bool isLoading = true;
 
   static CustomersController get to => Get.find<CustomersController>();
-
 
   Future<void> getAllCustomers(String token) async {
     try {
@@ -25,18 +24,19 @@ class CustomersController extends GetxController{
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         allCustomers.assignAll(jsonData);
-        for(var i in allCustomers){
-          if(!customersNumbers.contains(i['phone'])){
+        for (var i in allCustomers) {
+          if (!customersNumbers.contains(i['phone'])) {
             customersNumbers.add(i['phone']);
           }
-          if(!customersNames.contains(i['name'])){
+          if (!customersNames.contains(i['name'])) {
             customersNames.add(i['name']);
           }
         }
         update();
       }
     } catch (e) {
-      Get.snackbar("Sorry","something happened or please check your internet connection");
+      // Get.snackbar("Sorry",
+      //     "something happened or please check your internet connection");
     } finally {
       isLoading = false;
     }
@@ -55,13 +55,32 @@ class CustomersController extends GetxController{
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
       allFraudsters.assignAll(jsonData);
-      for(var i in allFraudsters){
-        if(!fraudsterNumbers.contains(i['customer'])){
+      for (var i in allFraudsters) {
+        if (!fraudsterNumbers.contains(i['customer'])) {
           fraudsterNumbers.add(i['customer']);
         }
       }
-     update();
+      update();
     }
   }
 
+  Future<void> getAllMyCustomers(String token) async {
+    try {
+      const url = "https://fnetagents.xyz/get_my_customers/";
+      var link = Uri.parse(url);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $token"
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        allMyCustomers.assignAll(jsonData);
+      }
+    } catch (e) {
+      // Get.snackbar("Sorry",
+      //     "something happened or please check your internet connection");
+    } finally {
+      isLoading = false;
+    }
+  }
 }

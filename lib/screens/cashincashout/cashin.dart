@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:easy_agent/controllers/customerscontroller.dart';
@@ -12,6 +11,7 @@ import 'package:ussd_advanced/ussd_advanced.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants.dart';
+import '../../controllers/accountController.dart';
 import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 import '../dashboard.dart';
@@ -25,6 +25,7 @@ class CashIn extends StatefulWidget {
 }
 
 class _CashInState extends State<CashIn> {
+  final AccountController accountController = Get.find();
   final CustomersController controller = Get.find();
   bool isPosting = false;
   final telephony = Telephony.instance;
@@ -114,9 +115,7 @@ class _CashInState extends State<CashIn> {
   late String uToken = "";
   final storage = GetStorage();
   bool isLoading = true;
-
   bool isMtn = false;
-  late List allFraudsters = [];
   bool isFraudster = false;
   late int oTP = 0;
   bool hasOTP = false;
@@ -129,101 +128,16 @@ class _CashInState extends State<CashIn> {
     oTP = rand.toInt();
   }
 
-  Future<void> getAllFraudsters() async {
-    try {
-      const url = "https://fnetagents.xyz/get_all_fraudsters/";
-      var link = Uri.parse(url);
-      http.Response response = await http.get(link, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Token $uToken"
-      });
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        allFraudsters.assignAll(jsonData);
-      }
-    } catch (e) {
-      Get.snackbar("Sorry",
-          "something happened or please check your internet connection");
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  final ProfileController profileController = Get.find();
 
-  ProfileController profileController = Get.find();
-
-  late List ownerDetails = [];
-  late String ownerId = "";
-  late String ownerUsername = "";
-  late String userEmail = "";
-  late String agentUsername = "";
-  late String companyName = "";
-  late String userId = "";
-  late String agentPhone = "";
-  List profileDetails = [];
-
-  Future<void> fetchOwnersDetails() async {
-    final postUrl =
-        "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      ownerDetails.assignAll(allPosts);
-      for (var i in ownerDetails) {
-        ownerId = i['id'].toString();
-        ownerUsername = i['username'];
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      // print(res.body);
-    }
-  }
-  Future<void> getUserDetails(String token) async {
-    const profileLink = "https://fnetagents.xyz/get_user_details/";
-    var link = Uri.parse(profileLink);
-    http.Response response = await http.get(link, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": "Token $token"
-    });
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      profileDetails = jsonData;
-      for(var i in profileDetails){
-        userId = i['id'].toString();
-        agentPhone = i['phone_number'];
-        userEmail = i['email'];
-        companyName = i['company_name'];
-      }
-
-      setState(() {
-        isLoading = false;
-      });
-    }
-    else{
-      if (kDebugMode) {
-        print(response.body);
-      }
-    }
-  }
-
-  processMomoDeposit() async {
+  Future<void> processMomoDeposit() async {
     const registerUrl = "https://fnetagents.xyz/post_momo_deposit/";
     final myLink = Uri.parse(registerUrl);
     final res = await http.post(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": "Token $uToken"
     }, body: {
-      "owner": ownerId,
+      "owner": accountController.ownerId,
       "agent": profileController.userId,
       "depositor_name": _depositorNameController.text.trim(),
       "depositor_number": _depositorNumberController.text.trim(),
@@ -247,11 +161,12 @@ class _CashInState extends State<CashIn> {
     if (res.statusCode == 201) {
       if (_currentSelectedDepositType == "Direct") {
         String num = _depositorNumberController.text.replaceFirst("0", '+233');
-        if(companyName == "Fnet Enterprise"){
-          sendSms.sendMySms(num, "FNET","Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
-        }
-        else{
-          sendSms.sendMySms(num, "EasyAgent","Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
+        if (accountController.companyName == "Fnet Enterprise") {
+          sendSms.sendMySms(num, "FNET",
+              "Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
+        } else {
+          sendSms.sendMySms(num, "EasyAgent",
+              "Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
         }
         // sendSms.sendMySms(num, "EasyAgent",
         //     "Your deposit of ${_amountController.text.trim()} by ${profileController.companyName} was successful.For more information please call ${profileController.companyNumber}.Thank you for working with Easy Agent.");
@@ -279,7 +194,6 @@ class _CashInState extends State<CashIn> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -288,9 +202,8 @@ class _CashInState extends State<CashIn> {
         uToken = storage.read("token");
       });
     }
-    fetchOwnersDetails();
+
     generate5digit();
-    getUserDetails(uToken);
     _amountController = TextEditingController();
     _cashReceivedController = TextEditingController();
     _customerPhoneController = TextEditingController();
@@ -333,95 +246,120 @@ class _CashInState extends State<CashIn> {
         appBar: AppBar(
           title: const Text("Cash In",
               style: TextStyle(fontWeight: FontWeight.bold)),
-          // actions: [
-          //   TextButton(onPressed: () { sendSMS(); },child: Text("Hello"),)
-          // ],
         ),
-        body: isLoading
-            ? const LoadingUi()
-            : ListView(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(18.0),
-                    child: Text(
-                      "Note: Please make sure to allow Easy Agent access in your phones accessibility before proceeding",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: warning),
+        body: ListView(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(18.0),
+              child: Text(
+                "Note: Please make sure to allow Easy Agent access in your phones accessibility before proceeding",
+                style: TextStyle(fontWeight: FontWeight.bold, color: warning),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: TextFormField(
+                        onChanged: (value) {
+                          if (value.length == 10 &&
+                              controller.fraudsterNumbers.contains(value)) {
+                            setState(() {
+                              isFraudster = true;
+                            });
+                            Get.snackbar("Customer Error",
+                                "This customer is in the fraud lists.",
+                                colorText: defaultWhite,
+                                snackPosition: SnackPosition.TOP,
+                                duration: const Duration(seconds: 10),
+                                backgroundColor: warning);
+                            Get.defaultDialog(
+                                buttonColor: primaryColor,
+                                title: "Fraud Alert",
+                                middleText:
+                                    "This customer is in the fraud list,continue",
+                                confirm: RawMaterialButton(
+                                    shape: const StadiumBorder(),
+                                    fillColor: secondaryColor,
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: const Text(
+                                      "Yes",
+                                      style: TextStyle(color: Colors.white),
+                                    )),
+                                cancel: RawMaterialButton(
+                                    shape: const StadiumBorder(),
+                                    fillColor: secondaryColor,
+                                    onPressed: () {
+                                      Get.offAll(() => const Dashboard());
+                                    },
+                                    child: const Text(
+                                      "No",
+                                      style: TextStyle(color: Colors.white),
+                                    )));
+                          } else {
+                            setState(() {
+                              isFraudster = false;
+                            });
+                          }
+                        },
+                        controller: _customerPhoneController,
+                        focusNode: customerPhoneFocusNode,
+                        cursorRadius: const Radius.elliptical(10, 10),
+                        cursorWidth: 10,
+                        cursorColor: secondaryColor,
+                        decoration: buildInputDecoration("Customer's Number"),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please enter customer's number";
+                          }
+                          return null;
+                        },
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: TextFormField(
-                              onChanged: (value) {
-                                if (value.length == 10 &&
-                                    controller.fraudsterNumbers
-                                        .contains(value)) {
-                                  setState(() {
-                                    isFraudster = true;
-                                  });
-                                  Get.snackbar("Customer Error",
-                                      "This customer is in the fraud lists.",
-                                      colorText: defaultWhite,
-                                      snackPosition: SnackPosition.TOP,
-                                      duration: const Duration(seconds: 10),
-                                      backgroundColor: warning);
-                                  Get.defaultDialog(
-                                      buttonColor: primaryColor,
-                                      title: "Fraud Alert",
-                                      middleText:
-                                          "This customer is in the fraud list,continue",
-                                      confirm: RawMaterialButton(
-                                          shape: const StadiumBorder(),
-                                          fillColor: secondaryColor,
-                                          onPressed: () {
-                                            Get.back();
-                                          },
-                                          child: const Text(
-                                            "Yes",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          )),
-                                      cancel: RawMaterialButton(
-                                          shape: const StadiumBorder(),
-                                          fillColor: secondaryColor,
-                                          onPressed: () {
-                                            Get.offAll(() => const Dashboard());
-                                          },
-                                          child: const Text(
-                                            "No",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          )));
-                                } else {
-                                  setState(() {
-                                    isFraudster = false;
-                                  });
-                                }
-                              },
-                              controller: _customerPhoneController,
-                              focusNode: customerPhoneFocusNode,
-                              cursorRadius: const Radius.elliptical(10, 10),
-                              cursorWidth: 10,
-                              cursorColor: secondaryColor,
-                              decoration:
-                                  buildInputDecoration("Customer's Number"),
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please enter customer's number";
-                                }
-                                return null;
-                              },
-                            ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey, width: 1)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10.0, right: 10),
+                          child: DropdownButton(
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                            items: networks.map((dropDownStringItem) {
+                              return DropdownMenuItem(
+                                value: dropDownStringItem,
+                                child: Text(dropDownStringItem),
+                              );
+                            }).toList(),
+                            onChanged: (newValueSelected) {
+                              _onDropDownItemSelectedNetwork(newValueSelected);
+                              if (newValueSelected == "Mtn") {
+                                setState(() {
+                                  isMtn = true;
+                                });
+                              } else {
+                                setState(() {
+                                  isMtn = false;
+                                });
+                              }
+                            },
+                            value: _currentSelectedNetwork,
                           ),
-                          Padding(
+                        ),
+                      ),
+                    ),
+                    isMtn
+                        ? Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
                             child: Container(
                               decoration: BoxDecoration(
@@ -434,179 +372,164 @@ class _CashInState extends State<CashIn> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   underline: const SizedBox(),
-                                  items: networks.map((dropDownStringItem) {
+                                  items: depositTypes.map((dropDownStringItem) {
                                     return DropdownMenuItem(
                                       value: dropDownStringItem,
                                       child: Text(dropDownStringItem),
                                     );
                                   }).toList(),
                                   onChanged: (newValueSelected) {
-                                    _onDropDownItemSelectedNetwork(
+                                    _onDropDownItemSelectedDepositType(
                                         newValueSelected);
-                                    if (newValueSelected == "Mtn") {
+                                    if (newValueSelected == "Direct") {
                                       setState(() {
-                                        isMtn = true;
+                                        isDirect = true;
+                                        isMtnLoading = false;
+                                        sentOTP = false;
                                       });
-                                    } else {
+                                    }
+                                    if (newValueSelected == "Loading") {
+                                      String num = _customerPhoneController.text
+                                          .replaceFirst("0", '+233');
+                                      sendSms.sendMySms(
+                                          num, "EasyAgent", "Your code $oTP");
                                       setState(() {
-                                        isMtn = false;
+                                        isDirect = false;
+                                        isMtnLoading = true;
+                                        sentOTP = true;
+                                        _cashReceivedController.text =
+                                            _amountController.text;
                                       });
                                     }
                                   },
-                                  value: _currentSelectedNetwork,
+                                  value: _currentSelectedDepositType,
                                 ),
                               ),
                             ),
-                          ),
-                          isMtn
-                              ? Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                            color: Colors.grey, width: 1)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10.0, right: 10),
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        underline: const SizedBox(),
-                                        items: depositTypes
-                                            .map((dropDownStringItem) {
-                                          return DropdownMenuItem(
-                                            value: dropDownStringItem,
-                                            child: Text(dropDownStringItem),
-                                          );
-                                        }).toList(),
-                                        onChanged: (newValueSelected) {
-                                          _onDropDownItemSelectedDepositType(
-                                              newValueSelected);
-                                          if (newValueSelected == "Direct") {
-                                            setState(() {
-                                              isDirect = true;
-                                              isMtnLoading = false;
-                                              sentOTP = false;
-                                            });
-                                          }
-                                          if (newValueSelected == "Loading") {
-                                            String num =
-                                                _customerPhoneController.text
-                                                    .replaceFirst("0", '+233');
-                                            sendSms.sendMySms(num, "EasyAgent",
-                                                "Your code $oTP");
-                                            setState(() {
-                                              isDirect = false;
-                                              isMtnLoading = true;
-                                              sentOTP = true;
-                                              _cashReceivedController.text =
-                                                  _amountController.text;
-                                            });
-                                          }
-                                        },
-                                        value: _currentSelectedDepositType,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(),
-                          sentOTP && !hasOTP
-                              ? const Text(
-                                  "An OTP was sent to the customers phone,enter it here",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
-                                )
-                              : Container(),
-                          sentOTP && !hasOTP
-                              ? const SizedBox(
-                                  height: 20,
-                                )
-                              : Container(),
-                          sentOTP && !hasOTP
-                              ? Pinput(
-                                  // defaultPinTheme: defaultPinTheme,
-                                  androidSmsAutofillMethod:
-                                      AndroidSmsAutofillMethod.smsRetrieverApi,
-                                  validator: (pin) {
-                                    if (pin?.length == 4 &&
-                                        pin == oTP.toString()) {
-                                      setState(() {
-                                        hasOTP = true;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        hasOTP = false;
-                                      });
-                                      Get.snackbar("Code Error",
-                                          "you entered an invalid code",
-                                          colorText: defaultWhite,
-                                          snackPosition: SnackPosition.TOP,
-                                          backgroundColor: warning,
-                                          duration: const Duration(seconds: 5));
+                          )
+                        : Container(),
+                    sentOTP && !hasOTP
+                        ? const Text(
+                            "An OTP was sent to the customers phone,enter it here",
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w600),
+                          )
+                        : Container(),
+                    sentOTP && !hasOTP
+                        ? const SizedBox(
+                            height: 20,
+                          )
+                        : Container(),
+                    sentOTP && !hasOTP
+                        ? Pinput(
+                            // defaultPinTheme: defaultPinTheme,
+                            androidSmsAutofillMethod:
+                                AndroidSmsAutofillMethod.smsRetrieverApi,
+                            validator: (pin) {
+                              if (pin?.length == 4 && pin == oTP.toString()) {
+                                setState(() {
+                                  hasOTP = true;
+                                });
+                              } else {
+                                setState(() {
+                                  hasOTP = false;
+                                });
+                                Get.snackbar(
+                                    "Code Error", "you entered an invalid code",
+                                    colorText: defaultWhite,
+                                    snackPosition: SnackPosition.TOP,
+                                    backgroundColor: warning,
+                                    duration: const Duration(seconds: 5));
+                              }
+                              return null;
+                            },
+                          )
+                        : Container(),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    isDirect
+                        ? Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: TextFormField(
+                                  controller: _depositorNameController,
+                                  focusNode: depositorNameFocusNode,
+                                  cursorRadius: const Radius.elliptical(10, 10),
+                                  cursorWidth: 10,
+                                  cursorColor: secondaryColor,
+                                  decoration:
+                                      buildInputDecoration("Depositor's Name"),
+                                  keyboardType: TextInputType.text,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Please enter depositors name";
                                     }
                                     return null;
                                   },
-                                )
-                              : Container(),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          isDirect
-                              ? Column(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 10.0),
-                                      child: TextFormField(
-                                        controller: _depositorNameController,
-                                        focusNode: depositorNameFocusNode,
-                                        cursorRadius:
-                                            const Radius.elliptical(10, 10),
-                                        cursorWidth: 10,
-                                        cursorColor: secondaryColor,
-                                        decoration: buildInputDecoration(
-                                            "Depositor's Name"),
-                                        keyboardType: TextInputType.text,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return "Please enter depositors name";
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 10.0),
-                                      child: TextFormField(
-                                        controller: _depositorNumberController,
-                                        focusNode: depositorNumberFocusNode,
-                                        cursorRadius:
-                                            const Radius.elliptical(10, 10),
-                                        cursorWidth: 10,
-                                        cursorColor: secondaryColor,
-                                        decoration: buildInputDecoration(
-                                            "Depositor's Number"),
-                                        keyboardType: TextInputType.number,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return "Please enter depositors number";
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Container(),
-                          Padding(
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: TextFormField(
+                                  controller: _depositorNumberController,
+                                  focusNode: depositorNumberFocusNode,
+                                  cursorRadius: const Radius.elliptical(10, 10),
+                                  cursorWidth: 10,
+                                  cursorColor: secondaryColor,
+                                  decoration: buildInputDecoration(
+                                      "Depositor's Number"),
+                                  keyboardType: TextInputType.number,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Please enter depositors number";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                        : Container(),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: TextFormField(
+                        onChanged: (value) {
+                          if (value.length > 1 &&
+                              value != "" &&
+                              _currentSelectedDepositType == "Loading") {
+                            setState(() {
+                              amountIsNotEmpty = true;
+                            });
+                          }
+                          if (value == "") {
+                            setState(() {
+                              amountIsNotEmpty = false;
+                            });
+                          }
+                        },
+                        controller: _amountController,
+                        focusNode: amountFocusNode,
+                        cursorRadius: const Radius.elliptical(10, 10),
+                        cursorWidth: 10,
+                        cursorColor: secondaryColor,
+                        decoration: buildInputDecoration("Amount Sent"),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please enter amount";
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    isDirect
+                        ? Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
                             child: TextFormField(
                               onChanged: (value) {
-                                if (value.length > 1 &&
-                                    value != "" &&
-                                    _currentSelectedDepositType == "Loading") {
+                                if (value.length > 1 && value != "") {
                                   setState(() {
                                     amountIsNotEmpty = true;
                                   });
@@ -617,156 +540,119 @@ class _CashInState extends State<CashIn> {
                                   });
                                 }
                               },
-                              controller: _amountController,
-                              focusNode: amountFocusNode,
+                              controller: _cashReceivedController,
+                              focusNode: cashReceivedFocusNode,
                               cursorRadius: const Radius.elliptical(10, 10),
                               cursorWidth: 10,
                               cursorColor: secondaryColor,
-                              decoration: buildInputDecoration("Amount Sent"),
+                              decoration: buildInputDecoration("Cash Received"),
                               keyboardType: TextInputType.number,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please enter amount";
+                                if (value!.isEmpty && isMtnLoading) {
+                                  return "Please enter cash received";
                                 }
                                 return null;
                               },
                             ),
-                          ),
-                          isDirect
-                              ? Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: TextFormField(
-                                    onChanged: (value) {
-                                      if (value.length > 1 && value != "") {
-                                        setState(() {
-                                          amountIsNotEmpty = true;
-                                        });
-                                      }
-                                      if (value == "") {
-                                        setState(() {
-                                          amountIsNotEmpty = false;
-                                        });
-                                      }
-                                    },
-                                    controller: _cashReceivedController,
-                                    focusNode: cashReceivedFocusNode,
-                                    cursorRadius:
-                                        const Radius.elliptical(10, 10),
-                                    cursorWidth: 10,
-                                    cursorColor: secondaryColor,
-                                    decoration:
-                                        buildInputDecoration("Cash Received"),
-                                    keyboardType: TextInputType.number,
-                                    validator: (value) {
-                                      if (value!.isEmpty && isMtnLoading) {
-                                        return "Please enter cash received";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                )
-                              : Container(),
-                          isDirect
-                              ? _cashReceivedController.text != "" &&
-                                      double.parse(
-                                              _cashReceivedController.text) >
-                                          double.parse(_amountController.text)
-                                  ? Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 8.0),
-                                      child: Row(
-                                        children: [
-                                          const Text("Commission is : "),
-                                          Text(
-                                              "${double.parse(_cashReceivedController.text) - double.parse(_amountController.text)}"),
-                                        ],
-                                      ),
-                                    )
-                                  : Container()
-                              : Container(),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          isPosting
-                              ? const LoadingUi()
-                              : amountIsNotEmpty && !isFraudster
-                                  ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: RawMaterialButton(
-                              fillColor: secondaryColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)
-                              ),
-                              onPressed: (){
-                                _startPosting();
-                                FocusScopeNode currentFocus =
-                                FocusScope.of(context);
-                                if (_currentSelectedDepositType ==
-                                    "Loading") {
-                                  _cashReceivedController.text =
-                                      _amountController.text;
-                                }
-
-                                if (!currentFocus.hasPrimaryFocus) {
-                                  currentFocus.unfocus();
-                                }
-                                if (!_formKey.currentState!
-                                    .validate()) {
-                                  return;
-                                } else {
-
-                                  if (_currentSelectedDepositType ==
-                                      "Select deposit type" &&
-                                      _currentSelectedNetwork ==
-                                          "Mtn") {
-                                    Get.snackbar(
-                                        "Network or Type Error",
-                                        "please select network and type",
-                                        colorText: defaultWhite,
-                                        backgroundColor: warning,
-                                        snackPosition:
-                                        SnackPosition.BOTTOM,
-                                        duration:
-                                        const Duration(seconds: 5));
-                                    return;
-                                  } else if (_currentSelectedNetwork ==
-                                      "Select Network") {
-                                    Get.snackbar("Network Error",
-                                        "please select network",
-                                        colorText: defaultWhite,
-                                        backgroundColor: warning,
-                                        snackPosition:
-                                        SnackPosition.BOTTOM,
-                                        duration:
-                                        const Duration(seconds: 5));
-                                    return;
-                                  }
-                                  else if (double.parse(_cashReceivedController.text) < double.parse(_amountController.text)) {
-                                    Get.snackbar("Amount Error",
-                                        "Cash received cannot be less than amount",
-                                        colorText: defaultWhite,
-                                        backgroundColor: warning,
-                                        snackPosition:
-                                        SnackPosition.BOTTOM,
-                                        duration:
-                                        const Duration(seconds: 5));
-                                    return;
-                                  }
-
-                                  else {
-                                    processMomoDeposit();
-                                  }
-                                }
-                              },child: const Text("Send",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
-                            ),
                           )
-                                  : Container(),
-                        ],
-                      ),
+                        : Container(),
+                    isDirect
+                        ? _cashReceivedController.text != "" &&
+                                double.parse(_cashReceivedController.text) >
+                                    double.parse(_amountController.text)
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Row(
+                                  children: [
+                                    const Text("Commission is : "),
+                                    Text(
+                                        "${double.parse(_cashReceivedController.text) - double.parse(_amountController.text)}"),
+                                  ],
+                                ),
+                              )
+                            : Container()
+                        : Container(),
+                    const SizedBox(
+                      height: 30,
                     ),
-                  )
-                ],
-              ));
+                    isPosting
+                        ? const LoadingUi()
+                        : amountIsNotEmpty && !isFraudster
+                            ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: RawMaterialButton(
+                                  fillColor: secondaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  onPressed: () {
+                                    _startPosting();
+                                    FocusScopeNode currentFocus =
+                                        FocusScope.of(context);
+                                    if (_currentSelectedDepositType ==
+                                        "Loading") {
+                                      _cashReceivedController.text =
+                                          _amountController.text;
+                                    }
+
+                                    if (!currentFocus.hasPrimaryFocus) {
+                                      currentFocus.unfocus();
+                                    }
+                                    if (!_formKey.currentState!.validate()) {
+                                      return;
+                                    } else {
+                                      if (_currentSelectedDepositType ==
+                                              "Select deposit type" &&
+                                          _currentSelectedNetwork == "Mtn") {
+                                        Get.snackbar("Network or Type Error",
+                                            "please select network and type",
+                                            colorText: defaultWhite,
+                                            backgroundColor: warning,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            duration:
+                                                const Duration(seconds: 5));
+                                        return;
+                                      } else if (_currentSelectedNetwork ==
+                                          "Select Network") {
+                                        Get.snackbar("Network Error",
+                                            "please select network",
+                                            colorText: defaultWhite,
+                                            backgroundColor: warning,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            duration:
+                                                const Duration(seconds: 5));
+                                        return;
+                                      } else if (double.parse(
+                                              _cashReceivedController.text) <
+                                          double.parse(
+                                              _amountController.text)) {
+                                        Get.snackbar("Amount Error",
+                                            "Cash received cannot be less than amount",
+                                            colorText: defaultWhite,
+                                            backgroundColor: warning,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            duration:
+                                                const Duration(seconds: 5));
+                                        return;
+                                      } else {
+                                        processMomoDeposit();
+                                      }
+                                    }
+                                  },
+                                  child: const Text(
+                                    "Send",
+                                    style: TextStyle(
+                                        color: defaultWhite,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ));
   }
 
   void _onDropDownItemSelectedNetwork(newValueSelected) {

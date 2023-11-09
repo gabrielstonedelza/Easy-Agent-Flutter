@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants.dart';
 import '../../controllers/profilecontroller.dart';
 import '../../widgets/loadingui.dart';
 import 'agentsprivatechat.dart';
-
 
 class AllOwnerUsers extends StatefulWidget {
   const AllOwnerUsers({Key? key}) : super(key: key);
@@ -36,7 +34,8 @@ class _AllOwnerUsersState extends State<AllOwnerUsers> {
   late String supervisorUsername = "";
 
   Future<void> fetchSuperVisorsDetails() async {
-    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
+    final postUrl =
+        "https://fnetagents.xyz/get_supervisor_with_code/${profileController.ownerCode}/";
     final pLink = Uri.parse(postUrl);
     http.Response res = await http.get(pLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -48,7 +47,7 @@ class _AllOwnerUsersState extends State<AllOwnerUsers> {
       var jsonData = jsonDecode(codeUnits);
       var allPosts = jsonData;
       supervisorDetails.assignAll(allPosts);
-      for(var i in supervisorDetails){
+      for (var i in supervisorDetails) {
         supervisorId = i['id'].toString();
         supervisorUsername = i['username'];
       }
@@ -61,17 +60,18 @@ class _AllOwnerUsersState extends State<AllOwnerUsers> {
     }
   }
 
-  Future<void>fetchAllMyOwnerUsers(String ownerUsername)async{
+  Future<void> fetchAllMyOwnerUsers(String ownerUsername) async {
     final url = "https://fnetagents.xyz/get_supervisor_agents/$ownerUsername/";
     var myLink = Uri.parse(url);
-    final response = await http.get(myLink,headers: {"Authorization": "Token $uToken"});
+    final response =
+        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
 
-    if(response.statusCode ==200){
+    if (response.statusCode == 200) {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
       allUsers = json.decode(jsonData);
-      for(var i in agentsNames){
-        if(!agentsNames.contains(i['username'])){
+      for (var i in agentsNames) {
+        if (!agentsNames.contains(i['username'])) {
           agentsNames.add(i['username']);
         }
       }
@@ -95,6 +95,7 @@ class _AllOwnerUsersState extends State<AllOwnerUsers> {
     }
     fetchSuperVisorsDetails();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,56 +114,69 @@ class _AllOwnerUsersState extends State<AllOwnerUsers> {
         ],
       ),
       body: SafeArea(
-          child:
-          isLoading ? const LoadingUi() : ListView.builder(
-              itemCount: allUsers != null ? allUsers.length : 0,
-              itemBuilder: (context,i){
-                items = allUsers[i];
-                return Column(
-                  children: [
-                    const SizedBox(height: 5,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0,right: 8),
-                      child: Card(
-                        color: secondaryColor,
-                        elevation: 12,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)
+          child: isLoading
+              ? const LoadingUi()
+              : ListView.builder(
+                  itemCount: allUsers != null ? allUsers.length : 0,
+                  itemBuilder: (context, i) {
+                    items = allUsers[i];
+                    return Column(
+                      children: [
+                        const SizedBox(
+                          height: 5,
                         ),
-                        // shadowColor: Colors.pink,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 1),
-                          child: allUsers[i]['username'] != profileController.agentUsername ?ListTile(
-                            onTap: (){
-                              // String telnum = allUsers[i]['phone'];
-                              // telnum = telnum.replaceFirst("0", '+233');
-                              // launchWhatsapp(message: "Hello", number: telnum);
-                              Get.to(()=> AgentPrivateChat(receiverUserName:allUsers[i]['username'],receiverId:allUsers[i]['id'].toString()));
-                              // print(allUsers[i]['id'].toString());
-                            },
-                            leading: const CircleAvatar(
-                                backgroundColor: secondaryColor,
-                                foregroundColor: Colors.white,
-                                child: Icon(Icons.person)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0, right: 8),
+                          child: Card(
+                            color: secondaryColor,
+                            elevation: 12,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            // shadowColor: Colors.pink,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 1),
+                              child: allUsers[i]['username'] !=
+                                      profileController.agentUsername
+                                  ? ListTile(
+                                      onTap: () {
+                                        // String telnum = allUsers[i]['phone'];
+                                        // telnum = telnum.replaceFirst("0", '+233');
+                                        // launchWhatsapp(message: "Hello", number: telnum);
+                                        Get.to(() => AgentPrivateChat(
+                                            receiverUserName: allUsers[i]
+                                                ['username'],
+                                            receiverId:
+                                                allUsers[i]['id'].toString()));
+                                        // print(allUsers[i]['id'].toString());
+                                      },
+                                      leading: const CircleAvatar(
+                                          backgroundColor: secondaryColor,
+                                          foregroundColor: Colors.white,
+                                          child: Icon(Icons.person)),
+                                      title: Text(
+                                        items['username'],
+                                        style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      ),
+                                      // subtitle: Column(
+                                      //   crossAxisAlignment: CrossAxisAlignment.start,
+                                      //   children: [
+                                      //     Text(items['company_name'],style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold,color: Colors.white),),
+                                      //   ],
+                                      // ),
+                                    )
+                                  : Container(),
                             ),
-                            title: Text(items['username'],style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold,color: Colors.white),),
-                            // subtitle: Column(
-                            //   crossAxisAlignment: CrossAxisAlignment.start,
-                            //   children: [
-                            //     Text(items['company_name'],style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold,color: Colors.white),),
-                            //   ],
-                            // ),
-                          ) : Container(),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 5,)
-                  ],
-                );
-              }
-          )
-      ),
-
+                        const SizedBox(
+                          height: 5,
+                        )
+                      ],
+                    );
+                  })),
     );
   }
 }

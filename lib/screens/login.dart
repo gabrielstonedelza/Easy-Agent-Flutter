@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 
 import '../constants.dart';
 import '../controllers/authphonecontroller.dart';
-import '../widgets/loadingui.dart';
 import 'loginabout.dart';
 
 class LoginView extends StatefulWidget {
@@ -75,8 +74,10 @@ class _LoginViewState extends State<LoginView> {
       // print(res.body);
     }
   }
+
   Future<void> fetchAgentAuthPhone() async {
-    final postUrl = "https://fnetagents.xyz/get_all_auth_phone_agent_by_phone_id/$phoneId/";
+    final postUrl =
+        "https://fnetagents.xyz/get_all_auth_phone_agent_by_phone_id/$phoneId/";
     final pLink = Uri.parse(postUrl);
     http.Response res = await http.get(pLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -90,17 +91,23 @@ class _LoginViewState extends State<LoginView> {
       setState(() {
         isLoading = false;
       });
-      for(var i in authPhoneDetailsForAgent){
-        if(authPhoneDetailsForAgent.isNotEmpty && i['get_agent_username'] == usernameController.text.trim() && i['finger_print'] == phoneFingerprint && i['phone_id'] == phoneId){
+      for (var i in authPhoneDetailsForAgent) {
+        if (authPhoneDetailsForAgent.isNotEmpty &&
+            i['get_agent_username'] == usernameController.text.trim() &&
+            i['finger_print'] == phoneFingerprint &&
+            i['phone_id'] == phoneId) {
           setState(() {
             canLogin = true;
           });
         }
-        if(i['get_agent_username'] != usernameController.text.trim() && i['finger_print'] == phoneFingerprint && i['phone_id'] == phoneId){
+        if (i['get_agent_username'] != usernameController.text.trim() &&
+            i['finger_print'] == phoneFingerprint &&
+            i['phone_id'] == phoneId) {
           setState(() {
             canLogin = false;
           });
-          Get.snackbar("Device Auth Error 😝😜🤪", "This device is registered to another user,please use another device,thank you.",
+          Get.snackbar("Device Auth Error 😝😜🤪",
+              "This device is registered to another user,please use another device,thank you.",
               colorText: Colors.white,
               snackPosition: SnackPosition.TOP,
               backgroundColor: warning,
@@ -110,8 +117,10 @@ class _LoginViewState extends State<LoginView> {
       }
     }
   }
+
   Future<void> fetchAgentAuthPhoneWithUsername() async {
-    final postUrl = "https://fnetagents.xyz/get_auth_phone_by_username/${usernameController.text.trim()}/";
+    final postUrl =
+        "https://fnetagents.xyz/get_auth_phone_by_username/${usernameController.text.trim()}/";
     final pLink = Uri.parse(postUrl);
     http.Response res = await http.get(pLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -125,9 +134,13 @@ class _LoginViewState extends State<LoginView> {
       setState(() {
         isLoading = false;
       });
-      for(var i in authPhoneUsernameDetailsForAgent){
-        if(authPhoneUsernameDetailsForAgent.isNotEmpty && i['get_agent_username'] == usernameController.text.trim() && i['finger_print'] != phoneFingerprint && i['phone_id'] != phoneId){
-          Get.snackbar("Device Auth Error 😝😜🤪", "This device is not your authenticated device,please login with your authenticated device.",
+      for (var i in authPhoneUsernameDetailsForAgent) {
+        if (authPhoneUsernameDetailsForAgent.isNotEmpty &&
+            i['get_agent_username'] == usernameController.text.trim() &&
+            i['finger_print'] != phoneFingerprint &&
+            i['phone_id'] != phoneId) {
+          Get.snackbar("Device Auth Error 😝😜🤪",
+              "This device is not your authenticated device,please login with your authenticated device.",
               colorText: Colors.white,
               snackPosition: SnackPosition.TOP,
               backgroundColor: warning,
@@ -149,23 +162,10 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
-
   Future<void> _launchInBrowser() async {
     if (!await launchUrl(_url)) {
       throw 'Could not launch $_url';
     }
-  }
-
-  bool isPosting = false;
-
-  void _startPosting()async{
-    setState(() {
-      isPosting = true;
-    });
-    await Future.delayed(const Duration(seconds: 5));
-    setState(() {
-      isPosting = false;
-    });
   }
 
   @override
@@ -199,17 +199,25 @@ class _LoginViewState extends State<LoginView> {
           Padding(
             padding: const EdgeInsets.only(right: 25.0),
             child: TextButton(
-              onPressed: (){
+              onPressed: () {
                 Get.to(() => const LoginAboutPage());
               },
-              child: const Text("About",style: TextStyle(color: secondaryColor,fontSize: 18,fontWeight: FontWeight.bold),),
+              child: const Text(
+                "About",
+                style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
       ),
       body: ListView(
         children: [
-          const SizedBox(height: 60,),
+          const SizedBox(
+            height: 60,
+          ),
           Image.asset(
             "assets/images/forapp.png",
             width: 100,
@@ -243,8 +251,8 @@ class _LoginViewState extends State<LoginView> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: TextFormField(
-                      onChanged: (value){
-                        if(value.length > 1){
+                      onChanged: (value) {
+                        if (value.length > 1) {
                           fetchAgentAuthPhone();
                           fetchAgentAuthPhoneWithUsername();
                         }
@@ -289,31 +297,53 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(
                     height: 30,
                   ),
-                 isPosting  ? const LoadingUi() :
+                  controller.isLoggingIn
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RawMaterialButton(
+                            fillColor: snackBackground,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            onPressed: () {},
+                            child: const Text(
+                              "Logging you in please wait",
+                              style: TextStyle(
+                                  color: defaultWhite,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RawMaterialButton(
+                            fillColor: secondaryColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            onPressed: () {
+                              controller.isLoggingIn = true;
+                              FocusScopeNode currentFocus =
+                                  FocusScope.of(context);
 
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RawMaterialButton(
-                      fillColor: secondaryColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
-                      ),
-                      onPressed: (){
-                        _startPosting();
-                        FocusScopeNode currentFocus = FocusScope.of(context);
-
-                        if (!currentFocus.hasPrimaryFocus) {
-                          currentFocus.unfocus();
-                        }
-                        if (!_formKey.currentState!.validate()) {
-                          return;
-                        } else {
-                          controller.loginUser(usernameController.text.trim(),
-                            _passwordController.text.trim(),);
-                        }
-                      },child: const Text("Login",style: TextStyle(color: defaultWhite,fontWeight: FontWeight.bold),),
-                    ),
-                  )
+                              if (!currentFocus.hasPrimaryFocus) {
+                                currentFocus.unfocus();
+                              }
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              } else {
+                                controller.loginUser(
+                                  usernameController.text.trim(),
+                                  _passwordController.text.trim(),
+                                );
+                              }
+                            },
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                  color: defaultWhite,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),
@@ -322,14 +352,16 @@ class _LoginViewState extends State<LoginView> {
             height: 20,
           ),
           TextButton(
-              onPressed: () async{
+              onPressed: () async {
                 await _launchInBrowser();
               },
               child: const Text(
                 "Forgot Password?",
-                style: TextStyle(color: secondaryColor,fontSize: 18,fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               )),
-
         ],
       ),
     );

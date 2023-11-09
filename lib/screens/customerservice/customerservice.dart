@@ -2,10 +2,8 @@ import 'package:easy_agent/screens/customerservice/fraud.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../widgets/basicui.dart';
-import '../../widgets/getonlineimage.dart';
 import 'mycomplains.dart';
 import 'myholdaccountsrequests.dart';
-
 
 class CustomerService extends StatelessWidget {
   const CustomerService({Key? key}) : super(key: key);
@@ -15,7 +13,6 @@ class CustomerService extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Customer Service"),
-
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -26,11 +23,11 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myBasicWidget("sad.png","Complains",""),
+                      myBasicWidget("sad.png", "Complains", ""),
                     ],
                   ),
                   onTap: () {
-                    Get.to(()=> const MyComplains());
+                    Get.to(() => const MyComplains());
                   },
                 ),
               ),
@@ -38,7 +35,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      myBasicWidget("hold.png","Hold","Account"),
+                      myBasicWidget("hold.png", "Hold", "Account"),
                     ],
                   ),
                   onTap: () {
@@ -50,8 +47,7 @@ class CustomerService extends StatelessWidget {
                 child: GestureDetector(
                   child: Column(
                     children: [
-                      
-                      myBasicWidget("fraud.png","Fraud",""),
+                      myBasicWidget("fraud.png", "Fraud", ""),
                     ],
                   ),
                   onTap: () {

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
+import 'package:easy_agent/controllers/accountController.dart';
 import 'package:easy_agent/screens/dashboard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +13,6 @@ import '../../widgets/loadingui.dart';
 import '../sendsms.dart';
 import 'mybankaccounts.dart';
 
-
-
 class AddToMyAccount extends StatefulWidget {
   const AddToMyAccount({Key? key}) : super(key: key);
 
@@ -24,7 +22,7 @@ class AddToMyAccount extends StatefulWidget {
 
 class _AddToUserAccount extends State<AddToMyAccount> {
   final _formKey = GlobalKey<FormState>();
-  void _startPosting()async{
+  void _startPosting() async {
     setState(() {
       isPosting = true;
     });
@@ -33,6 +31,8 @@ class _AddToUserAccount extends State<AddToMyAccount> {
       isPosting = false;
     });
   }
+
+  final AccountController accountController = Get.find();
 
   bool isPosting = false;
   late List allAccounts = [];
@@ -71,62 +71,15 @@ class _AddToUserAccount extends State<AddToMyAccount> {
 
   var _currentSelectedBank = "Select bank";
 
-
-  Future<void>fetchMyAccounts() async {
-    const url = "https://fnetagents.xyz/get_agent_accounts/";
-    var myLink = Uri.parse(url);
-    final response = await http.get(myLink);
-
-    if (response.statusCode == 200) {
-      final codeUnits = response.body.codeUnits;
-      var jsonData = const Utf8Decoder().convert(codeUnits);
-      allAccounts = json.decode(jsonData);
-      for (var i in allAccounts) {
-        AccountNames.add(i['account_name']);
-        agentAccountNumbers.add(i['account_number']);
-      }
-    }
-    setState(() {
-      isLoading = false;
-    });
-  }
   final ProfileController controller = Get.find();
-  late List ownerDetails = [];
-  late String ownerId = "";
-  late String ownerUsername = "";
 
-  Future<void> fetchOwnersDetails() async {
-    final postUrl = "https://fnetagents.xyz/get_supervisor_with_code/${controller.ownerCode}/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      ownerDetails.assignAll(allPosts);
-      for(var i in ownerDetails){
-        ownerId = i['id'].toString();
-        ownerUsername = i['username'];
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      // print(res.body);
-    }
-  }
-
-  late final TextEditingController _accountNumberController = TextEditingController();
+  late final TextEditingController _accountNumberController =
+      TextEditingController();
   late final TextEditingController phone = TextEditingController();
   late final TextEditingController accountName = TextEditingController();
   late final TextEditingController mtnLinkedNum = TextEditingController();
 
-
-  addToAccount()async{
+  Future<void> addToAccount() async {
     const registerUrl = "https://fnetagents.xyz/add_to_agent_accounts/";
     final myLink = Uri.parse(registerUrl);
     final res = await http.post(myLink, headers: {
@@ -138,17 +91,16 @@ class _AddToUserAccount extends State<AddToMyAccount> {
       "account_name": accountName.text,
       "phone": phone.text,
       "mtn_linked_number": mtnLinkedNum.text,
-      "owner": ownerId,
+      "owner": accountController.ownerId,
     });
-    if(res.statusCode == 201){
+    if (res.statusCode == 201) {
       Get.snackbar("Congratulations", "Account was added successfully",
           colorText: Colors.white,
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 10),
           backgroundColor: snackBackground);
       Get.offAll(() => const Dashboard());
-    }
-    else{
+    } else {
       if (kDebugMode) {
         print(res.body);
       }
@@ -164,15 +116,12 @@ class _AddToUserAccount extends State<AddToMyAccount> {
     // TODO: implement initState
     super.initState();
 
-    if(storage.read("token") != null){
+    if (storage.read("token") != null) {
       setState(() {
         uToken = storage.read("token");
       });
     }
-    fetchOwnersDetails();
-    fetchMyAccounts();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +231,6 @@ class _AddToUserAccount extends State<AddToMyAccount> {
                           hint: const Text("Select bank"),
                           isExpanded: true,
                           underline: const SizedBox(),
-
                           items: newBanks.map((dropDownStringItem) {
                             return DropdownMenuItem(
                               value: dropDownStringItem,
@@ -323,29 +271,30 @@ class _AddToUserAccount extends State<AddToMyAccount> {
                       },
                     ),
                   ),
-                  isPosting ? const LoadingUi() : RawMaterialButton(
-                    onPressed: () {
-                      _startPosting();
-                      if (!_formKey.currentState!.validate()) {
-                        return;
-                      } else {
-                        addToAccount();
-                      }
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                    ),
-                    elevation: 8,
-                    fillColor: secondaryColor,
-                    splashColor: defaultWhite,
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white),
-                    ),
-                  ),
+                  isPosting
+                      ? const LoadingUi()
+                      : RawMaterialButton(
+                          onPressed: () {
+                            _startPosting();
+                            if (!_formKey.currentState!.validate()) {
+                              return;
+                            } else {
+                              addToAccount();
+                            }
+                          },
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          elevation: 8,
+                          fillColor: secondaryColor,
+                          splashColor: defaultWhite,
+                          child: const Text(
+                            "Save",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.white),
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -353,7 +302,7 @@ class _AddToUserAccount extends State<AddToMyAccount> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           Get.to(() => const MyBankAccounts());
         },
         child: const Text("Accs",
@@ -364,10 +313,10 @@ class _AddToUserAccount extends State<AddToMyAccount> {
       ),
     );
   }
+
   void _onDropDownItemSelectedBank(newValueSelected) {
     setState(() {
       _currentSelectedBank = newValueSelected;
     });
   }
-
 }

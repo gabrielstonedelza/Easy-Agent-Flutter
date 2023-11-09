@@ -19,8 +19,11 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 import '../about.dart';
+import '../controllers/accountController.dart';
 import '../controllers/authphonecontroller.dart';
+import '../controllers/customerscontroller.dart';
 import '../controllers/localnotificationcontroller.dart';
+import '../controllers/logincontroller.dart';
 import '../controllers/notificationcontroller.dart';
 import '../controllers/profilecontroller.dart';
 import '../controllers/trialandmonthlypaymentcontroller.dart';
@@ -42,7 +45,6 @@ import 'customers/customeraccounts.dart';
 import 'customers/mycustomers.dart';
 import 'customers/registercustomer.dart';
 import 'customerservice/customerservice.dart';
-import 'login.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -85,8 +87,11 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   DateTime now = DateTime.now();
-  NotificationController notificationsController = Get.find();
+  final NotificationController notificationController = Get.find();
+  final CustomersController customersController = Get.find();
   final ProfileController profileController = Get.find();
+  final AccountController accountController = Get.find();
+  final LoginController loginController = Get.find();
   final storage = GetStorage();
   late String uToken = "";
   late String agentCode = "";
@@ -110,123 +115,15 @@ class _DashboardState extends State<Dashboard> {
   SmsQuery query = SmsQuery();
   late List mySmss = [];
   int lastSmsCount = 0;
-  late List allNotifications = [];
 
-  late List yourNotifications = [];
-
-  late List notRead = [];
-
-  late List triggered = [];
-
-  late List unreadNotifications = [];
-
-  late List triggeredNotifications = [];
-
-  late List notifications = [];
-
-  late List allNots = [];
   bool phoneNotAuthenticated = false;
   final AuthPhoneController authController = Get.find();
   final TrialAndMonthlyPaymentController tpController = Get.find();
 
   bool isAuthenticated = false;
   bool isAuthenticatedAlready = false;
-  late List accountBalanceDetailsClosedToday = [];
-  bool hasClosedAccountToday = false;
 
-  Future<void> fetchAccountBalanceClosed() async {
-    const postUrl =
-        "https://fnetagents.xyz/get_my_account_balance_closed_today/";
-    final pLink = Uri.parse(postUrl);
-    http.Response res = await http.get(pLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-    if (res.statusCode == 200) {
-      final codeUnits = res.body;
-      var jsonData = jsonDecode(codeUnits);
-      var allPosts = jsonData;
-      accountBalanceDetailsClosedToday.assignAll(allPosts);
-      for (var i in accountBalanceDetailsClosedToday) {
-        if (i['date_closed'] == now.toString().split(" ").first &&
-            i['isClosed'] == true) {
-          hasClosedAccountToday = true;
-        }
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      // print(res.body);
-    }
-  }
-
-  Future<void> getAllTriggeredNotifications() async {
-    const url = "https://fnetagents.xyz/get_triggered_notifications/";
-    var myLink = Uri.parse(url);
-    final response =
-        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
-    if (response.statusCode == 200) {
-      final codeUnits = response.body.codeUnits;
-      var jsonData = const Utf8Decoder().convert(codeUnits);
-      triggeredNotifications = json.decode(jsonData);
-      triggered.assignAll(triggeredNotifications);
-    }
-  }
-
-  Future<void> getAllUnReadNotifications() async {
-    const url = "https://fnetagents.xyz/get_my_unread_notifications/";
-    var myLink = Uri.parse(url);
-    final response =
-        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
-    if (response.statusCode == 200) {
-      final codeUnits = response.body.codeUnits;
-      var jsonData = const Utf8Decoder().convert(codeUnits);
-      yourNotifications = json.decode(jsonData);
-      notRead.assignAll(yourNotifications);
-    }
-  }
-
-  Future<void> getAllNotifications() async {
-    const url = "https://fnetagents.xyz/get_my_notifications/";
-    var myLink = Uri.parse(url);
-    final response =
-        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
-    if (response.statusCode == 200) {
-      final codeUnits = response.body.codeUnits;
-      var jsonData = const Utf8Decoder().convert(codeUnits);
-      allNotifications = json.decode(jsonData);
-      allNots.assignAll(allNotifications);
-    }
-  }
-
-  unTriggerNotifications(int id) async {
-    final requestUrl = "https://fnetagents.xyz/un_trigger_notification/$id/";
-    final myLink = Uri.parse(requestUrl);
-    final response = await http.put(myLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    }, body: {
-      "notification_trigger": "Not Triggered",
-      "read": "Read",
-    });
-    if (response.statusCode == 200) {}
-  }
-
-  updateReadNotification(int id) async {
-    const requestUrl = "https://fnetagents.xyz/read_notification/";
-    final myLink = Uri.parse(requestUrl);
-    final response = await http.put(myLink, headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    }, body: {});
-    if (response.statusCode == 200) {}
-  }
-
-  fetchInbox() async {
+  Future<void> fetchInbox() async {
     List<SmsMessage> messages = await query.getAllSms;
     for (var message in messages) {
       if (message.address == "MobileMoney") {
@@ -486,7 +383,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Future checkMtnBalance() async {
+  Future<void> checkMtnBalance() async {
     fetchInbox();
     Get.defaultDialog(
         content: Column(
@@ -501,44 +398,11 @@ class _DashboardState extends State<Dashboard> {
         ));
   }
 
-  late List allRequests = [];
-  bool hasSomePendings = false;
-  late List allPendingList = [];
   final Uri _url = Uri.parse('https://aop.ecobank.com/register');
 
   Future<void> _launchInBrowser() async {
     if (!await launchUrl(_url)) {
       throw 'Could not launch $_url';
-    }
-  }
-
-  Future<void> fetchAllRequests() async {
-    const url = "https://fnetagents.xyz/get_all_my_requests/";
-    var myLink = Uri.parse(url);
-    final response =
-        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
-
-    if (response.statusCode == 200) {
-      final codeUnits = response.body.codeUnits;
-      var jsonData = const Utf8Decoder().convert(codeUnits);
-      allRequests = json.decode(jsonData);
-      for (var i in allRequests) {
-        allPendingList.add(i['request_approved']);
-        allPendingList.add(i['request_paid']);
-        allPendingList.add(i['payment_approved']);
-      }
-      setState(() {
-        isLoading = false;
-      });
-    }
-    if (allPendingList.contains("Pending")) {
-      setState(() {
-        hasSomePendings = true;
-      });
-    } else {
-      setState(() {
-        hasSomePendings = false;
-      });
     }
   }
 
@@ -580,7 +444,7 @@ class _DashboardState extends State<Dashboard> {
     var hour = DateTime.now().hour;
     switch (hour) {
       case 00:
-        logoutUser();
+        loginController.logoutUser(uToken);
         break;
     }
   }
@@ -588,12 +452,6 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    fetchInbox();
-    // TimeChecker.startTimer(context);
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      fetchInbox();
-    });
-
     if (storage.read("token") != null) {
       setState(() {
         uToken = storage.read("token");
@@ -617,80 +475,154 @@ class _DashboardState extends State<Dashboard> {
         appVersionFromServer = int.parse(storage.read("AppVersion"));
       });
     }
-    // checkTheTime();
-    // getLatestAppVersion();
-    tpController.fetchFreeTrial(uToken);
-    tpController.fetchAccountBalance(uToken);
-    tpController.fetchMonthlyPayment(uToken);
-    notificationsController.getAllNotifications(uToken);
-    notificationsController.getAllUnReadNotifications(uToken);
-    profileController.getUserDetails(uToken);
-    profileController.getUserProfile(uToken);
-    getAllTriggeredNotifications();
-    fetchAllRequests();
-    fetchAccountBalanceClosed();
-    fetchAllInstalled();
+    scheduleTimer();
+  }
 
-// Clear existing timers before creating new ones
-    _timer.cancel();
+  // void scheduleTimer() {
+  //   notificationController.getAllNotifications(uToken);
+  //   notificationController.getAllUnReadNotifications(uToken);
+  //   profileController.getUserDetails(uToken);
+  //   profileController.getUserProfile(uToken);
+  //   customersController.getAllMyCustomers(uToken);
+  //   customersController.getAllCustomers(uToken);
+  //   customersController.getAllFraudsters(uToken);
+  //   accountController.getAllFraudsters(uToken);
+  //   accountController.fetchAccountBalance(uToken);
+  //   accountController.fetchAccountBalance(uToken);
+  //   accountController.getUserDetails(uToken);
+  //   accountController.fetchAllPayTo(uToken);
+  //   accountController.fetchAllMtnDeposits(uToken);
+  //   accountController.fetchAllMtnWithdrawals(uToken);
+  //   accountController.fetchAllBankDeposits(uToken);
+  //   accountController.fetchAllBankWithdrawals(uToken);
+  //   accountController.getAllMyReports(uToken);
+  //   accountController.getAllAgentsAccounts(uToken);
+  //   accountController.fetchOwnersDetails(uToken, profileController.ownerCode);
+  //
+  //   fetchAllInstalled();
+  //   fetchInbox();
+  //   Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+  //     fetchInbox();
+  //     customersController.getAllMyCustomers(uToken);
+  //     customersController.getAllCustomers(uToken);
+  //     customersController.getAllFraudsters(uToken);
+  //     notificationController.getAllNotifications(uToken);
+  //     notificationController.getAllUnReadNotifications(uToken);
+  //     profileController.getUserDetails(uToken);
+  //     profileController.getUserProfile(uToken);
+  //     accountController.getAllFraudsters(uToken);
+  //     accountController.fetchAccountBalance(uToken);
+  //     accountController.fetchAccountBalance(uToken);
+  //     accountController.getUserDetails(uToken);
+  //     accountController.fetchAllPayTo(uToken);
+  //     accountController.fetchAllMtnDeposits(uToken);
+  //     accountController.fetchAllMtnWithdrawals(uToken);
+  //     accountController.fetchAllBankDeposits(uToken);
+  //     accountController.fetchAllBankWithdrawals(uToken);
+  //     accountController.getAllMyReports(uToken);
+  //     accountController.getAllAgentsAccounts(uToken);
+  //     accountController.fetchOwnersDetails(uToken, profileController.ownerCode);
+  //     fetchAllInstalled();
+  //     for (var i in notificationController.triggered) {
+  //       NotificationService().showNotifications(
+  //         title: i['notification_title'],
+  //         body: i['notification_message'],
+  //       );
+  //     }
+  //   });
+  //
+  //   _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+  //     for (var e in notificationController.triggered) {
+  //       notificationController.unTriggerNotifications(e["id"], uToken);
+  //     }
+  //   });
+  // }
+  void scheduleTimer() {
+    // Initial data fetching
+    fetchInitialData();
 
-    _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
-      getAllTriggeredNotifications();
-      getAllUnReadNotifications();
-      checkTheTime();
-      tpController.fetchFreeTrial(uToken);
-      tpController.fetchAccountBalance(uToken);
-      tpController.fetchMonthlyPayment(uToken);
-
-      for (var i in triggered) {
-        NotificationService().showNotifications(
-          title: i['notification_title'],
-          body: i['notification_message'],
-        );
-      }
+    // Periodic data fetching and notifications
+    final dataFetchingTimer =
+        Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      fetchPeriodicData();
+      showNotifications();
     });
 
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      // getLatestAppVersion();
-      // checkTheTime();
-
-      for (var e in triggered) {
-        unTriggerNotifications(e["id"]);
-      }
+    // Untrigger notifications
+    final untriggerTimer =
+        Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      unTriggerNotifications();
     });
   }
 
-  logoutUser() async {
-    storage.remove("token");
-    storage.remove("agent_code");
-    storage.remove("phoneAuthenticated");
-    storage.remove("IsAuthDevice");
-    storage.remove("AppVersion");
-    Get.offAll(() => const LoginView());
-    const logoutUrl = "https://www.fnetagents.xyz/auth/token/logout";
-    final myLink = Uri.parse(logoutUrl);
-    http.Response response = await http.post(myLink, headers: {
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
+  void fetchInitialData() {
+    notificationController.getAllNotifications(uToken);
+    notificationController.getAllUnReadNotifications(uToken);
+    profileController.getUserDetails(uToken);
+    profileController.getUserProfile(uToken);
+    customersController.getAllMyCustomers(uToken);
+    customersController.getAllCustomers(uToken);
+    customersController.getAllFraudsters(uToken);
+    accountController.getAllFraudsters(uToken);
+    accountController.fetchAccountBalance(uToken);
+    accountController.fetchAccountBalance(uToken);
+    accountController.getUserDetails(uToken);
+    accountController.fetchAllPayTo(uToken);
+    accountController.fetchAllMtnDeposits(uToken);
+    accountController.fetchAllMtnWithdrawals(uToken);
+    accountController.fetchAllBankDeposits(uToken);
+    accountController.fetchAllBankWithdrawals(uToken);
+    accountController.getAllMyReports(uToken);
+    accountController.getAllAgentsAccounts(uToken);
+    accountController.fetchOwnersDetails(uToken, profileController.ownerCode);
+    fetchAllInstalled();
+    fetchInbox();
+  }
 
-    if (response.statusCode == 200) {
-      Get.snackbar("Success", "You were logged out",
-          colorText: defaultWhite,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: snackBackground);
-      storage.remove("token");
-      storage.remove("agent_code");
-      storage.remove("AppVersion");
-      Get.offAll(() => const LoginView());
+  void fetchPeriodicData() {
+    fetchInbox();
+    customersController.getAllMyCustomers(uToken);
+    customersController.getAllCustomers(uToken);
+    customersController.getAllFraudsters(uToken);
+    notificationController.getAllNotifications(uToken);
+    notificationController.getAllUnReadNotifications(uToken);
+    profileController.getUserDetails(uToken);
+    profileController.getUserProfile(uToken);
+    accountController.getAllFraudsters(uToken);
+    accountController.fetchAccountBalance(uToken);
+    accountController.fetchAccountBalance(uToken);
+    accountController.getUserDetails(uToken);
+    accountController.fetchAllPayTo(uToken);
+    accountController.fetchAllMtnDeposits(uToken);
+    accountController.fetchAllMtnWithdrawals(uToken);
+    accountController.fetchAllBankDeposits(uToken);
+    accountController.fetchAllBankWithdrawals(uToken);
+    accountController.getAllMyReports(uToken);
+    accountController.getAllAgentsAccounts(uToken);
+    accountController.fetchOwnersDetails(uToken, profileController.ownerCode);
+    fetchAllInstalled();
+  }
+
+  void showNotifications() {
+    for (var i in notificationController.triggered) {
+      NotificationService().showNotifications(
+        title: i['notification_title'],
+        body: i['notification_message'],
+      );
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _timer.cancel();
+  void unTriggerNotifications() {
+    for (var e in notificationController.triggered) {
+      notificationController.unTriggerNotifications(e["id"], uToken);
+    }
   }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   _timer.cancel();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -761,7 +693,7 @@ class _DashboardState extends State<Dashboard> {
                                 shape: const StadiumBorder(),
                                 fillColor: secondaryColor,
                                 onPressed: () {
-                                  logoutUser();
+                                  loginController.logoutUser(uToken);
                                   Get.back();
                                 },
                                 child: const Text(
@@ -847,12 +779,6 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 backgroundColor: snackBackground,
                 actions: [
-                  // IconButton(
-                  //   onPressed: (){
-                  //     Get.to(() => const AddToMyAccount());
-                  //   },
-                  //   icon: myOnlineImage("bank-account.png",30,30),
-                  // ),
                   IconButton(
                     onPressed: () {
                       Get.to(() => const CalculateDenominations());
