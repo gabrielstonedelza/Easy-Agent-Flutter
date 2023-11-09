@@ -2,6 +2,10 @@ import 'package:easy_agent/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+<<<<<<< HEAD
+=======
+import 'package:http/http.dart' as http;
+>>>>>>> 93087fe64ab5a4ec61eebb7826edd9c3cef64d34
 import '../../controllers/accountController.dart';
 import '../../controllers/customerscontroller.dart';
 

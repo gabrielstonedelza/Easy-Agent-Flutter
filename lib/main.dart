@@ -33,7 +33,7 @@ void main() async {
   Get.put(NotificationController());
   Get.put(AuthPhoneController());
   Get.put(TrialAndMonthlyPaymentController());
-  NotificationService().initNotification();
+  LocalNotificationController().initNotification();
   runApp(const MyApp());
 }
 

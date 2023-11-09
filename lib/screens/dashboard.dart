@@ -478,6 +478,7 @@ class _DashboardState extends State<Dashboard> {
     scheduleTimer();
   }
 
+<<<<<<< HEAD
   // void scheduleTimer() {
   //   notificationController.getAllNotifications(uToken);
   //   notificationController.getAllUnReadNotifications(uToken);
@@ -616,6 +617,82 @@ class _DashboardState extends State<Dashboard> {
     for (var e in notificationController.triggered) {
       notificationController.unTriggerNotifications(e["id"], uToken);
     }
+=======
+  void scheduleTimer() {
+    // tpController.fetchFreeTrial(uToken);
+    // tpController.fetchAccountBalance(uToken);
+    // tpController.fetchMonthlyPayment(uToken);
+    notificationController.getAllNotifications(uToken);
+    notificationController.getAllUnReadNotifications(uToken);
+    profileController.getUserDetails(uToken);
+    profileController.getUserProfile(uToken);
+    // accountController.fetchAccountBalanceClosed(uToken);
+    // accountController.fetchAllRequests(uToken);
+    customersController.getAllMyCustomers(uToken);
+    customersController.getAllCustomers(uToken);
+    customersController.getAllFraudsters(uToken);
+    accountController.getAllFraudsters(uToken);
+    accountController.fetchAccountBalance(uToken);
+    accountController.fetchAccountBalance(uToken);
+    accountController.getUserDetails(uToken);
+    accountController.fetchAllPayTo(uToken);
+    accountController.fetchAllMtnDeposits(uToken);
+    accountController.fetchAllMtnWithdrawals(uToken);
+    accountController.fetchAllBankDeposits(uToken);
+    accountController.fetchAllBankWithdrawals(uToken);
+    accountController.getAllMyReports(uToken);
+    accountController.getAllAgentsAccounts(uToken);
+    accountController.fetchOwnersDetails(uToken, profileController.ownerCode);
+
+    fetchAllInstalled();
+    fetchInbox();
+    Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      fetchInbox();
+      // tpController.fetchFreeTrial(uToken);
+      // tpController.fetchAccountBalance(uToken);
+      // tpController.fetchMonthlyPayment(uToken);
+      customersController.getAllMyCustomers(uToken);
+      customersController.getAllCustomers(uToken);
+      customersController.getAllFraudsters(uToken);
+      notificationController.getAllNotifications(uToken);
+      notificationController.getAllUnReadNotifications(uToken);
+      profileController.getUserDetails(uToken);
+      profileController.getUserProfile(uToken);
+      // accountController.fetchAccountBalanceClosed(uToken);
+      // accountController.fetchAllRequests(uToken);
+      accountController.getAllFraudsters(uToken);
+      accountController.fetchAccountBalance(uToken);
+      accountController.fetchAccountBalance(uToken);
+      accountController.getUserDetails(uToken);
+      accountController.fetchAllPayTo(uToken);
+      accountController.fetchAllMtnDeposits(uToken);
+      accountController.fetchAllMtnWithdrawals(uToken);
+      accountController.fetchAllBankDeposits(uToken);
+      accountController.fetchAllBankWithdrawals(uToken);
+      accountController.getAllMyReports(uToken);
+      accountController.getAllAgentsAccounts(uToken);
+      accountController.fetchOwnersDetails(uToken, profileController.ownerCode);
+      fetchAllInstalled();
+      for (var i in notificationController.triggered) {
+        LocalNotificationController().showNotifications(
+          title: i['notification_title'],
+          body: i['notification_message'],
+        );
+      }
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      for (var e in notificationController.triggered) {
+        notificationController.unTriggerNotifications(e["id"], uToken);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.cancel();
+>>>>>>> 93087fe64ab5a4ec61eebb7826edd9c3cef64d34
   }
 
   // @override

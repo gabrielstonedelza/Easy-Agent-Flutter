@@ -83,6 +83,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
   bool isCompleted = false;
   bool isResent = false;
 
+<<<<<<< HEAD
   // void startTimer() {
   //   timer = Timer.periodic(const Duration(seconds: 1), (timer) {
   //     if (seconds > 0) {
@@ -111,6 +112,36 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
   //   timer?.cancel();
   // }
 
+=======
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (seconds > 0) {
+        setState(() {
+          seconds--;
+        });
+      } else {
+        stopTimer(reset: false);
+        setState(() {
+          isCompleted = true;
+        });
+      }
+    });
+  }
+
+  void resetTimer() {
+    setState(() {
+      seconds = maxSeconds;
+    });
+  }
+
+  void stopTimer({bool reset = true}) {
+    if (reset) {
+      resetTimer();
+    }
+    timer?.cancel();
+  }
+
+>>>>>>> 93087fe64ab5a4ec61eebb7826edd9c3cef64d34
   Future<void> logoutUser() async {
     storage.remove("token");
     storage.remove("agent_code");
@@ -185,13 +216,17 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
         sendSms.sendMySms(num, "FNET", "Your code $oTP");
         sendOtp();
       } else {
+<<<<<<< HEAD
         sendOtp();
+=======
+>>>>>>> 93087fe64ab5a4ec61eebb7826edd9c3cef64d34
         sendSms.sendMySms(num, "EasyAgent", "Your code $oTP");
         sendOtp();
       }
     });
   }
 
+<<<<<<< HEAD
   @override
   void dispose() {
     // Cancel the timer when the widget is disposed.
@@ -199,6 +234,8 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
     super.dispose();
   }
 
+=======
+>>>>>>> 93087fe64ab5a4ec61eebb7826edd9c3cef64d34
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -274,6 +311,7 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                         const SizedBox(
                           width: 20,
                         ),
+<<<<<<< HEAD
                         TextButton(
                           onPressed: () {
                             String num = agentPhone.replaceFirst("0", '+233');
@@ -294,6 +332,40 @@ class _AuthenticateByPhoneState extends State<AuthenticateByPhone> {
                           child: const Text("Resend Code",
                               style: TextStyle(color: secondaryColor)),
                         )
+=======
+                        isCompleted
+                            ? TextButton(
+                                onPressed: () {
+                                  String num =
+                                      agentPhone.replaceFirst("0", '+233');
+                                  if (companyName == "Fnet Enterprise") {
+                                    sendSms.sendMySms(
+                                        num, "FNET", "Your code $oTP");
+                                    sendOtp();
+                                  } else {
+                                    sendSms.sendMySms(
+                                        num, "EasyAgent", "Your code $oTP");
+                                    sendOtp();
+                                  }
+                                  sendOtp();
+                                  Get.snackbar(
+                                      "Check Phone", "code was sent again",
+                                      backgroundColor: snackBackground,
+                                      colorText: defaultWhite,
+                                      duration: const Duration(seconds: 5));
+                                  startTimer();
+                                  resetTimer();
+                                  setState(() {
+                                    isResent = true;
+                                    isCompleted = false;
+                                  });
+                                },
+                                child: const Text("Resend Code",
+                                    style: TextStyle(color: secondaryColor)),
+                              )
+                            : Text("00:${seconds.toString()}",
+                                style: const TextStyle(color: defaultWhite)),
+>>>>>>> 93087fe64ab5a4ec61eebb7826edd9c3cef64d34
                       ],
                     ),
                   ),
